@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 const NAV = [
-  { href: "/", label: "Discover", icon: Compass },
+  { href: "/discover", label: "Discover", icon: Compass },
   { href: "/updates", label: "Updates", icon: Bell },
   { href: "/saved", label: "Saved", icon: Heart },
   { href: "/early-access", label: "Early Access", icon: KeyRound },
@@ -38,8 +38,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <nav className="flex flex-1 flex-col gap-1">
           {NAV.map(({ href, label, icon: Icon }) => {
             const active =
-              href === "/"
-                ? pathname === "/" || pathname.startsWith("/homes")
+              href === "/discover"
+                ? pathname === "/discover" || pathname.startsWith("/homes")
                 : pathname === href || pathname.startsWith(`${href}/`);
             return (
               <Link
@@ -77,8 +77,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="flex items-center justify-around px-2 py-2">
           {NAV.slice(0, 5).map(({ href, label, icon: Icon }) => {
             const active =
-              href === "/"
-                ? pathname === "/" || pathname.startsWith("/homes")
+              href === "/discover"
+                ? pathname === "/discover" || pathname.startsWith("/homes")
                 : pathname === href;
             return (
               <Link

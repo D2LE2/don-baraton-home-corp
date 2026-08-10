@@ -1,12 +1,7 @@
 "use client";
 
-import { AppShell } from "@/components/homehub/AppShell";
-import { DiscoverView } from "@/components/homehub/DiscoverView";
+import { LandingPage } from "@/components/homehub/LandingPage";
 
 export default function HomePage() {
-  return (
-    <AppShell>
-      <DiscoverView />
-    </AppShell>
-  );
+  return <LandingPage />;
 }

@@ -21,7 +21,7 @@ export default function EarlyAccessPage() {
         <div className="mt-8 rounded-2xl border border-dashed border-[#e0e0e0] bg-white px-5 py-10 text-center">
           <p className="text-[14px] text-[#8a8a8a]">You haven&apos;t joined a list yet.</p>
           <Link
-            href="/"
+            href="/discover"
             className="mt-4 inline-flex rounded-full bg-[#111] px-4 py-2.5 text-[13px] font-semibold text-white"
           >
             Discover homes

@@ -24,7 +24,7 @@ export function HomeDetailClient({ home }: { home: PreMarketHome }) {
   return (
     <div>
       <Link
-        href="/"
+        href="/discover"
         className="mb-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-[#6a6a6a] hover:text-[#111]"
       >
         <ArrowLeft size={14} />
