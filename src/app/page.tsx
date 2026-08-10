@@ -139,9 +139,9 @@ export default function HomePage() {
       {/* Video houses — the magic + unlock */}
       <VideoResidenceFeed />
 
-      {/* Simple 3 steps — easy to get */}
-      <section className="relative bg-white px-5 py-24 md:px-12 md:py-28 lg:px-16">
-        <div className="mx-auto max-w-6xl">
+      {/* Simple 3 steps — editorial */}
+      <section className="relative bg-[#faf8f4] px-5 py-24 md:px-12 md:py-32 lg:px-16">
+        <div className="mx-auto max-w-[1200px]">
           <motion.div
             initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -149,29 +149,30 @@ export default function HomePage() {
             transition={{ duration: 0.7 }}
             className="max-w-2xl"
           >
-            <p className="text-[11px] tracking-[0.35em] text-gold uppercase">Omar Corp</p>
-            <h2 className="mt-4 text-3xl font-light leading-tight tracking-wide text-ink md:text-5xl">
-              Tan fácil como
-              <span className="script ml-2 text-gold">mirar, seguir y entrar.</span>
+            <p className="text-[11px] tracking-[0.45em] text-[#9a8660] uppercase">Proceso</p>
+            <h2 className="display mt-4 text-4xl font-light leading-tight text-ink md:text-6xl">
+              Tres pasos.
+              <br />
+              Cero ruido.
             </h2>
           </motion.div>
 
-          <div className="mt-16 grid gap-10 md:grid-cols-3 md:gap-8">
+          <div className="mt-20 grid gap-0 border-t border-[#e8e2d8] md:grid-cols-3">
             {[
               {
                 step: "01",
-                title: "Explora el recorrido",
-                copy: "Desliza entre residencias activas. Ves precio de preventa, avance y demanda en vivo.",
+                title: "Observa",
+                copy: "Recorre residencias activas con precio de preventa, avance de obra y demanda en vivo.",
               },
               {
                 step: "02",
-                title: "Anótate ya",
-                copy: "Lista de espera con cupos limitados. Prioridad real, no spam.",
+                title: "Reserva tu lugar",
+                copy: "Lista de espera limitada. Prioridad real para quien actúa a tiempo.",
               },
               {
                 step: "03",
                 title: "Omar Private",
-                copy: "Si quieres más acceso, solicita membresía. Privilegio, no cola genérica.",
+                copy: "Acceso anticipado por membresía. Para quien está listo de verdad.",
               },
             ].map((item, i) => (
               <motion.div
@@ -180,11 +181,11 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.12, duration: 0.55 }}
-                className="border-t border-border pt-7"
+                className="border-[#e8e2d8] py-10 md:border-r md:px-8 md:py-12 md:first:pl-0 md:last:border-r-0 md:last:pr-0"
               >
-                <p className="text-[11px] tracking-[0.3em] text-gold">{item.step}</p>
-                <h3 className="mt-4 text-xl font-light tracking-wide text-ink">{item.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted">{item.copy}</p>
+                <p className="text-[11px] tracking-[0.4em] text-[#9a8660]">{item.step}</p>
+                <h3 className="display mt-6 text-3xl font-light text-ink">{item.title}</h3>
+                <p className="mt-4 text-sm leading-relaxed text-[#8a847a]">{item.copy}</p>
               </motion.div>
             ))}
           </div>

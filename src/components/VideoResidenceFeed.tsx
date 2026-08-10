@@ -2,22 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Eye,
-  Lock,
-  Users,
-  Volume2,
-  VolumeX,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Lock, Volume2, VolumeX } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { UnlockModal } from "@/components/UnlockModal";
 import { useNova } from "@/context/NovaContext";
 import { residences } from "@/data/residences";
 import { useLiveSocialProof } from "@/hooks/useLiveSocialProof";
-import { formatUsd, savingsAmount, savingsPercent } from "@/lib/pricing";
+import { formatUsd, savingsPercent } from "@/lib/pricing";
 
 function VideoSlide({
   residence,
@@ -57,17 +49,15 @@ function VideoSlide({
 
   return (
     <article
-      className={`w-[88vw] max-w-[880px] shrink-0 snap-center overflow-hidden rounded-[1.75rem] border bg-white shadow-[0_24px_80px_rgba(20,16,10,0.08)] transition duration-500 ${
-        active
-          ? "scale-100 border-gold/35 opacity-100"
-          : "scale-[0.96] border-border opacity-70"
+      className={`w-[92vw] max-w-[1080px] shrink-0 snap-center transition duration-700 ${
+        active ? "opacity-100" : "opacity-40"
       }`}
       onClick={() => {
         if (!active) onSelect();
       }}
     >
-      {/* Video area — clean, almost no cover */}
-      <div className="relative aspect-[16/10] bg-[#ece8e1] md:aspect-[16/9]">
+      {/* Cinematic frame — video is the hero */}
+      <div className="relative aspect-[16/10] overflow-hidden bg-[#1a1814] md:aspect-[21/11]">
         <video
           ref={videoRef}
           className="pointer-events-none absolute inset-0 h-full w-full object-cover"
@@ -80,101 +70,111 @@ function VideoSlide({
           controls={false}
           disablePictureInPicture
         />
+        {/* Hairline frame only — no dark wash over the film */}
+        <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/20" />
 
-        <div className="absolute top-4 left-4 z-10 flex flex-wrap gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-black/5 bg-white/95 px-3 py-1.5 text-[10px] tracking-[0.14em] text-ink uppercase shadow-sm">
-            <Eye size={12} className="text-emerald-600" />
-            {viewers} mirando
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-black/5 bg-white/95 px-3 py-1.5 text-[10px] tracking-[0.14em] text-ink uppercase shadow-sm">
-            <Users size={12} className="text-gold" />
-            {waitlistLive} en lista
-          </span>
-        </div>
-
-        <div className="pointer-events-none absolute top-4 right-4 z-10 w-[min(100%-2rem,240px)]">
+        <div className="absolute top-0 inset-x-0 z-10 flex items-start justify-between p-5 md:p-7">
+          <p className="bg-white/90 px-3 py-1.5 text-[10px] tracking-[0.35em] text-ink uppercase backdrop-blur-sm">
+            En vivo · {viewers} presentes
+          </p>
           <AnimatePresence mode="popLayout">
             {active && toast && (
-              <motion.div
+              <motion.p
                 key={toast.id}
-                initial={{ opacity: 0, y: -8 }}
+                initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="rounded-2xl border border-black/5 bg-white/95 px-3 py-2.5 shadow-lg backdrop-blur-md"
+                className="max-w-[220px] bg-white/90 px-3 py-1.5 text-[10px] leading-relaxed tracking-[0.04em] text-ink/80 backdrop-blur-sm md:max-w-xs"
               >
-                <div className="flex items-start gap-2">
-                  <span className="live-dot mt-1 shrink-0" />
-                  <p className="text-[11px] leading-snug text-ink/80">{toast.text}</p>
-                </div>
-              </motion.div>
+                {toast.text}
+              </motion.p>
             )}
           </AnimatePresence>
         </div>
       </div>
 
-      {/* Info below video — never covers it */}
-      <div className="space-y-5 bg-white p-5 md:p-7">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-[10px] tracking-[0.28em] text-gold uppercase">
-              {residence.code}
-            </p>
-            <h2 className="mt-1 text-2xl font-light tracking-[0.06em] text-ink md:text-4xl">
-              {residence.name}
-            </h2>
-            <p className="mt-1 text-sm text-muted">{residence.location}</p>
-            <p className="script mt-2 text-2xl text-gold md:text-3xl">{residence.teaser}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-[10px] tracking-[0.2em] text-muted uppercase">Preventa</p>
-            <p className="display mt-1 text-3xl text-ink">{formatUsd(residence.priceFrom)}</p>
-            <p className="mt-1 text-xs text-muted line-through">
-              {formatUsd(residence.marketValue)}
-            </p>
-            <p className="mt-1 text-[11px] font-medium text-emerald-700">
-              -{savingsPercent(residence.priceFrom, residence.marketValue)}% vs mercado
-            </p>
-          </div>
-        </div>
-
+      {/* Editorial details under the film */}
+      <div className="grid gap-8 border border-t-0 border-[#e8e2d8] bg-white px-5 py-8 md:grid-cols-[1.4fr_1fr] md:gap-12 md:px-10 md:py-10">
         <div>
-          <div className="mb-1.5 flex justify-between text-[10px] tracking-[0.16em] text-muted uppercase">
-            <span>Obra · {currentStage?.label ?? "En curso"}</span>
-            <span className="text-ink">{residence.progress}%</span>
+          <div className="flex items-center gap-4">
+            <span className="text-[11px] tracking-[0.4em] text-[#9a8660] uppercase">
+              {residence.code}
+            </span>
+            <span className="h-px flex-1 bg-[#e8e2d8]" />
+            <span className="text-[11px] tracking-[0.2em] text-[#8a847a] uppercase">
+              {waitlistLive} en lista
+            </span>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-[#ece8e1]">
-            <div
-              className="h-full rounded-full bg-gold transition-[width] duration-700"
-              style={{ width: active ? `${residence.progress}%` : "0%" }}
-            />
-          </div>
-          <p className="mt-2 text-xs text-muted">Entrega · {residence.expected}</p>
+          <h2 className="display mt-5 text-[clamp(2.4rem,5vw,4rem)] font-light leading-[0.95] tracking-[0.02em] text-ink">
+            {residence.name}
+          </h2>
+          <p className="mt-3 text-sm tracking-[0.08em] text-[#8a847a] uppercase">
+            {residence.location}
+          </p>
+          <p className="mt-5 max-w-md text-[15px] leading-relaxed text-[#5c574f]">
+            {residence.teaser}
+          </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          {!unlocked ? (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onOpenUnlock();
-              }}
-              className="inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 text-[11px] font-medium tracking-[0.2em] text-white uppercase transition hover:bg-ink/90"
-            >
-              <Lock size={14} />
-              Solicitar acceso
-            </button>
-          ) : (
-            <Link
-              href={`/residences/${residence.id}`}
-              onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 text-[11px] font-medium tracking-[0.2em] text-white uppercase"
-            >
-              Abrir Build Story
-              <ArrowRight size={14} />
-            </Link>
-          )}
-          <p className="text-xs text-muted">{residence.priceHook}</p>
+        <div className="flex flex-col justify-between border-t border-[#e8e2d8] pt-6 md:border-t-0 md:border-l md:pt-0 md:pl-10">
+          <div>
+            <p className="text-[10px] tracking-[0.35em] text-[#9a8660] uppercase">
+              Precio de preventa
+            </p>
+            <p className="display mt-2 text-4xl font-light text-ink md:text-5xl">
+              {formatUsd(residence.priceFrom)}
+            </p>
+            <p className="mt-2 text-sm text-[#8a847a]">
+              Valor estimado {formatUsd(residence.marketValue)} ·{" "}
+              <span className="text-ink">
+                {savingsPercent(residence.priceFrom, residence.marketValue)}% bajo mercado
+              </span>
+            </p>
+            <p className="mt-3 text-[12px] tracking-[0.06em] text-[#9a8660]">
+              {residence.priceHook}
+            </p>
+          </div>
+
+          <div className="mt-8">
+            <div className="mb-2 flex justify-between text-[10px] tracking-[0.25em] text-[#8a847a] uppercase">
+              <span>{currentStage?.label ?? "Construcción"}</span>
+              <span className="text-ink">{residence.progress}%</span>
+            </div>
+            <div className="h-px overflow-hidden bg-[#e8e2d8]">
+              <div
+                className="h-full bg-[#9a8660] transition-[width] duration-1000 ease-out"
+                style={{ width: active ? `${residence.progress}%` : "0%" }}
+              />
+            </div>
+            <p className="mt-3 text-[11px] tracking-[0.18em] text-[#8a847a] uppercase">
+              Entrega · {residence.expected}
+            </p>
+
+            <div className="mt-8">
+              {!unlocked ? (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenUnlock();
+                  }}
+                  className="inline-flex items-center gap-3 border border-ink bg-ink px-8 py-3.5 text-[11px] tracking-[0.28em] text-white uppercase transition hover:bg-transparent hover:text-ink"
+                >
+                  <Lock size={13} />
+                  Solicitar acceso
+                </button>
+              ) : (
+                <Link
+                  href={`/residences/${residence.id}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-flex items-center gap-3 border border-ink bg-ink px-8 py-3.5 text-[11px] tracking-[0.28em] text-white uppercase transition hover:bg-transparent hover:text-ink"
+                >
+                  Build Story
+                  <ArrowRight size={14} />
+                </Link>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </article>
@@ -206,7 +206,6 @@ export function VideoResidenceFeed() {
   useEffect(() => {
     const scroller = scrollerRef.current;
     if (!scroller) return;
-
     let frame = 0;
     const onScroll = () => {
       cancelAnimationFrame(frame);
@@ -226,7 +225,6 @@ export function VideoResidenceFeed() {
         setIndex(best);
       });
     };
-
     scroller.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       scroller.removeEventListener("scroll", onScroll);
@@ -245,52 +243,67 @@ export function VideoResidenceFeed() {
   }, []);
 
   return (
-    <section id="casas" className="relative overflow-hidden bg-[#f7f5f1]">
-      <div className="mx-auto flex max-w-6xl items-end justify-between gap-6 px-5 pb-6 pt-14 md:px-10 md:pt-16">
-        <div>
-          <p className="text-[11px] tracking-[0.32em] text-gold uppercase">
-            Residencias activas
-          </p>
-          <h2 className="mt-2 text-3xl font-light tracking-wide text-ink md:text-4xl">
-            Recorrido en vivo
-          </h2>
-          <p className="mt-2 max-w-md text-sm text-muted">
-            Desliza para pasar de una residencia a otra. Hay más al lado.
-          </p>
+    <section id="casas" className="relative overflow-hidden bg-[#faf8f4]">
+      {/* Gallery header */}
+      <div className="mx-auto max-w-[1200px] px-5 pt-16 md:px-10 md:pt-24">
+        <div className="flex flex-col gap-8 border-b border-[#e8e2d8] pb-8 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-[11px] tracking-[0.45em] text-[#9a8660] uppercase">
+              Colección privada
+            </p>
+            <h2 className="display mt-4 text-[clamp(2.5rem,6vw,4.5rem)] font-light leading-[0.95] text-ink">
+              Residencias
+              <br />
+              en construcción
+            </h2>
+          </div>
+          <div className="flex flex-col items-start gap-5 md:items-end">
+            <p className="max-w-xs text-right text-sm leading-relaxed text-[#8a847a] md:text-left">
+              Desliza con calma. Cada propiedad es un lanzamiento — precio de preventa, obra y
+              demanda en tiempo real.
+            </p>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                aria-label={muted ? "Activar sonido" : "Silenciar"}
+                onClick={() => setMuted((m) => !m)}
+                className="flex h-10 w-10 items-center justify-center border border-[#d9d2c6] text-ink transition hover:border-ink"
+              >
+                {muted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+              </button>
+              <button
+                type="button"
+                aria-label="Anterior"
+                disabled={index === 0}
+                onClick={() => scrollToIndex(index - 1)}
+                className="flex h-10 w-10 items-center justify-center border border-[#d9d2c6] text-ink transition hover:border-ink disabled:opacity-25"
+              >
+                <ArrowLeft size={15} />
+              </button>
+              <button
+                type="button"
+                aria-label="Siguiente"
+                disabled={index === total - 1}
+                onClick={() => scrollToIndex(index + 1)}
+                className="flex h-10 w-10 items-center justify-center border border-[#d9d2c6] text-ink transition hover:border-ink disabled:opacity-25"
+              >
+                <ArrowRight size={15} />
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            aria-label={muted ? "Activar sonido" : "Silenciar"}
-            onClick={() => setMuted((m) => !m)}
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-white text-ink shadow-sm"
-          >
-            {muted ? <VolumeX size={15} /> : <Volume2 size={15} />}
-          </button>
-          <button
-            type="button"
-            aria-label="Anterior"
-            disabled={index === 0}
-            onClick={() => scrollToIndex(index - 1)}
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-white text-ink shadow-sm disabled:opacity-30"
-          >
-            <ArrowLeft size={16} />
-          </button>
-          <button
-            type="button"
-            aria-label="Siguiente"
-            disabled={index === total - 1}
-            onClick={() => scrollToIndex(index + 1)}
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-white text-ink shadow-sm disabled:opacity-30"
-          >
-            <ArrowRight size={16} />
-          </button>
+
+        <div className="mt-4 flex items-center justify-between text-[11px] tracking-[0.3em] text-[#8a847a] uppercase">
+          <p>
+            {String(index + 1).padStart(2, "0")} — {String(total).padStart(2, "0")}
+          </p>
+          <p>{current.name}</p>
         </div>
       </div>
 
       <div
         ref={scrollerRef}
-        className="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-[6vw] pb-6 pt-2 [-ms-overflow-style:none] [scrollbar-width:none] md:gap-7 md:px-[14vw] [&::-webkit-scrollbar]:hidden"
+        className="mt-8 flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth px-[4vw] pb-4 [-ms-overflow-style:none] [scrollbar-width:none] md:gap-10 md:px-[calc((100vw-1080px)/2)] [&::-webkit-scrollbar]:hidden"
       >
         {residences.map((r, i) => (
           <div
@@ -311,58 +324,44 @@ export function VideoResidenceFeed() {
         ))}
       </div>
 
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 pb-12 pt-1 md:px-10">
-        <p className="text-sm text-muted">
-          <span className="font-medium text-gold">
-            {String(index + 1).padStart(2, "0")}
-          </span>
-          <span className="text-border"> / {String(total).padStart(2, "0")}</span>
-          <span className="mx-2 text-border">·</span>
-          <span className="text-ink">{current.name}</span>
-        </p>
-        <div className="flex items-center gap-2">
-          {residences.map((r, i) => (
-            <button
-              key={r.id}
-              type="button"
-              aria-label={r.name}
-              onClick={() => scrollToIndex(i)}
-              className={`h-1.5 rounded-full transition-all ${
-                i === index ? "w-8 bg-gold" : "w-1.5 bg-border hover:bg-muted"
-              }`}
-            />
-          ))}
-        </div>
+      <div className="mx-auto flex max-w-[1200px] justify-center gap-3 px-5 py-10">
+        {residences.map((r, i) => (
+          <button
+            key={r.id}
+            type="button"
+            aria-label={r.name}
+            onClick={() => scrollToIndex(i)}
+            className={`h-px transition-all duration-500 ${
+              i === index ? "w-16 bg-ink" : "w-8 bg-[#d9d2c6] hover:bg-[#9a8660]"
+            }`}
+          />
+        ))}
       </div>
 
-      {/* Light premium catalog */}
-      <div className="border-t border-border bg-white px-5 py-16 md:px-10 md:py-20">
-        <div className="mx-auto max-w-6xl">
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+      {/* Editorial catalog */}
+      <div className="border-t border-[#e8e2d8] bg-white">
+        <div className="mx-auto max-w-[1200px] px-5 py-20 md:px-10 md:py-28">
+          <div className="mb-14 flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div>
-              <p className="text-[11px] tracking-[0.32em] text-gold uppercase">
-                Catálogo Omar Corp
+              <p className="text-[11px] tracking-[0.45em] text-[#9a8660] uppercase">
+                Inventario selecto
               </p>
-              <h3 className="mt-2 text-3xl font-light text-ink md:text-4xl">
-                Tres residencias. Una decisión.
+              <h3 className="display mt-4 text-4xl font-light text-ink md:text-5xl">
+                Comparar residencias
               </h3>
-              <p className="mt-2 max-w-lg text-sm text-muted">
-                Compara precio de preventa, avance de obra y demanda.
-              </p>
             </div>
             <Link
               href="/residences"
-              className="inline-flex items-center gap-2 text-[11px] tracking-[0.22em] text-gold uppercase"
+              className="inline-flex items-center gap-3 text-[11px] tracking-[0.28em] text-ink uppercase transition hover:text-[#9a8660]"
             >
-              Ver showroom completo
+              Showroom completo
               <ArrowRight size={14} />
             </Link>
           </div>
 
-          <div className="mt-10 grid gap-5 md:grid-cols-3">
+          <div className="divide-y divide-[#e8e2d8] border-y border-[#e8e2d8]">
             {residences.map((r, i) => {
               const selected = i === index;
-              const save = savingsAmount(r.priceFrom, r.marketValue);
               return (
                 <button
                   key={r.id}
@@ -374,58 +373,51 @@ export function VideoResidenceFeed() {
                       block: "start",
                     });
                   }}
-                  className={`group overflow-hidden rounded-[1.75rem] border text-left transition ${
-                    selected
-                      ? "border-gold bg-[#fbf8f2] shadow-[0_16px_40px_rgba(20,16,10,0.06)]"
-                      : "border-border bg-white hover:border-gold/40"
+                  className={`group grid w-full grid-cols-1 items-center gap-6 py-8 text-left transition md:grid-cols-[140px_1.2fr_1fr_auto] md:gap-10 md:py-10 ${
+                    selected ? "bg-[#faf8f4]" : "hover:bg-[#faf8f4]"
                   }`}
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden">
+                  <div className="relative aspect-[4/3] overflow-hidden md:aspect-[5/4]">
                     <Image
                       src={r.image}
                       alt={r.name}
                       fill
-                      className="object-cover transition duration-700 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover transition duration-700 group-hover:scale-[1.03]"
+                      sizes="180px"
                     />
-                    <div className="absolute top-3 left-3 flex gap-2">
-                      <span className="rounded-full bg-white/95 px-2.5 py-1 text-[9px] tracking-[0.16em] text-ink uppercase shadow-sm">
-                        {r.progress}% obra
-                      </span>
-                      {selected && (
-                        <span className="rounded-full bg-ink px-2.5 py-1 text-[9px] tracking-[0.16em] text-white uppercase">
-                          En vista
-                        </span>
-                      )}
-                    </div>
                   </div>
-                  <div className="space-y-3 p-5">
-                    <div>
-                      <p className="text-[10px] tracking-[0.22em] text-gold uppercase">
-                        {r.code}
+
+                  <div>
+                    <p className="text-[10px] tracking-[0.35em] text-[#9a8660] uppercase">
+                      {String(i + 1).padStart(2, "0")} · {r.code}
+                    </p>
+                    <p className="display mt-2 text-3xl font-light text-ink md:text-4xl">
+                      {r.name}
+                    </p>
+                    <p className="mt-2 text-sm text-[#8a847a]">{r.location}</p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-baseline justify-between gap-4 md:block">
+                      <p className="display text-2xl text-ink">{formatUsd(r.priceFrom)}</p>
+                      <p className="text-xs tracking-[0.12em] text-[#8a847a] uppercase">
+                        {r.progress}% construido · {r.waitlistCount} en lista
                       </p>
-                      <p className="mt-1 text-xl tracking-[0.04em] text-ink">{r.name}</p>
-                      <p className="mt-1 text-sm text-muted">{r.location}</p>
                     </div>
-                    <div className="flex items-end justify-between gap-3">
-                      <div>
-                        <p className="text-[10px] tracking-[0.18em] text-muted uppercase">Desde</p>
-                        <p className="display text-2xl text-ink">{formatUsd(r.priceFrom)}</p>
-                      </div>
-                      <p className="text-right text-[11px] text-emerald-700">
-                        Ahorras {formatUsd(save, true)}
-                      </p>
-                    </div>
-                    <div className="h-1.5 overflow-hidden rounded-full bg-[#ece8e1]">
+                    <div className="h-px bg-[#e8e2d8]">
                       <div
-                        className="h-full rounded-full bg-gold"
+                        className="h-full bg-[#9a8660]"
                         style={{ width: `${r.progress}%` }}
                       />
                     </div>
-                    <div className="flex items-center justify-between text-[11px] text-muted">
-                      <span>{r.waitlistCount}+ en lista</span>
-                      <span className="tracking-[0.14em] text-gold uppercase">Ver en vivo →</span>
-                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 text-[11px] tracking-[0.25em] text-ink uppercase">
+                    {selected ? "En vista" : "Ver"}
+                    <ArrowRight
+                      size={14}
+                      className="transition group-hover:translate-x-1"
+                    />
                   </div>
                 </button>
               );
