@@ -6,8 +6,8 @@ import { AnimatedCounter } from "@/components/AnimatedCounter";
 
 const STATS = [
   {
-    value: 13,
-    label: "Residencias cerradas",
+    value: 14,
+    label: "Viviendas vendidas",
     detail: "Transacciones completadas a través de Omar Corp",
   },
   {

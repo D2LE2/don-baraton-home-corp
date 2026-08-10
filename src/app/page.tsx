@@ -8,6 +8,7 @@ import { useState } from "react";
 import { BannerLiveTicks } from "@/components/BannerLiveTicks";
 import { LaunchCard } from "@/components/LaunchCard";
 import { Logo } from "@/components/Logo";
+import { OmarAnnouncementBand } from "@/components/OmarAnnouncementBand";
 import { OmarCredibility } from "@/components/OmarCredibility";
 import { ProgressBar } from "@/components/ProgressBar";
 import { ResidencesCatalog } from "@/components/ResidencesCatalog";
@@ -167,19 +168,19 @@ export default function HomePage() {
         </div>
 
         <div className="relative">
-          <div className="relative mx-auto w-full max-w-[440px] px-5 md:px-0">
-            <div className="relative overflow-hidden bg-[#ece7df]">
+          <div className="relative mx-auto w-full overflow-hidden bg-[#1a1814]">
+            <div className="relative mx-auto h-[38vh] min-h-[240px] max-h-[340px] w-full md:h-[42vh] md:max-h-[380px]">
               <Image
                 src={featured.image}
                 alt={featured.name}
-                width={576}
-                height={1024}
-                className="h-auto w-full"
-                sizes="(max-width: 768px) 100vw, 440px"
+                fill
+                className="object-cover object-[center_32%]"
+                sizes="100vw"
                 priority
               />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
 
-              <div className="absolute top-4 right-4 z-20 w-[140px] md:top-5 md:right-5 md:w-[150px]">
+              <div className="absolute top-4 right-4 z-20 w-[140px] md:top-5 md:right-6 md:w-[150px]">
                 <div className="border border-white/15 bg-black/45 px-2.5 py-1.5 backdrop-blur-sm">
                   <ProgressBar
                     value={featured.progress}
@@ -194,7 +195,9 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="relative z-20 mt-5 px-4 pb-10 md:mt-6 md:px-10 md:pb-14 lg:px-16">
+          <OmarAnnouncementBand />
+
+          <div className="relative z-20 bg-[#f7f4ef] px-4 pt-6 pb-10 md:px-10 md:pt-8 md:pb-14 lg:px-16">
             <LaunchCard residence={featured} />
           </div>
         </div>
