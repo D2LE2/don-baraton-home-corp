@@ -23,6 +23,7 @@ import type { Residence } from "@/data/residences";
 
 const INITIALS = ["S.M.", "C.R.", "A.V.", "L.P.", "M.G."];
 
+/** Flat rectangular launch strip — wide, not tall */
 export function LaunchCard({ residence }: { residence: Residence }) {
   const { isOnWaitlist } = useNova();
   const joined = isOnWaitlist(residence.id);
@@ -35,7 +36,7 @@ export function LaunchCard({ residence }: { residence: Residence }) {
 
   const mx = useMotionValue(0.5);
   const my = useMotionValue(0.5);
-  const glow = useMotionTemplate`radial-gradient(420px circle at ${mx}px ${my}px, rgba(196,165,116,0.14), transparent 55%)`;
+  const glow = useMotionTemplate`radial-gradient(420px circle at ${mx}px ${my}px, rgba(196,165,116,0.12), transparent 55%)`;
 
   useEffect(() => {
     let n = residence.waitlistCount;
@@ -53,12 +54,12 @@ export function LaunchCard({ residence }: { residence: Residence }) {
       } else if (mode === 1) {
         v = Math.max(4, Math.min(16, v + (Math.random() > 0.45 ? 1 : -1)));
         setViewers(v);
-        setTick(`${v} viendo esta residencia`);
+        setTick(`${v} viendo ahora`);
       } else {
-        setTick(`Progreso vivo · ${residence.progress}%`);
+        setTick(`${residence.progress}% en obra`);
       }
       setTickId(i);
-      hide = window.setTimeout(() => setTick(null), 2800);
+      hide = window.setTimeout(() => setTick(null), 2600);
     };
 
     const start = window.setTimeout(pulse, 1600);
@@ -78,169 +79,161 @@ export function LaunchCard({ residence }: { residence: Residence }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 28 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-      className="mx-auto max-w-lg md:max-w-xl"
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className="mx-auto w-full max-w-3xl md:max-w-4xl"
     >
       <div
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         onMouseMove={onMove}
-        className="group relative overflow-hidden rounded-2xl border border-[#e8e2d8] bg-white shadow-[0_20px_50px_rgba(20,16,10,0.14)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_64px_rgba(20,16,10,0.18)]"
+        className="group relative overflow-hidden rounded-xl border border-[#e4dfd6] bg-white shadow-[0_14px_40px_rgba(20,16,10,0.12)] transition duration-300 hover:-translate-y-0.5"
       >
         <motion.div
           className="pointer-events-none absolute inset-0 z-10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
           style={{ background: glow }}
         />
 
-        <div className="relative z-20 p-4 md:p-5">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500/70" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              </span>
-              <p className="text-[10px] tracking-[0.28em] text-[#b8924a] uppercase">
-                Próximo lanzamiento
-              </p>
-            </div>
-            <Link
-              href={`/residences/${residence.id}`}
-              className="inline-flex items-center gap-1 text-[9px] tracking-[0.16em] text-[#8a847a] uppercase transition hover:text-ink"
+        <div className="relative z-20 flex flex-col gap-3 p-3 sm:flex-row sm:items-stretch sm:gap-4 sm:p-3.5">
+          {/* Thumb — landscape */}
+          <div className="relative h-[88px] w-full shrink-0 overflow-hidden rounded-lg sm:h-auto sm:w-[148px] md:w-[168px]">
+            <motion.div
+              className="absolute inset-0"
+              animate={{ scale: hovered ? 1.05 : 1 }}
+              transition={{ duration: 0.4 }}
             >
-              Detalle
-              <ArrowUpRight
-                size={12}
-                className={`transition duration-300 ${hovered ? "translate-x-0.5 -translate-y-0.5" : ""}`}
+              <Image
+                src={residence.image}
+                alt=""
+                fill
+                className="object-cover object-[center_40%]"
+                sizes="168px"
               />
-            </Link>
-          </div>
-
-          <div className="mt-3.5 flex gap-3.5">
-            <div className="relative h-[84px] w-[100px] shrink-0 overflow-hidden rounded-xl md:h-[92px] md:w-[112px]">
-              <motion.div
-                className="absolute inset-0"
-                animate={{ scale: hovered ? 1.06 : 1 }}
-                transition={{ duration: 0.45 }}
-              >
-                <Image
-                  src={residence.image}
-                  alt=""
-                  fill
-                  className="object-cover"
-                  sizes="112px"
-                />
-              </motion.div>
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent px-2 py-1.5">
-                <p className="text-[8px] tracking-[0.14em] text-white/90 uppercase tabular-nums">
-                  {residence.progress}% obra
-                </p>
-              </div>
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <p className="text-[13px] font-semibold tracking-[0.14em] text-ink uppercase md:text-[14px]">
-                {residence.code}
+            </motion.div>
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/50 to-transparent px-2 py-1">
+              <p className="text-[8px] tracking-[0.14em] text-white/90 uppercase tabular-nums">
+                {residence.progress}%
               </p>
-              <p className="mt-0.5 text-[12px] text-[#8a847a]">{residence.location}</p>
-
-              <div className="mt-3">
-                <ProgressBar value={residence.progress} showLabel label="Transformación" />
-              </div>
-
-              <div className="mt-3 grid grid-cols-4 gap-1 border-t border-[#f0ebe3] pt-2.5">
-                {[
-                  { Icon: BedDouble, label: `${residence.beds} Hab.` },
-                  { Icon: Bath, label: `${residence.baths} Baños` },
-                  { Icon: Ruler, label: `${residence.sqft.toLocaleString()} Sq` },
-                  { Icon: Car, label: `${residence.garage} Gar.` },
-                ].map(({ Icon, label }, i) => (
-                  <motion.div
-                    key={label}
-                    initial={{ opacity: 0, y: 6 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.08 * i, duration: 0.35 }}
-                    className="flex flex-col items-start gap-0.5"
-                  >
-                    <Icon size={12} className="text-[#b8924a]" strokeWidth={1.5} />
-                    <span className="text-[8px] tracking-[0.06em] text-[#6a655e] uppercase">
-                      {label}
-                    </span>
-                  </motion.div>
-                ))}
-              </div>
             </div>
           </div>
 
-          {/* Live social row */}
-          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-[#f0ebe3] pt-3">
-            <p className="inline-flex items-center gap-1.5 text-[10px] text-[#6a655e]">
-              <Users size={12} className="text-[#b8924a]" />
-              <span className="font-medium text-ink tabular-nums">
-                <AnimatedCounter value={waitlist} />
+          {/* Main content row */}
+          <div className="flex min-w-0 flex-1 flex-col justify-between gap-2.5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500/70" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  </span>
+                  <p className="text-[9px] tracking-[0.24em] text-[#b8924a] uppercase">
+                    Próximo lanzamiento
+                  </p>
+                </div>
+                <p className="mt-1 text-[13px] font-semibold tracking-[0.12em] text-ink uppercase md:text-[14px]">
+                  {residence.code}
+                </p>
+                <p className="mt-0.5 truncate text-[11px] text-[#8a847a]">{residence.location}</p>
+              </div>
+
+              <div className="hidden shrink-0 sm:block">
+                <Countdown
+                  targetDate={residence.completionDate}
+                  variant="light"
+                  size="sm"
+                />
+              </div>
+            </div>
+
+            <ProgressBar
+              value={residence.progress}
+              size="sm"
+              showLabel
+              label="Obra"
+              className="max-w-md"
+            />
+
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+              <span className="inline-flex items-center gap-1 text-[9px] text-[#6a655e] uppercase">
+                <BedDouble size={11} className="text-[#b8924a]" />
+                {residence.beds}
               </span>
-              <span className="tracking-[0.08em] uppercase">en lista</span>
-            </p>
-            <p className="inline-flex items-center gap-1.5 text-[10px] text-[#6a655e]">
-              <Eye size={12} className="text-[#b8924a]" />
-              <span className="font-medium text-ink tabular-nums">
-                <AnimatedCounter value={viewers} />
+              <span className="inline-flex items-center gap-1 text-[9px] text-[#6a655e] uppercase">
+                <Bath size={11} className="text-[#b8924a]" />
+                {residence.baths}
               </span>
-              <span className="tracking-[0.08em] uppercase">viendo ahora</span>
-            </p>
-            <div className="min-h-[16px] min-w-0 flex-1">
+              <span className="inline-flex items-center gap-1 text-[9px] text-[#6a655e] uppercase">
+                <Ruler size={11} className="text-[#b8924a]" />
+                {residence.sqft.toLocaleString()}
+              </span>
+              <span className="inline-flex items-center gap-1 text-[9px] text-[#6a655e] uppercase">
+                <Car size={11} className="text-[#b8924a]" />
+                {residence.garage}
+              </span>
+              <span className="hidden h-3 w-px bg-[#e4dfd6] sm:inline-block" />
+              <span className="inline-flex items-center gap-1 text-[9px] text-[#6a655e]">
+                <Users size={11} className="text-[#b8924a]" />
+                <span className="font-medium text-ink tabular-nums">
+                  <AnimatedCounter value={waitlist} />
+                </span>
+                <span className="uppercase">lista</span>
+              </span>
+              <span className="inline-flex items-center gap-1 text-[9px] text-[#6a655e]">
+                <Eye size={11} className="text-[#b8924a]" />
+                <span className="font-medium text-ink tabular-nums">
+                  <AnimatedCounter value={viewers} />
+                </span>
+              </span>
               <AnimatePresence mode="wait">
                 {tick && (
-                  <motion.p
+                  <motion.span
                     key={tickId}
-                    initial={{ opacity: 0, x: 6 }}
-                    animate={{ opacity: 1, x: 0 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="truncate text-[9px] tracking-[0.04em] text-[#9a8660]"
+                    className="truncate text-[9px] text-[#9a8660]"
                   >
-                    {tick}
-                  </motion.p>
+                    · {tick}
+                  </motion.span>
                 )}
               </AnimatePresence>
             </div>
-          </div>
 
-          <div className="mt-3 flex flex-col gap-3 border-t border-[#f0ebe3] pt-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="inline-flex items-center gap-1.5 text-[9px] tracking-[0.18em] text-[#b8924a] uppercase">
-              <CalendarDays size={13} strokeWidth={1.75} />
-              Coming Fall 2026
-            </p>
-            <Countdown
-              targetDate={residence.completionDate}
-              variant="light"
-              size="sm"
-            />
-          </div>
-
-          <div className="mt-3 flex gap-2 border-t border-[#f0ebe3] pt-3">
-            {joined ? (
-              <span className="inline-flex flex-1 items-center justify-center gap-1.5 border border-[#e8e2d8] py-2.5 text-[10px] tracking-[0.16em] text-[#6a655e] uppercase">
-                Ya estás en esta lista
-              </span>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setWaitlistOpen(true)}
-                className="flex-1 bg-ink py-2.5 text-[10px] font-medium tracking-[0.18em] text-[#e0c57a] uppercase transition hover:bg-ink/90"
+            <div className="flex items-center gap-2 border-t border-[#f0ebe3] pt-2.5 sm:border-0 sm:pt-0">
+              <p className="mr-auto hidden items-center gap-1 text-[8px] tracking-[0.14em] text-[#b8924a] uppercase sm:inline-flex">
+                <CalendarDays size={11} />
+                Fall 2026
+              </p>
+              <div className="sm:hidden">
+                <Countdown
+                  targetDate={residence.completionDate}
+                  variant="light"
+                  size="sm"
+                />
+              </div>
+              {joined ? (
+                <span className="border border-[#e8e2d8] px-3 py-2 text-[9px] tracking-[0.14em] text-[#6a655e] uppercase">
+                  En lista
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setWaitlistOpen(true)}
+                  className="bg-ink px-3.5 py-2 text-[9px] font-medium tracking-[0.16em] text-[#e0c57a] uppercase transition hover:bg-ink/90"
+                >
+                  Unirse a lista
+                </button>
+              )}
+              <Link
+                href={`/residences/${residence.id}`}
+                className="inline-flex h-8 w-8 items-center justify-center border border-[#e8e2d8] text-[#9a8660] transition hover:border-ink hover:text-ink"
+                aria-label="Ver residencia"
               >
-                Unirse a lista de {residence.code.replace("RESIDENCE ", "R.")}
-              </button>
-            )}
-            <Link
-              href={`/residences/${residence.id}`}
-              className="inline-flex items-center justify-center border border-[#e8e2d8] px-3 text-[#9a8660] transition hover:border-ink hover:text-ink"
-              aria-label="Ver residencia"
-            >
-              <ArrowUpRight size={16} />
-            </Link>
+                <ArrowUpRight size={14} />
+              </Link>
+            </div>
           </div>
         </div>
       </div>

@@ -154,7 +154,7 @@ export default function HomePage() {
           </div>
 
           {/* Card bridges hero → rest of page */}
-          <div className="relative z-20 -mt-16 px-4 md:-mt-20 md:px-10 lg:px-16">
+          <div className="relative z-20 -mt-12 px-4 md:-mt-14 md:px-10 lg:px-16">
             <LaunchCard residence={featured} />
           </div>
         </div>
