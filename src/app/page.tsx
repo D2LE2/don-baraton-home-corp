@@ -114,53 +114,26 @@ export default function HomePage() {
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
             className="max-w-3xl"
           >
-            <p className="text-[10px] tracking-[0.55em] text-gold-soft uppercase md:text-[11px]">
-              Omar Corp
-            </p>
-
-            <h1 className="mt-4 text-[clamp(2.1rem,7vw,5.4rem)] font-light leading-[0.95] tracking-[0.02em] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.75)]">
+            <h1 className="text-[clamp(2.2rem,7.5vw,5.6rem)] font-light leading-[0.95] tracking-[0.02em] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.75)]">
               VE LA CASA ANTES
               <br />
               DE QUE SEA HOGAR.
             </h1>
 
-            <p className="mt-5 max-w-lg text-[13px] leading-relaxed text-white/80 md:text-[15px] drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
-              Accede a nuestra colección privada de residencias en transformación.
-              Sigue cada avance, descubre nuevas propiedades y entra en la lista
-              para tener prioridad cuando estén listas.
-            </p>
-
-            <p className="mt-5 text-[10px] tracking-[0.22em] text-white/55 uppercase md:text-[11px]">
-              Mírala cambiar · Síguela de cerca · Sé el próximo propietario
-            </p>
-
-            <p className="mt-6 inline-flex items-center gap-2.5 text-[10px] tracking-[0.28em] text-gold-soft uppercase">
-              <span className="live-dot" />
-              Proyectos actualizándose en vivo
-            </p>
-
-            <div className="mt-6 flex flex-col items-start gap-4">
-              <Link
-                href="/#casas"
-                className="group inline-flex items-center justify-center gap-3 rounded-full bg-gold-soft px-8 py-3.5 text-[11px] font-medium tracking-[0.24em] text-ink uppercase shadow-[0_0_40px_rgba(224,197,122,0.35)] transition hover:bg-white"
-              >
-                Entrar a la colección
-                <ArrowRight size={16} className="transition group-hover:translate-x-1" />
-              </Link>
-              <Link
-                href="/private"
-                className="text-[10px] tracking-[0.28em] text-white/45 uppercase transition hover:text-gold-soft"
-              >
-                Solicitar acceso a la lista privada
-              </Link>
-            </div>
+            <Link
+              href="/#casas"
+              className="group mt-8 inline-flex items-center justify-center gap-3 rounded-full bg-gold-soft px-8 py-3.5 text-[11px] font-medium tracking-[0.24em] text-ink uppercase shadow-[0_0_40px_rgba(224,197,122,0.35)] transition hover:bg-white"
+            >
+              Entrar a la colección
+              <ArrowRight size={16} className="transition group-hover:translate-x-1" />
+            </Link>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.15, duration: 0.8 }}
-            className="mt-5 flex flex-col items-center gap-1.5 self-center text-white/35"
+            className="mt-8 flex flex-col items-center gap-1.5 self-center text-white/35"
           >
             <span className="text-[9px] tracking-[0.35em] uppercase">Desliza</span>
             <ChevronDown className="animate-bounce" size={18} />
