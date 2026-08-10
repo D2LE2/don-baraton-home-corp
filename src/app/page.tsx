@@ -35,8 +35,9 @@ export default function HomePage() {
           />
         </motion.div>
 
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.62)_0%,rgba(5,5,5,0.2)_35%,rgba(5,5,5,0.25)_55%,rgba(5,5,5,0.88)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_40%,transparent_0%,rgba(0,0,0,0.45)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.72)_0%,rgba(5,5,5,0.28)_35%,rgba(5,5,5,0.4)_55%,rgba(5,5,5,0.92)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_40%,transparent_0%,rgba(0,0,0,0.55)_100%)]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-transparent to-transparent" />
 
         <header className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-5 py-6 md:px-10">
           <Logo light size="md" />
@@ -82,7 +83,7 @@ export default function HomePage() {
               Residencias en construcción · Indiana
             </p>
 
-            <h1 className="mt-4 text-[clamp(2.75rem,8vw,6.5rem)] font-light leading-[0.92] tracking-[0.04em] text-white">
+            <h1 className="mt-4 text-[clamp(2.75rem,8vw,6.5rem)] font-light leading-[0.92] tracking-[0.04em] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.75)]">
               EL FUTURO
               <br />
               DE VIVIR
@@ -92,12 +93,12 @@ export default function HomePage() {
               initial={{ opacity: 0, x: -16 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4, duration: 0.85 }}
-              className="script mt-3 text-[clamp(2.1rem,5vw,3.5rem)] text-gold-soft"
+              className="script mt-3 text-[clamp(2.1rem,5vw,3.5rem)] text-gold-soft drop-shadow-[0_2px_14px_rgba(0,0,0,0.85)]"
             >
               Entra ahora.
             </motion.p>
 
-            <p className="mt-5 max-w-md text-[15px] leading-relaxed text-white/70 md:text-base">
+            <p className="mt-5 max-w-md text-[15px] leading-relaxed text-white/85 md:text-base drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
               Mira cómo nace tu próxima casa. Síguele el pulso. Anótate antes de que se cierre.
             </p>
 

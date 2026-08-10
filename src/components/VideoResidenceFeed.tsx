@@ -70,23 +70,26 @@ function VideoSlide({
         />
       </motion.div>
 
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/70 via-black/20 to-black/85" />
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-black/35 to-transparent" />
+      {/* Scrims: keep video visible but text always readable */}
+      <div className="pointer-events-none absolute inset-0 bg-black/25" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/85 via-black/35 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-[55%] bg-gradient-to-r from-black/55 via-black/25 to-transparent" />
 
       <div className="relative z-10 flex h-full flex-col justify-end px-5 pb-28 md:px-12 md:pb-32 lg:px-16">
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-2xl"
+          className="max-w-2xl rounded-[1.75rem] bg-black/45 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-md md:p-7"
         >
-          <p className="text-[11px] tracking-[0.35em] text-gold-soft uppercase">
+          <p className="text-[11px] tracking-[0.35em] text-gold-soft uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
             {residence.code}
           </p>
-          <h2 className="mt-3 text-4xl font-light tracking-[0.08em] text-white md:text-6xl">
+          <h2 className="mt-3 text-4xl font-light tracking-[0.08em] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] md:text-6xl">
             {residence.name}
           </h2>
-          <p className="mt-2 text-sm text-white/55 md:text-base">{residence.location}</p>
+          <p className="mt-2 text-sm text-white/85 md:text-base">{residence.location}</p>
 
           <AnimatePresence>
             {teaserIn && (
@@ -95,27 +98,27 @@ function VideoSlide({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.5 }}
-                className="script mt-5 max-w-lg text-2xl text-gold-soft md:text-4xl"
+                className="script mt-5 max-w-lg text-2xl text-gold-soft drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] md:text-4xl"
               >
                 {residence.teaser}
               </motion.p>
             )}
           </AnimatePresence>
 
-          <div className="mt-8 flex flex-wrap items-center gap-4">
+          <div className="mt-7 flex flex-wrap items-center gap-4">
             <div className="flex items-baseline gap-2">
-              <span className="display text-4xl font-light text-white md:text-5xl">
+              <span className="display text-4xl font-light text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] md:text-5xl">
                 {residence.progress}%
               </span>
-              <span className="text-[10px] tracking-[0.28em] text-white/45 uppercase">
+              <span className="text-[10px] tracking-[0.28em] text-white/75 uppercase">
                 construido
               </span>
             </div>
-            <span className="hidden h-8 w-px bg-white/15 sm:block" />
-            <p className="text-sm text-white/50">Entrega · {residence.expected}</p>
+            <span className="hidden h-8 w-px bg-white/25 sm:block" />
+            <p className="text-sm text-white/80">Entrega · {residence.expected}</p>
           </div>
 
-          <div className="mt-8">
+          <div className="mt-7">
             {!unlocked ? (
               <button
                 type="button"
@@ -124,7 +127,7 @@ function VideoSlide({
               >
                 <Lock size={14} />
                 Me interesa
-                <span className="text-ink/50 transition group-hover:text-ink">· ver más</span>
+                <span className="text-ink/60 transition group-hover:text-ink">· ver más</span>
               </button>
             ) : (
               <Link
@@ -134,7 +137,7 @@ function VideoSlide({
                 Entrar al Build Story
               </Link>
             )}
-            <p className="mt-3 text-[11px] tracking-[0.12em] text-white/40">
+            <p className="mt-3 text-[11px] tracking-[0.12em] text-white/70">
               {unlocked
                 ? "Ya desbloqueaste esta residencia"
                 : "Si te enamoras, toca. El tour sigue solo."}
@@ -248,17 +251,17 @@ export function VideoResidenceFeed() {
     <section ref={sectionRef} id="casas" className="relative bg-ink">
       {/* Orientation header */}
       <div className="absolute inset-x-0 top-0 z-30 px-4 pt-5 md:px-10 md:pt-7">
-        <div className="mb-4 flex items-center justify-between gap-4">
+        <div className="mb-4 flex items-center justify-between gap-4 rounded-2xl bg-black/55 px-4 py-3 shadow-[0_12px_40px_rgba(0,0,0,0.35)] backdrop-blur-md md:px-5">
           <div>
-            <p className="text-[10px] tracking-[0.32em] text-white/45 uppercase">
+            <p className="text-[10px] tracking-[0.32em] text-white/70 uppercase">
               Tour de residencias
             </p>
-            <p className="mt-1 text-sm text-white/80">
-              <span className="text-gold-soft">
+            <p className="mt-1 text-sm text-white">
+              <span className="font-medium text-gold-soft">
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <span className="text-white/35"> / {String(total).padStart(2, "0")}</span>
-              <span className="mx-2 text-white/25">·</span>
+              <span className="text-white/55"> / {String(total).padStart(2, "0")}</span>
+              <span className="mx-2 text-white/35">·</span>
               <span className="tracking-[0.08em]">{current.name}</span>
             </p>
           </div>
@@ -267,7 +270,7 @@ export function VideoResidenceFeed() {
               type="button"
               aria-label={paused ? "Reanudar tour" : "Pausar tour"}
               onClick={() => setPaused((p) => !p)}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur-md"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-black/55 text-white backdrop-blur-md"
             >
               {paused || unlockOpen ? <Play size={14} /> : <Pause size={14} />}
             </button>
@@ -275,7 +278,7 @@ export function VideoResidenceFeed() {
               type="button"
               aria-label={muted ? "Activar sonido" : "Silenciar"}
               onClick={() => setMuted((m) => !m)}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur-md"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-black/55 text-white backdrop-blur-md"
             >
               {muted ? <VolumeX size={14} /> : <Volume2 size={14} />}
             </button>
@@ -283,7 +286,7 @@ export function VideoResidenceFeed() {
         </div>
 
         {/* Story progress segments */}
-        <div className="flex gap-1.5">
+        <div className="flex gap-1.5 rounded-full bg-black/40 p-1.5 backdrop-blur-sm">
           {residences.map((r, i) => {
             const fill =
               i < index ? 1 : i === index ? (reduceMotion ? 1 : progress) : 0;
@@ -293,7 +296,7 @@ export function VideoResidenceFeed() {
                 type="button"
                 aria-label={`Ir a ${r.name}`}
                 onClick={() => goTo(i, i > index ? 1 : -1)}
-                className="group h-1 flex-1 overflow-hidden rounded-full bg-white/20"
+                className="group h-1.5 flex-1 overflow-hidden rounded-full bg-white/30"
               >
                 <span
                   className="block h-full origin-left rounded-full bg-gold-soft transition-[width] duration-75 ease-linear group-hover:bg-white"
@@ -339,9 +342,9 @@ export function VideoResidenceFeed() {
         </AnimatePresence>
 
         {/* Next peek label */}
-        <div className="pointer-events-none absolute right-5 bottom-36 z-20 hidden text-right md:right-10 md:block">
-          <p className="text-[9px] tracking-[0.28em] text-white/35 uppercase">Siguiente</p>
-          <p className="mt-1 text-xs tracking-[0.14em] text-white/60">{next.name}</p>
+        <div className="pointer-events-none absolute right-5 bottom-36 z-20 hidden rounded-xl bg-black/55 px-3 py-2 text-right backdrop-blur-md md:right-10 md:block">
+          <p className="text-[9px] tracking-[0.28em] text-white/70 uppercase">Siguiente</p>
+          <p className="mt-1 text-xs tracking-[0.14em] text-white">{next.name}</p>
         </div>
       </div>
 
