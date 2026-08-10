@@ -338,3 +338,24 @@ export const residences: Residence[] = [
 export function getResidence(id: string) {
   return residences.find((r) => r.id === id);
 }
+
+/** Residences currently in transformation (real catalog count). */
+export function getActiveResidences() {
+  return residences.filter((r) => r.progress > 0 && r.progress < 100);
+}
+
+export function getActiveResidenceCount() {
+  return getActiveResidences().length;
+}
+
+/** Scroll to collection and play a residence transformation video. */
+export function playResidenceAvance(residenceId?: string) {
+  if (typeof window === "undefined") return;
+  const target = document.getElementById("casas");
+  target?.scrollIntoView({ behavior: "smooth", block: "start" });
+  window.dispatchEvent(
+    new CustomEvent("omar:play-avance", {
+      detail: { id: residenceId ?? residences[0]?.id },
+    }),
+  );
+}

@@ -65,6 +65,24 @@ export function VideoResidenceFeed() {
   }, []);
 
   useEffect(() => {
+    const onPlayAvance = (event: Event) => {
+      const id = (event as CustomEvent<{ id?: string }>).detail?.id;
+      const i = id ? residences.findIndex((r) => r.id === id) : 0;
+      const next = i >= 0 ? i : 0;
+
+      setIndex((prev) => {
+        if (next !== prev) setDirection(next > prev ? 1 : -1);
+        return next;
+      });
+      setHintVisible(false);
+      window.setTimeout(() => setPlaying(true), 380);
+    };
+
+    window.addEventListener("omar:play-avance", onPlayAvance);
+    return () => window.removeEventListener("omar:play-avance", onPlayAvance);
+  }, []);
+
+  useEffect(() => {
     if (!hintVisible || index >= total - 1) return;
     const t = window.setTimeout(() => setHintVisible(false), 4800);
     return () => window.clearTimeout(t);

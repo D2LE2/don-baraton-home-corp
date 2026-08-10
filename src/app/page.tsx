@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/Logo";
 import { VideoResidenceFeed } from "@/components/VideoResidenceFeed";
 import { useNova } from "@/context/NovaContext";
-import { residences } from "@/data/residences";
+import { residences, getActiveResidenceCount, getActiveResidences, playResidenceAvance } from "@/data/residences";
 import { useViewportHeight } from "@/hooks/useViewportHeight";
 
 export default function HomePage() {
@@ -16,6 +16,8 @@ export default function HomePage() {
   const viewportH = useViewportHeight();
   const { membership } = useNova();
   const [menuOpen, setMenuOpen] = useState(false);
+  const activeCount = getActiveResidenceCount();
+  const activeResidences = getActiveResidences();
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
@@ -109,13 +111,13 @@ export default function HomePage() {
           style={{ opacity: contentOpacity }}
           className="relative z-10 flex h-full flex-col px-5 pb-4 pt-[4.75rem] md:px-12 md:pb-6 lg:px-16"
         >
-          {/* Mid: count + play */}
+          {/* Mid: real active count + play avance */}
           <div className="mt-[8%] flex items-center justify-between md:mt-[10%]">
             <div className="flex items-stretch gap-3">
               <span className="w-px bg-[#c4a574]/85" />
               <div>
-                <p className="text-[1.75rem] font-light leading-none tracking-[0.06em] text-white md:text-[2rem]">
-                  {String(residences.length).padStart(2, "0")}
+                <p className="text-[1.75rem] font-light leading-none tracking-[0.06em] text-white tabular-nums md:text-[2rem]">
+                  {String(activeCount).padStart(2, "0")}
                 </p>
                 <p className="mt-1.5 max-w-[7.5rem] text-[9px] leading-snug tracking-[0.2em] text-white/70 uppercase">
                   Residencias activas
@@ -123,8 +125,9 @@ export default function HomePage() {
               </div>
             </div>
 
-            <Link
-              href="/#casas"
+            <button
+              type="button"
+              onClick={() => playResidenceAvance(activeResidences[0]?.id)}
               className="group flex flex-col items-center gap-2 text-white"
             >
               <span className="flex h-14 w-14 items-center justify-center rounded-full border border-white/75 transition group-hover:border-[#e0c57a] group-hover:text-[#e0c57a] md:h-[3.75rem] md:w-[3.75rem]">
@@ -133,7 +136,7 @@ export default function HomePage() {
               <span className="text-[9px] tracking-[0.28em] text-white/75 uppercase">
                 Ver avance
               </span>
-            </Link>
+            </button>
           </div>
 
           <div className="mt-auto">
@@ -177,11 +180,12 @@ export default function HomePage() {
             </motion.div>
 
             <div className="mt-4 flex gap-2.5 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] md:gap-3 [&::-webkit-scrollbar]:hidden">
-              {residences.map((r, i) => (
-                <Link
+              {activeResidences.map((r, i) => (
+                <button
                   key={r.id}
-                  href="/#casas"
-                  className={`relative w-[140px] shrink-0 overflow-hidden rounded-md border bg-black/50 backdrop-blur-md transition md:w-[160px] ${
+                  type="button"
+                  onClick={() => playResidenceAvance(r.id)}
+                  className={`relative w-[140px] shrink-0 overflow-hidden rounded-md border bg-black/50 text-left backdrop-blur-md transition md:w-[160px] ${
                     i === 0
                       ? "border-[#c4a574]/85"
                       : "border-white/15 hover:border-white/35"
@@ -211,7 +215,7 @@ export default function HomePage() {
                       />
                     </div>
                   </div>
-                </Link>
+                </button>
               ))}
             </div>
 
