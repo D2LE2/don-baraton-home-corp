@@ -2,14 +2,35 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Lock, Menu, Play, X } from "lucide-react";
+import {
+  ArrowRight,
+  Camera,
+  Crown,
+  Lock,
+  Menu,
+  Play,
+  Users,
+  X,
+} from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Logo } from "@/components/Logo";
 import { VideoResidenceFeed } from "@/components/VideoResidenceFeed";
 import { useNova } from "@/context/NovaContext";
-import { getActiveResidenceCount, getActiveResidences, playResidenceAvance } from "@/data/residences";
+import {
+  getActiveResidenceCount,
+  getActiveResidences,
+  playResidenceAvance,
+} from "@/data/residences";
 import { useViewportHeight } from "@/hooks/useViewportHeight";
+
+const LIST_AVATARS = [
+  { initials: "MR", tone: "bg-[#3d3428]" },
+  { initials: "AL", tone: "bg-[#2a3340]" },
+  { initials: "JS", tone: "bg-[#3a2f3a]" },
+  { initials: "CK", tone: "bg-[#2f3a32]" },
+  { initials: "DN", tone: "bg-[#403528]" },
+];
 
 export default function HomePage() {
   const viewportH = useViewportHeight();
@@ -17,6 +38,11 @@ export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const activeCount = getActiveResidenceCount();
   const activeResidences = getActiveResidences();
+  const featured = activeResidences[0];
+  const listNow = Math.min(
+    99,
+    activeResidences.reduce((sum, r) => sum + Math.round(r.waitlistCount * 0.08), 0) || 24,
+  );
 
   useEffect(() => {
     if (viewportH > 0) {
@@ -26,189 +52,271 @@ export default function HomePage() {
 
   return (
     <main className="overflow-x-hidden bg-ink">
-      {/* In-flow hero — native scroll, no fixed/transform lag */}
-      <section
-        className="hero-viewport relative isolate overflow-hidden bg-ink"
-        style={
-          viewportH > 0
-            ? { height: viewportH, minHeight: viewportH }
-            : undefined
-        }
-      >
-        <div className="absolute inset-0">
-          <Image
-            src="/images/monroe.jpg"
-            alt="Omar Corp residence in transformation"
-            fill
-            priority
-            className="animate-ken object-cover object-[center_38%]"
-            sizes="100vw"
-          />
-        </div>
+      {/* PRIMERA SECCIÓN — hero + social + residencias activas */}
+      <section className="bg-black text-white">
+        {/* Hero media */}
+        <div
+          className="hero-viewport relative isolate overflow-hidden"
+          style={
+            viewportH > 0
+              ? { height: viewportH, minHeight: viewportH }
+              : undefined
+          }
+        >
+          <div className="absolute inset-0">
+            <Image
+              src={featured?.image ?? "/images/monroe.jpg"}
+              alt={featured?.name ?? "Omar Corp residence"}
+              fill
+              priority
+              className="object-cover object-[center_40%]"
+              sizes="100vw"
+            />
+          </div>
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.62)_0%,rgba(5,5,5,0.2)_32%,rgba(5,5,5,0.45)_62%,rgba(5,5,5,0.94)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_40%,transparent_0%,rgba(0,0,0,0.5)_100%)]" />
 
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.55)_0%,rgba(5,5,5,0.15)_28%,rgba(5,5,5,0.35)_52%,rgba(5,5,5,0.92)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_60%_35%,transparent_0%,rgba(0,0,0,0.45)_100%)]" />
+          <header className="absolute inset-x-0 top-0 z-30 flex items-center justify-between px-5 py-5 md:px-10 md:py-6">
+            <Logo light size="md" />
+            <div className="flex items-center gap-2.5">
+              <Link
+                href={membership.status === "approved" ? "/private/status" : "/private"}
+                className="inline-flex items-center gap-2 rounded-full border border-[#c4a574]/70 px-3.5 py-2 text-[9px] tracking-[0.22em] text-[#e0c57a] uppercase backdrop-blur-md"
+              >
+                <Lock size={11} strokeWidth={1.75} />
+                {membership.status === "approved" ? "Miembro" : "Private"}
+              </Link>
+              <button
+                type="button"
+                aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+                onClick={() => setMenuOpen((v) => !v)}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 text-white backdrop-blur-md"
+              >
+                {menuOpen ? <X size={16} /> : <Menu size={16} />}
+              </button>
+            </div>
+          </header>
 
-        {/* Header */}
-        <header className="absolute inset-x-0 top-0 z-30 flex items-center justify-between px-5 py-5 md:px-10 md:py-6">
-          <Logo light size="md" />
-          <div className="flex items-center gap-2.5">
-            <Link
-              href={membership.status === "approved" ? "/private/status" : "/private"}
-              className="inline-flex items-center gap-2 rounded-full border border-[#c4a574]/70 px-3.5 py-2 text-[9px] tracking-[0.22em] text-[#e0c57a] uppercase backdrop-blur-md transition hover:border-[#e0c57a] hover:bg-black/30"
-            >
-              <Lock size={11} strokeWidth={1.75} />
-              {membership.status === "approved" ? "Miembro" : "Private"}
-            </Link>
+          <AnimatePresence>
+            {menuOpen && (
+              <motion.nav
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="absolute top-[4.5rem] right-5 z-40 w-48 border border-white/15 bg-black/90 p-4 backdrop-blur-md md:right-10"
+              >
+                <div className="flex flex-col gap-3 text-[11px] tracking-[0.22em] text-white/80 uppercase">
+                  <Link href="/#casas" onClick={() => setMenuOpen(false)}>
+                    Colección
+                  </Link>
+                  <Link href="/residences" onClick={() => setMenuOpen(false)}>
+                    Showroom
+                  </Link>
+                  <Link href="/private" onClick={() => setMenuOpen(false)}>
+                    Omar Private
+                  </Link>
+                </div>
+              </motion.nav>
+            )}
+          </AnimatePresence>
+
+          {/* Center play */}
+          <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
             <button
               type="button"
-              aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
-              onClick={() => setMenuOpen((v) => !v)}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 text-white backdrop-blur-md"
+              onClick={() => playResidenceAvance(featured?.id)}
+              aria-label="Ver avance"
+              className="pointer-events-auto flex h-[4.25rem] w-[4.25rem] items-center justify-center rounded-full border border-white/60 bg-white/10 text-white backdrop-blur-[2px] transition hover:border-[#e0c57a] hover:bg-black/30 md:h-20 md:w-20"
             >
-              {menuOpen ? <X size={16} /> : <Menu size={16} />}
+              <Play size={22} fill="currentColor" className="ml-0.5" />
             </button>
           </div>
-        </header>
 
-        <AnimatePresence>
-          {menuOpen && (
-            <motion.nav
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="absolute top-[4.5rem] right-5 z-40 w-48 border border-white/15 bg-black/90 p-4 backdrop-blur-md md:right-10"
-            >
-              <div className="flex flex-col gap-3 text-[11px] tracking-[0.22em] text-white/80 uppercase">
-                <Link href="/#casas" onClick={() => setMenuOpen(false)}>
-                  Colección
-                </Link>
-                <Link href="/residences" onClick={() => setMenuOpen(false)}>
-                  Showroom
-                </Link>
-                <Link href="/private" onClick={() => setMenuOpen(false)}>
-                  Omar Private
-                </Link>
-              </div>
-            </motion.nav>
-          )}
-        </AnimatePresence>
-
-        {/* Composition — one locked viewport, mockup hierarchy */}
-        <div className="relative z-10 flex h-full flex-col px-5 pb-4 pt-[4.75rem] md:px-12 md:pb-6 lg:px-16">
-          {/* Mid: real active count + play avance */}
-          <div className="mt-[8%] flex items-center justify-between md:mt-[10%]">
-            <div className="flex items-stretch gap-3">
-              <span className="w-px bg-[#c4a574]/85" />
-              <div>
-                <p className="text-[1.75rem] font-light leading-none tracking-[0.06em] text-white tabular-nums md:text-[2rem]">
-                  {String(activeCount).padStart(2, "0")}
-                </p>
-                <p className="mt-1.5 max-w-[7.5rem] text-[9px] leading-snug tracking-[0.2em] text-white/70 uppercase">
-                  Residencias activas
-                </p>
+          {/* Right: progress of featured */}
+          {featured && (
+            <div className="absolute top-[38%] right-5 z-20 w-[7.5rem] md:right-10 md:w-36 lg:right-16">
+              <p className="text-[clamp(2rem,6vw,2.75rem)] font-light leading-none tracking-tight text-[#e0c57a] tabular-nums">
+                {featured.progress}%
+              </p>
+              <p className="mt-1.5 text-[9px] tracking-[0.28em] text-white/70 uppercase">
+                Transformed
+              </p>
+              <div className="relative mt-3 h-[2px] bg-white/20">
+                <div
+                  className="absolute inset-y-0 left-0 bg-[#e0c57a]"
+                  style={{ width: `${featured.progress}%` }}
+                />
+                <span
+                  className="absolute top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-white"
+                  style={{ left: `calc(${featured.progress}% - 4px)` }}
+                />
               </div>
             </div>
+          )}
 
-            <button
-              type="button"
-              onClick={() => playResidenceAvance(activeResidences[0]?.id)}
-              className="group flex flex-col items-center gap-2 text-white"
-            >
-              <span className="flex h-14 w-14 items-center justify-center rounded-full border border-white/75 transition group-hover:border-[#e0c57a] group-hover:text-[#e0c57a] md:h-[3.75rem] md:w-[3.75rem]">
-                <Play size={18} fill="currentColor" className="ml-0.5" />
-              </span>
-              <span className="text-[9px] tracking-[0.28em] text-white/75 uppercase">
-                Ver avance
-              </span>
-            </button>
-          </div>
+          {/* Bottom-right live */}
+          <p className="absolute right-5 bottom-6 z-20 inline-flex items-center gap-2 text-[9px] tracking-[0.22em] text-white/80 uppercase md:right-10 md:bottom-8">
+            <span className="live-dot !bg-emerald-400" />
+            Actualizaciones en vivo
+          </p>
 
-          <div className="mt-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-              className="max-w-xl"
-            >
-              <h1 className="text-[clamp(1.7rem,6.2vw,3.75rem)] font-light leading-[1.05] tracking-[0.02em] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.75)]">
+          {/* Left copy */}
+          <div className="relative z-10 flex h-full flex-col justify-end px-5 pb-8 pt-24 md:px-10 md:pb-10 lg:px-16">
+            <div className="max-w-xl">
+              <p className="text-[11px] tracking-[0.28em] text-white/85 uppercase">
+                <span className="font-medium">01</span>
+                <span className="text-white/40">
+                  {" "}
+                  / {String(activeCount).padStart(2, "0")}
+                </span>
+              </p>
+
+              <p className="mt-4 inline-flex items-center gap-2 text-[10px] tracking-[0.28em] text-[#e0c57a] uppercase">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#e0c57a]" />
+                Proyecto en transformación
+              </p>
+
+              <h1 className="mt-4 text-[clamp(1.85rem,6.5vw,3.75rem)] font-light leading-[1.05] tracking-[0.02em] text-white">
                 VE LA CASA ANTES
                 <br />
-                DE QUE{" "}
-                <span className="text-[#e0c57a]">SEA HOGAR.</span>
+                DE QUE SEA{" "}
+                <span className="text-[#e0c57a]">HOGAR.</span>
               </h1>
 
-              <div className="mt-3.5 flex items-center gap-3">
-                <span className="h-px w-7 shrink-0 bg-[#c4a574]" />
-                <p className="text-[8px] tracking-[0.2em] text-white/80 uppercase md:text-[10px]">
-                  Acceso exclusivo a residencias en transformación
-                </p>
-              </div>
-
-              <p className="mt-2.5 inline-flex items-center gap-2 text-[8px] tracking-[0.22em] text-[#e0c57a] uppercase md:text-[9px]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#e0c57a]" />
-                Proyectos en transformación
+              <p className="mt-4 max-w-sm text-[13px] leading-relaxed text-white/75 md:text-[15px]">
+                Sigue cada avance en tiempo real y sé el primero en elegir tu futura casa.
               </p>
 
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <Link
+                  href="/#casas"
+                  className="group inline-flex items-center justify-center gap-2.5 rounded-md bg-[#c4a574] px-6 py-3.5 text-[11px] font-semibold tracking-[0.2em] text-ink uppercase transition hover:bg-[#e0c57a]"
+                >
+                  Entrar a la colección
+                  <ArrowRight size={14} className="transition group-hover:translate-x-1" />
+                </Link>
+                <Link
+                  href="/private"
+                  className="inline-flex items-center justify-center gap-2 rounded-md border border-[#c4a574]/55 px-5 py-3.5 text-[10px] tracking-[0.2em] text-[#e0c57a] uppercase transition hover:border-[#e0c57a] hover:bg-white/5"
+                >
+                  <Lock size={12} />
+                  Lista privada
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Social proof capsule */}
+        <div className="relative z-10 -mt-5 px-4 md:-mt-6 md:px-10 lg:px-16">
+          <div className="mx-auto flex max-w-5xl flex-col gap-3 rounded-2xl border border-white/10 bg-[#121212] px-4 py-3.5 shadow-[0_12px_40px_rgba(0,0,0,0.45)] sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5">
+            <p className="inline-flex items-center gap-2 text-[10px] tracking-[0.18em] text-[#e0c57a] uppercase">
+              <Users size={14} strokeWidth={1.75} />
+              {listNow} en la lista ahora
+            </p>
+            <div className="flex items-center gap-2">
+              <div className="flex -space-x-2">
+                {LIST_AVATARS.map((a) => (
+                  <span
+                    key={a.initials}
+                    className={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#121212] text-[9px] font-medium tracking-wide text-white/80 ${a.tone}`}
+                  >
+                    {a.initials}
+                  </span>
+                ))}
+              </div>
+              <span className="text-[11px] text-white/45">+{Math.max(listNow - 5, 19)}</span>
+            </div>
+            <p className="inline-flex items-center gap-2 text-[10px] tracking-[0.12em] text-white/65 uppercase sm:tracking-[0.16em]">
+              <span className="live-dot !bg-emerald-400" />
+              María S. se unió hace 2 min
+            </p>
+          </div>
+        </div>
+
+        {/* Residencias activas */}
+        <div className="px-5 pt-10 pb-8 md:px-10 md:pt-14 md:pb-10 lg:px-16">
+          <div className="mx-auto max-w-5xl">
+            <div className="flex items-end justify-between gap-4">
+              <p className="text-[11px] tracking-[0.35em] text-[#c4a574] uppercase">
+                Residencias activas
+              </p>
               <Link
                 href="/#casas"
-                className="group mt-4 inline-flex w-full max-w-sm items-center justify-center gap-3 rounded-md bg-[#c4a574] px-5 py-3.5 text-[10px] font-semibold tracking-[0.2em] text-ink uppercase transition hover:bg-[#e0c57a] sm:w-auto md:text-[11px]"
+                className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.22em] text-[#e0c57a] uppercase transition hover:text-white"
               >
-                Entrar a la colección
-                <ArrowRight size={14} className="transition group-hover:translate-x-1" />
+                Ver todas
+                <ArrowRight size={12} />
               </Link>
+            </div>
 
-              <p className="mt-2.5 flex items-center gap-1.5 text-[8px] tracking-[0.2em] text-white/45 uppercase">
-                <Lock size={9} />
-                Lista privada · Acceso limitado
-              </p>
-            </motion.div>
-
-            <div className="mt-4 flex gap-2.5 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] md:gap-3 [&::-webkit-scrollbar]:hidden">
+            <div className="mt-6 grid gap-4 sm:grid-cols-3">
               {activeResidences.map((r, i) => (
                 <button
                   key={r.id}
                   type="button"
                   onClick={() => playResidenceAvance(r.id)}
-                  className={`relative w-[140px] shrink-0 overflow-hidden rounded-md border bg-black/50 text-left backdrop-blur-md transition md:w-[160px] ${
-                    i === 0
-                      ? "border-[#c4a574]/85"
-                      : "border-white/15 hover:border-white/35"
-                  }`}
+                  className="group text-left"
                 >
-                  <div className="relative h-[64px] w-full md:h-[72px]">
+                  <div className="relative aspect-[5/4] overflow-hidden rounded-lg">
                     <Image
                       src={r.image}
                       alt={r.name}
                       fill
-                      className="object-cover"
-                      sizes="160px"
+                      className="object-cover transition duration-500 group-hover:scale-[1.03]"
+                      sizes="(max-width: 640px) 100vw, 33vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                    <span className="absolute top-3 left-3 rounded-full bg-[#c4a574] px-2.5 py-1 text-[9px] font-semibold tracking-[0.16em] text-ink">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
                   </div>
-                  <div className="space-y-1 px-2 py-2">
-                    <p className="truncate text-[8px] font-medium tracking-[0.14em] text-white uppercase md:text-[9px]">
-                      {String(i + 1).padStart(2, "0")} {r.name}
-                    </p>
-                    <p className="text-[7px] tracking-[0.12em] text-[#e0c57a] uppercase md:text-[8px]">
-                      {r.progress}% completado
-                    </p>
-                    <div className="h-px overflow-hidden bg-white/15">
-                      <div
-                        className="h-full bg-[#c4a574]"
-                        style={{ width: `${r.progress}%` }}
-                      />
-                    </div>
+                  <p className="mt-3 text-[13px] font-medium tracking-[0.16em] text-white uppercase">
+                    {r.name}
+                  </p>
+                  <p className="mt-1.5 text-[10px] tracking-[0.18em] text-[#e0c57a] uppercase tabular-nums">
+                    {r.progress}% transformed
+                  </p>
+                  <div className="mt-2 h-px overflow-hidden bg-white/15">
+                    <div
+                      className="h-full bg-[#c4a574]"
+                      style={{ width: `${r.progress}%` }}
+                    />
                   </div>
                 </button>
               ))}
             </div>
 
-            <div className="mt-3.5 flex flex-col items-center gap-1 self-center">
-              <span className="text-[8px] tracking-[0.3em] text-white/45 uppercase">
-                Desliza para explorar
-              </span>
-              <span className="h-px w-7 bg-[#c4a574]/80" />
+            {/* Feature strip */}
+            <div className="mt-12 grid gap-6 border-t border-white/10 pt-8 sm:grid-cols-3 sm:gap-4">
+              {[
+                {
+                  icon: Camera,
+                  label: "Actualizaciones en tiempo real",
+                },
+                {
+                  icon: Crown,
+                  label: "Acceso prioritario antes que todos",
+                },
+                {
+                  icon: Lock,
+                  label: "Solo miembros acceso exclusivo",
+                },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="flex items-start gap-3 sm:flex-col sm:items-center sm:text-center"
+                >
+                  <item.icon
+                    size={18}
+                    strokeWidth={1.5}
+                    className="mt-0.5 shrink-0 text-[#c4a574] sm:mt-0"
+                  />
+                  <p className="text-[9px] leading-relaxed tracking-[0.2em] text-[#c4a574]/90 uppercase md:text-[10px]">
+                    {item.label}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
