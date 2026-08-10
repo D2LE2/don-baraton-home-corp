@@ -169,7 +169,7 @@ export default function HomePage() {
 
         <div className="relative">
           <div className="relative w-full overflow-hidden bg-[#0c0b0a]">
-            <div className="relative mx-auto w-full max-w-[1200px] aspect-[1800/980]">
+            <div className="relative mx-auto w-full max-w-[1200px] aspect-[1024/682]">
               <Image
                 src="/images/monroe-featured.jpg"
                 alt={featured.name}
