@@ -27,7 +27,7 @@ export default function HomePage() {
 
   return (
     <main className="overflow-x-hidden bg-[#f7f4ef] text-ink">
-      {/* 1 — HERO: una sola composición */}
+      {/* 1 — HERO (solo marca + mensaje) */}
       <section className="relative bg-[#f7f4ef]">
         <header className="relative z-30 flex items-center justify-between px-5 pt-5 md:px-10 md:pt-7">
           <Logo size="md" />
@@ -50,14 +50,14 @@ export default function HomePage() {
               className="absolute top-[4.25rem] right-5 z-40 w-48 border border-[#e4dfd6] bg-white p-4 shadow-lg md:right-10"
             >
               <div className="flex flex-col gap-3 text-[11px] tracking-[0.22em] text-ink/70 uppercase">
+                <Link href="/#lanzamiento" onClick={() => setMenuOpen(false)}>
+                  Lanzamiento
+                </Link>
                 <Link href="/#casas" onClick={() => setMenuOpen(false)}>
                   Colección
                 </Link>
                 <Link href="/#catalogo" onClick={() => setMenuOpen(false)}>
                   Catálogo
-                </Link>
-                <Link href="/residences" onClick={() => setMenuOpen(false)}>
-                  Showroom
                 </Link>
                 <Link href="/private" onClick={() => setMenuOpen(false)}>
                   Omar Private
@@ -68,7 +68,7 @@ export default function HomePage() {
         </AnimatePresence>
 
         <div className="relative mt-5 w-full overflow-hidden md:mt-6">
-          <div className="relative h-[min(58vh,560px)] min-h-[320px] w-full bg-[#1a1814]">
+          <div className="relative h-[min(52vh,480px)] min-h-[280px] w-full bg-[#1a1814]">
             <motion.div
               className="absolute inset-0"
               initial={{ scale: 1.06 }}
@@ -77,32 +77,19 @@ export default function HomePage() {
             >
               <Image
                 src={featured.image}
-                alt={featured.name}
+                alt=""
                 fill
                 priority
-                className="object-cover object-[center_42%]"
+                className="object-cover object-[center_38%]"
                 sizes="100vw"
               />
             </motion.div>
             <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/20" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-black/25" />
 
             <BannerLiveTicks />
 
-            <div className="absolute top-3 right-3 z-20 w-[132px] md:top-4 md:right-5 md:w-[152px]">
-              <div className="border border-white/15 bg-black/45 px-2.5 py-1.5 backdrop-blur-sm">
-                <ProgressBar
-                  value={featured.progress}
-                  tone="dark"
-                  size="sm"
-                  showLabel
-                  label="Progreso"
-                  live
-                />
-              </div>
-            </div>
-
-            <div className="absolute inset-0 z-10 flex flex-col justify-end px-5 pb-24 md:px-10 md:pb-28 lg:px-16">
+            <div className="absolute inset-0 z-10 flex flex-col justify-end px-5 pb-10 md:px-10 md:pb-12 lg:px-16">
               <motion.p
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -136,10 +123,10 @@ export default function HomePage() {
                 className="mt-6 flex flex-wrap items-center gap-3"
               >
                 <Link
-                  href="#catalogo"
+                  href="#lanzamiento"
                   className="inline-flex items-center gap-2 bg-[#e0c57a] px-5 py-3 text-[11px] font-semibold tracking-[0.18em] text-ink uppercase transition hover:bg-white"
                 >
-                  Ver residencias
+                  Ver primer lanzamiento
                   <ArrowRight size={14} />
                 </Link>
                 <Link
@@ -152,14 +139,9 @@ export default function HomePage() {
               </motion.div>
             </div>
           </div>
-
-          {/* Card bridges hero → rest of page */}
-          <div className="relative z-20 -mt-12 px-4 md:-mt-14 md:px-10 lg:px-16">
-            <LaunchCard residence={featured} />
-          </div>
         </div>
 
-        <p className="mx-auto max-w-lg px-5 pt-8 pb-12 text-center text-[13px] leading-relaxed text-[#6a655e] md:px-10">
+        <p className="mx-auto max-w-lg px-5 py-8 text-center text-[13px] leading-relaxed text-[#6a655e] md:px-10">
           Omar Corp documenta cada transformación. Tú eliges la residencia, sigues el avance y
           entras a su lista — antes del mercado.
         </p>
@@ -168,7 +150,52 @@ export default function HomePage() {
       {/* Soft divider */}
       <div className="h-px w-full bg-gradient-to-r from-transparent via-[#d9d0c3] to-transparent" />
 
-      {/* 2 — Colección en vivo */}
+      {/* 2 — PRIMERA RESIDENCIA (foto + card Próximo lanzamiento) */}
+      <section id="lanzamiento" className="relative bg-[#f7f4ef] pt-2 md:pt-4">
+        <div className="px-5 pb-3 md:px-10 lg:px-16">
+          <p className="text-[10px] tracking-[0.35em] text-[#9a8660] uppercase">
+            Residencia destacada
+          </p>
+          <h2 className="mt-1.5 text-xl font-light tracking-[0.04em] text-ink md:text-2xl">
+            {featured.code} · {featured.location}
+          </h2>
+        </div>
+
+        <div className="relative">
+          <div className="relative mx-auto h-[42vh] min-h-[260px] max-h-[400px] w-full overflow-hidden bg-[#1a1814] md:h-[46vh] md:max-h-[460px]">
+            <Image
+              src={featured.image}
+              alt={featured.name}
+              fill
+              className="object-cover object-[center_45%]"
+              sizes="100vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+
+            <div className="absolute top-4 right-4 z-20 w-[140px] md:top-5 md:right-6 md:w-[160px]">
+              <div className="border border-white/15 bg-black/45 px-2.5 py-1.5 backdrop-blur-sm">
+                <ProgressBar
+                  value={featured.progress}
+                  tone="dark"
+                  size="sm"
+                  showLabel
+                  label="Progreso"
+                  live
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="relative z-20 -mt-10 px-4 pb-10 md:-mt-12 md:px-10 md:pb-14 lg:px-16">
+            <LaunchCard residence={featured} />
+          </div>
+        </div>
+      </section>
+
+      {/* Soft divider */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-[#d9d0c3] to-transparent" />
+
+      {/* 3 — Colección en vivo */}
       <VideoResidenceFeed />
 
       {/* Soft divider into catalog */}
