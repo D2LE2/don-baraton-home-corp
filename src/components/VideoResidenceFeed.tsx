@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Lock, Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { Eye, Lock, Pause, Play, Users, Volume2, VolumeX } from "lucide-react";
 import {
   AnimatePresence,
   motion,
@@ -12,8 +12,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { UnlockModal } from "@/components/UnlockModal";
 import { useNova } from "@/context/NovaContext";
 import { residences, type Residence } from "@/data/residences";
+import { useLiveSocialProof } from "@/hooks/useLiveSocialProof";
 
-const SLIDE_MS = 7000;
+const SLIDE_MS = 8000;
 
 function VideoSlide({
   residence,
@@ -30,6 +31,10 @@ function VideoSlide({
   const { isUnlocked, ready } = useNova();
   const unlocked = ready && isUnlocked(residence.id);
   const [teaserIn, setTeaserIn] = useState(false);
+  const { viewers, waitlistLive, toast, currentStage } = useLiveSocialProof(
+    residence,
+    active,
+  );
 
   useEffect(() => {
     const el = videoRef.current;
@@ -70,23 +75,56 @@ function VideoSlide({
         />
       </motion.div>
 
-      {/* Scrims: keep video visible but text always readable */}
       <div className="pointer-events-none absolute inset-0 bg-black/25" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/85 via-black/35 to-transparent" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
       <div className="pointer-events-none absolute inset-y-0 left-0 w-[55%] bg-gradient-to-r from-black/55 via-black/25 to-transparent" />
+
+      {/* Live toasts */}
+      <div className="pointer-events-none absolute top-28 right-4 z-20 w-[min(100%-2rem,280px)] md:top-32 md:right-10">
+        <AnimatePresence mode="popLayout">
+          {toast && (
+            <motion.div
+              key={toast.id}
+              initial={{ opacity: 0, y: -10, x: 12 }}
+              animate={{ opacity: 1, y: 0, x: 0 }}
+              exit={{ opacity: 0, y: -8, x: 8 }}
+              transition={{ duration: 0.35 }}
+              className="rounded-2xl border border-white/15 bg-black/70 px-3.5 py-3 shadow-[0_12px_40px_rgba(0,0,0,0.45)] backdrop-blur-md"
+            >
+              <div className="flex items-start gap-2.5">
+                <span className="live-dot mt-1.5 shrink-0" />
+                <p className="text-[12px] leading-snug text-white/90">{toast.text}</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       <div className="relative z-10 flex h-full flex-col justify-end px-5 pb-28 md:px-12 md:pb-32 lg:px-16">
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-2xl rounded-[1.75rem] bg-black/45 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-md md:p-7"
+          className="max-w-2xl rounded-[1.75rem] bg-black/50 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-md md:p-7"
         >
-          <p className="text-[11px] tracking-[0.35em] text-gold-soft uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/15 px-3 py-1.5 text-[10px] tracking-[0.18em] text-emerald-200 uppercase">
+              <Eye size={12} />
+              <span className="live-dot !bg-emerald-300" />
+              {viewers} mirando ahora
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-full border border-gold-soft/35 bg-gold-soft/10 px-3 py-1.5 text-[10px] tracking-[0.18em] text-gold-soft uppercase">
+              <Users size={12} />
+              {waitlistLive} en lista
+              {residence.waitlistLimited ? " · limitada" : ""}
+            </span>
+          </div>
+
+          <p className="mt-4 text-[11px] tracking-[0.35em] text-gold-soft uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
             {residence.code}
           </p>
-          <h2 className="mt-3 text-4xl font-light tracking-[0.08em] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] md:text-6xl">
+          <h2 className="mt-2 text-4xl font-light tracking-[0.08em] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] md:text-6xl">
             {residence.name}
           </h2>
           <p className="mt-2 text-sm text-white/85 md:text-base">{residence.location}</p>
@@ -98,27 +136,43 @@ function VideoSlide({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.5 }}
-                className="script mt-5 max-w-lg text-2xl text-gold-soft drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] md:text-4xl"
+                className="script mt-4 max-w-lg text-2xl text-gold-soft drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] md:text-3xl"
               >
                 {residence.teaser}
               </motion.p>
             )}
           </AnimatePresence>
 
-          <div className="mt-7 flex flex-wrap items-center gap-4">
-            <div className="flex items-baseline gap-2">
-              <span className="display text-4xl font-light text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] md:text-5xl">
+          {/* Visual construction progress */}
+          <div className="mt-6">
+            <div className="mb-2 flex items-end justify-between gap-3">
+              <div>
+                <p className="text-[10px] tracking-[0.28em] text-white/65 uppercase">
+                  Progreso de obra
+                </p>
+                <p className="mt-1 text-sm text-white/85">
+                  Etapa actual · {currentStage?.label ?? "En curso"}
+                </p>
+              </div>
+              <p className="display text-3xl font-light text-white md:text-4xl">
                 {residence.progress}%
-              </span>
-              <span className="text-[10px] tracking-[0.28em] text-white/75 uppercase">
-                construido
-              </span>
+              </p>
             </div>
-            <span className="hidden h-8 w-px bg-white/25 sm:block" />
-            <p className="text-sm text-white/80">Entrega · {residence.expected}</p>
+            <div className="h-2.5 overflow-hidden rounded-full bg-white/15">
+              <motion.div
+                className="h-full rounded-full bg-gradient-to-r from-gold-soft/80 to-gold-soft"
+                initial={{ width: 0 }}
+                animate={{ width: active ? `${residence.progress}%` : 0 }}
+                transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+              />
+            </div>
+            <div className="mt-2 flex justify-between text-[10px] tracking-[0.16em] text-white/55 uppercase">
+              <span>Inicio</span>
+              <span>Entrega · {residence.expected}</span>
+            </div>
           </div>
 
-          <div className="mt-7">
+          <div className="mt-6">
             {!unlocked ? (
               <button
                 type="button"
@@ -140,7 +194,7 @@ function VideoSlide({
             <p className="mt-3 text-[11px] tracking-[0.12em] text-white/70">
               {unlocked
                 ? "Ya desbloqueaste esta residencia"
-                : "Si te enamoras, toca. El tour sigue solo."}
+                : `${waitlistLive} personas ya están en la lista. Si te enamoras, toca.`}
             </p>
           </div>
         </motion.div>
@@ -376,8 +430,8 @@ export function VideoResidenceFeed() {
                   >
                     {r.name}
                   </p>
-                  <p className="mt-0.5 truncate text-[10px] text-white/40">
-                    {r.progress}% · {r.location.split(",")[0]}
+                  <p className="mt-0.5 truncate text-[10px] text-white/45">
+                    {r.progress}% obra · {r.waitlistCount}+ lista
                   </p>
                 </div>
                 {active && (
