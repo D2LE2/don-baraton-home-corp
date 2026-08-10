@@ -47,7 +47,7 @@ export default function HomePage() {
       {/* PRIMERA SECCIÓN — hero + social + residencias activas */}
       <section className="bg-black text-white">
         {/* Hero media */}
-        <div className="hero-viewport relative isolate overflow-hidden">
+        <div className="hero-viewport relative isolate flex flex-col overflow-hidden">
           <div className="absolute inset-0">
             <Image
               src={featured?.image ?? "/images/monroe.jpg"}
@@ -105,48 +105,43 @@ export default function HomePage() {
             )}
           </AnimatePresence>
 
-          {/* Center play */}
-          <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
-            <button
-              type="button"
-              onClick={() => playResidenceAvance(featured?.id)}
-              aria-label="Ver avance"
-              className="pointer-events-auto flex h-[4.25rem] w-[4.25rem] items-center justify-center rounded-full border border-white/60 bg-white/10 text-white backdrop-blur-[2px] transition hover:border-[#e0c57a] hover:bg-black/30 md:h-20 md:w-20"
-            >
-              <Play size={22} fill="currentColor" className="ml-0.5" />
-            </button>
+          {/* Upper stage: play + (desktop) progress — never over the CTAs */}
+          <div className="relative z-10 flex min-h-0 flex-1 flex-col px-5 pt-[4.75rem] md:px-10 lg:px-16">
+            <div className="relative flex flex-1 items-center justify-center">
+              <button
+                type="button"
+                onClick={() => playResidenceAvance(featured?.id)}
+                aria-label="Ver avance"
+                className="flex h-14 w-14 items-center justify-center rounded-full border border-white/60 bg-black/25 text-white backdrop-blur-[2px] transition hover:border-[#e0c57a] hover:bg-black/40 md:h-[4.5rem] md:w-[4.5rem]"
+              >
+                <Play size={20} fill="currentColor" className="ml-0.5 md:h-[22px] md:w-[22px]" />
+              </button>
+
+              {featured && (
+                <div className="absolute top-1/2 right-0 hidden w-32 -translate-y-1/2 md:block lg:w-36">
+                  <p className="text-[2.5rem] font-light leading-none tracking-tight text-[#e0c57a] tabular-nums lg:text-[2.75rem]">
+                    {featured.progress}%
+                  </p>
+                  <p className="mt-1.5 text-[9px] tracking-[0.28em] text-white/70 uppercase">
+                    Transformed
+                  </p>
+                  <div className="relative mt-3 h-[2px] bg-white/20">
+                    <div
+                      className="absolute inset-y-0 left-0 bg-[#e0c57a]"
+                      style={{ width: `${featured.progress}%` }}
+                    />
+                    <span
+                      className="absolute top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-white"
+                      style={{ left: `calc(${featured.progress}% - 4px)` }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Right: progress of featured */}
-          {featured && (
-            <div className="absolute top-[38%] right-5 z-20 w-[7.5rem] md:right-10 md:w-36 lg:right-16">
-              <p className="text-[clamp(2rem,6vw,2.75rem)] font-light leading-none tracking-tight text-[#e0c57a] tabular-nums">
-                {featured.progress}%
-              </p>
-              <p className="mt-1.5 text-[9px] tracking-[0.28em] text-white/70 uppercase">
-                Transformed
-              </p>
-              <div className="relative mt-3 h-[2px] bg-white/20">
-                <div
-                  className="absolute inset-y-0 left-0 bg-[#e0c57a]"
-                  style={{ width: `${featured.progress}%` }}
-                />
-                <span
-                  className="absolute top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-white"
-                  style={{ left: `calc(${featured.progress}% - 4px)` }}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Bottom-right live */}
-          <p className="absolute right-5 bottom-6 z-20 inline-flex items-center gap-2 text-[9px] tracking-[0.22em] text-white/80 uppercase md:right-10 md:bottom-8">
-            <span className="live-dot !bg-emerald-400" />
-            Actualizaciones en vivo
-          </p>
-
-          {/* Left copy */}
-          <div className="relative z-10 flex h-full flex-col justify-end px-5 pb-8 pt-24 md:px-10 md:pb-10 lg:px-16">
+          {/* Bottom copy — exclusive layer, no absolute overlays here */}
+          <div className="relative z-20 px-5 pb-7 md:px-10 md:pb-10 lg:px-16">
             <div className="max-w-xl">
               <p className="text-[11px] tracking-[0.28em] text-white/85 uppercase">
                 <span className="font-medium">01</span>
@@ -156,38 +151,67 @@ export default function HomePage() {
                 </span>
               </p>
 
-              <p className="mt-4 inline-flex items-center gap-2 text-[10px] tracking-[0.28em] text-[#e0c57a] uppercase">
+              <p className="mt-3 inline-flex items-center gap-2 text-[10px] tracking-[0.28em] text-[#e0c57a] uppercase">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#e0c57a]" />
                 Proyecto en transformación
               </p>
 
-              <h1 className="mt-4 text-[clamp(1.85rem,6.5vw,3.75rem)] font-light leading-[1.05] tracking-[0.02em] text-white">
+              <h1 className="mt-3 text-[clamp(1.7rem,6vw,3.75rem)] font-light leading-[1.05] tracking-[0.02em] text-white">
                 VE LA CASA ANTES
                 <br />
                 DE QUE SEA{" "}
                 <span className="text-[#e0c57a]">HOGAR.</span>
               </h1>
 
-              <p className="mt-4 max-w-sm text-[13px] leading-relaxed text-white/75 md:text-[15px]">
+              <p className="mt-3 max-w-sm text-[13px] leading-relaxed text-white/75 md:mt-4 md:text-[15px]">
                 Sigue cada avance en tiempo real y sé el primero en elegir tu futura casa.
               </p>
 
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+              {/* Progress on mobile — in flow, not floating over the button */}
+              {featured && (
+                <div className="mt-5 md:hidden">
+                  <div className="flex items-end justify-between gap-4">
+                    <div>
+                      <p className="text-[2rem] font-light leading-none tracking-tight text-[#e0c57a] tabular-nums">
+                        {featured.progress}%
+                      </p>
+                      <p className="mt-1 text-[9px] tracking-[0.28em] text-white/55 uppercase">
+                        Transformed
+                      </p>
+                    </div>
+                    <div className="mb-2 min-w-0 flex-1">
+                      <div className="relative h-[2px] bg-white/20">
+                        <div
+                          className="absolute inset-y-0 left-0 bg-[#e0c57a]"
+                          style={{ width: `${featured.progress}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-5 flex flex-col gap-2.5 sm:mt-6 sm:flex-row sm:items-center sm:gap-3">
                 <Link
                   href="/#casas"
-                  className="group inline-flex items-center justify-center gap-2.5 rounded-md bg-[#c4a574] px-6 py-3.5 text-[11px] font-semibold tracking-[0.2em] text-ink uppercase transition hover:bg-[#e0c57a]"
+                  className="group inline-flex w-full items-center justify-center gap-2.5 rounded-md bg-[#c4a574] px-6 py-3.5 text-[11px] font-semibold tracking-[0.2em] text-ink uppercase transition hover:bg-[#e0c57a] sm:w-auto"
                 >
                   Entrar a la colección
                   <ArrowRight size={14} className="transition group-hover:translate-x-1" />
                 </Link>
                 <Link
                   href="/private"
-                  className="inline-flex items-center justify-center gap-2 rounded-md border border-[#c4a574]/55 px-5 py-3.5 text-[10px] tracking-[0.2em] text-[#e0c57a] uppercase transition hover:border-[#e0c57a] hover:bg-white/5"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-[#c4a574]/55 px-5 py-3.5 text-[10px] tracking-[0.2em] text-[#e0c57a] uppercase transition hover:border-[#e0c57a] hover:bg-white/5 sm:w-auto"
                 >
                   <Lock size={12} />
                   Lista privada
                 </Link>
               </div>
+
+              <p className="mt-4 inline-flex items-center gap-2 text-[9px] tracking-[0.22em] text-white/70 uppercase">
+                <span className="live-dot !bg-emerald-400" />
+                Actualizaciones en vivo
+              </p>
             </div>
           </div>
         </div>

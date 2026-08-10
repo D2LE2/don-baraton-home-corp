@@ -55,6 +55,8 @@ body {
  * Forced pixel heights + scroll transforms were causing the section handoff jank.
  */
 .hero-viewport {
+  display: flex;
+  flex-direction: column;
   min-height: 100svh;
   min-height: 100dvh;
   width: 100%;
