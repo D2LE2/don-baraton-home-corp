@@ -15,8 +15,8 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { UnlockModal } from "@/components/UnlockModal";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
+import { UnlockModal } from "@/components/UnlockModal";
 import { useNova } from "@/context/NovaContext";
 import { residences } from "@/data/residences";
 import { useLiveViewersMap } from "@/hooks/useLiveViewersMap";
@@ -48,15 +48,21 @@ function formatDelivery(expected: string) {
   return expected.toUpperCase();
 }
 
+const slideVariants = {
+  enter: (dir: number) => ({ x: dir > 0 ? "28%" : "-28%", opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (dir: number) => ({ x: dir > 0 ? "-22%" : "22%", opacity: 0 }),
+};
+
 export function VideoResidenceFeed() {
   const total = residences.length;
   const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
   const [playing, setPlaying] = useState(false);
   const [unlockOpen, setUnlockOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [hintVisible, setHintVisible] = useState(true);
   const [liveFlash, setLiveFlash] = useState<string | null>(null);
-  const [progressFill, setProgressFill] = useState(0);
   const prevViewersRef = useRef<number | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { isUnlocked, ready } = useNova();
@@ -70,43 +76,40 @@ export function VideoResidenceFeed() {
     [current.progress],
   );
 
-  // Animate completion bar when property changes
-  useEffect(() => {
-    setProgressFill(0);
-    const t = window.setTimeout(() => setProgressFill(current.progress), 80);
-    return () => window.clearTimeout(t);
-  }, [current.id, current.progress]);
-
-  // Live flash when viewers tick up/down
   useEffect(() => {
     const prev = prevViewersRef.current;
     prevViewersRef.current = viewersNow;
     if (prev === null || prev === viewersNow) return;
     const delta = viewersNow - prev;
-    setLiveFlash(
-      delta > 0
-        ? `+${delta} entró a ver`
-        : `${Math.abs(delta)} salió`,
-    );
-    const t = window.setTimeout(() => setLiveFlash(null), 1800);
-    return () => window.clearTimeout(t);
+    const id = window.setTimeout(() => {
+      setLiveFlash(delta > 0 ? `+${delta} entró` : `−${Math.abs(delta)}`);
+    }, 0);
+    const clear = window.setTimeout(() => setLiveFlash(null), 1600);
+    return () => {
+      window.clearTimeout(id);
+      window.clearTimeout(clear);
+    };
   }, [viewersNow]);
 
   const goTo = useCallback(
-    (i: number) => {
-      setIndex(Math.max(0, Math.min(total - 1, i)));
+    (i: number, dir?: number) => {
+      const next = Math.max(0, Math.min(total - 1, i));
+      if (next === index) return;
+      setDirection(dir ?? (next > index ? 1 : -1));
+      setIndex(next);
       setPlaying(false);
       setHintVisible(false);
+      prevViewersRef.current = null;
     },
-    [total],
+    [index, total],
   );
 
   const goNext = useCallback(() => {
-    if (index < total - 1) goTo(index + 1);
+    if (index < total - 1) goTo(index + 1, 1);
   }, [goTo, index, total]);
 
   const goPrev = useCallback(() => {
-    if (index > 0) goTo(index - 1);
+    if (index > 0) goTo(index - 1, -1);
   }, [goTo, index]);
 
   useEffect(() => {
@@ -129,61 +132,71 @@ export function VideoResidenceFeed() {
     });
   }, []);
 
-  // Soft hide slide hint after a few seconds
   useEffect(() => {
     if (!hintVisible || index >= total - 1) return;
-    const t = window.setTimeout(() => setHintVisible(false), 5200);
+    const t = window.setTimeout(() => setHintVisible(false), 4800);
     return () => window.clearTimeout(t);
   }, [hintVisible, index, total]);
 
   function onDragEnd(_: unknown, info: PanInfo) {
-    const dist = info.offset.x;
-    const vel = info.velocity.x;
-    if (dist < -56 || vel < -400) goNext();
-    else if (dist > 56 || vel > 400) goPrev();
+    if (info.offset.x < -56 || info.velocity.x < -400) goNext();
+    else if (info.offset.x > 56 || info.velocity.x > 400) goPrev();
   }
 
   return (
-    <section
-      id="casas"
-      className="relative flex min-h-[100dvh] flex-col bg-black text-white"
-    >
-      <motion.div
-        className="relative flex min-h-[100dvh] flex-col touch-pan-y"
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={0.12}
-        onDragEnd={onDragEnd}
-      >
-        {/* ═══ ZONE 1: Hero ═══ */}
-        <div className="relative min-h-[42vh] flex-1 overflow-hidden md:min-h-[48vh]">
-          <Image
-            src={current.image}
-            alt={current.name}
-            fill
-            priority
-            className={`object-cover object-center transition-opacity duration-500 ${
-              playing ? "opacity-0" : "opacity-100"
-            }`}
-            sizes="100vw"
-          />
-          <video
-            ref={videoRef}
-            key={current.id}
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
-              playing ? "opacity-100" : "opacity-0"
-            }`}
-            src={current.video}
-            poster={current.image}
-            playsInline
-            loop
-            muted
-            preload="auto"
-            controls={false}
-            disablePictureInPicture
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
+    <section id="casas" className="relative flex min-h-[100dvh] flex-col bg-black text-white">
+      <div className="relative flex min-h-[100dvh] flex-col">
+        {/* HERO */}
+        <div className="relative min-h-[46vh] flex-1 overflow-hidden md:min-h-[52vh]">
+          <motion.div
+            className="absolute inset-0 touch-pan-y"
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.16}
+            onDragEnd={onDragEnd}
+          >
+            <AnimatePresence initial={false} custom={direction} mode="popLayout">
+              <motion.div
+                key={current.id}
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute inset-0"
+              >
+                <Image
+                  src={current.image}
+                  alt={current.name}
+                  fill
+                  priority
+                  className={`object-cover object-center ${
+                    playing ? "opacity-0" : "opacity-100"
+                  }`}
+                  sizes="100vw"
+                />
+                <video
+                  ref={videoRef}
+                  className={`absolute inset-0 h-full w-full object-cover ${
+                    playing ? "opacity-100" : "opacity-0"
+                  }`}
+                  src={current.video}
+                  poster={current.image}
+                  playsInline
+                  loop
+                  muted
+                  preload="auto"
+                  controls={false}
+                  disablePictureInPicture
+                />
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
 
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/75" />
+
+          {/* Header */}
           <header className="absolute inset-x-0 top-0 z-30 flex items-center justify-between px-4 pt-4 md:px-8 md:pt-6">
             <Link href="/" className="flex items-center gap-2.5">
               <span className="display text-2xl font-medium leading-none text-[#c4a574]">
@@ -228,165 +241,139 @@ export function VideoResidenceFeed() {
             )}
           </AnimatePresence>
 
-          <div className="absolute top-16 left-4 z-20 md:top-20 md:left-8">
-            <p className="rounded-md bg-black/55 px-2.5 py-1.5 text-[10px] tracking-[0.28em] text-white uppercase shadow-[0_4px_20px_rgba(0,0,0,0.35)] backdrop-blur-sm md:text-[11px]">
-              <span className="font-semibold text-white">
+          {/* ONE clean top meta row — no overlap */}
+          <div className="absolute top-[58px] inset-x-4 z-20 flex items-center justify-between gap-2 md:top-[72px] md:inset-x-8">
+            <p className="min-w-0 truncate rounded-md bg-black/60 px-2.5 py-1.5 text-[10px] tracking-[0.22em] text-white uppercase backdrop-blur-sm">
+              <span className="font-semibold">
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <span className="text-white/70">
+              <span className="text-white/55">
                 {" "}
                 / {String(total).padStart(2, "0")}
               </span>
-              <span className="ml-3 font-medium tracking-[0.32em] text-white">
+              <span className="ml-2 hidden tracking-[0.28em] sm:inline">
                 Exclusive Residence
               </span>
             </p>
-          </div>
-
-          {/* Live viewers — current property */}
-          <div className="absolute top-16 right-14 z-20 md:top-20 md:right-20">
-            <motion.p
-              key={viewersNow}
-              initial={{ scale: 1.06 }}
-              animate={{ scale: 1 }}
-              className="inline-flex items-center gap-2 rounded-md bg-black/55 px-2.5 py-1.5 text-[9px] tracking-[0.18em] text-white uppercase backdrop-blur-sm"
-            >
-              <span className="live-dot !bg-emerald-400" />
-              <AnimatedCounter value={viewersNow} className="tabular-nums" />{" "}
-              mirando
-            </motion.p>
-            <AnimatePresence>
-              {liveFlash && (
-                <motion.p
-                  key={liveFlash}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
-                  className="mt-1.5 rounded-md bg-emerald-500/15 px-2 py-1 text-[8px] tracking-[0.14em] text-emerald-300 uppercase backdrop-blur-sm"
-                >
-                  {liveFlash}
-                </motion.p>
-              )}
-            </AnimatePresence>
+            <div className="relative shrink-0">
+              <p className="inline-flex items-center gap-1.5 rounded-md bg-black/60 px-2.5 py-1.5 text-[9px] tracking-[0.16em] text-white uppercase backdrop-blur-sm">
+                <span className="live-dot !bg-emerald-400" />
+                <AnimatedCounter value={viewersNow} className="tabular-nums" />{" "}
+                mirando
+              </p>
+              <AnimatePresence>
+                {liveFlash && (
+                  <motion.span
+                    key={liveFlash}
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute top-full right-0 mt-1 whitespace-nowrap rounded bg-emerald-500/20 px-2 py-0.5 text-[8px] tracking-[0.12em] text-emerald-300 uppercase"
+                  >
+                    {liveFlash}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
 
           {/* Play */}
-          <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+          <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
             <button
               type="button"
               onClick={() => setPlaying((p) => !p)}
               className="pointer-events-auto flex flex-col items-center gap-2.5"
             >
-              <span className="flex h-[52px] w-[52px] items-center justify-center rounded-full border border-white/70 bg-black/20 text-white backdrop-blur-[2px]">
+              <span className="flex h-[52px] w-[52px] items-center justify-center rounded-full border border-white/70 bg-black/30 text-white backdrop-blur-[2px]">
                 {playing ? (
                   <Pause size={18} fill="currentColor" />
                 ) : (
                   <Play size={18} fill="currentColor" className="ml-0.5" />
                 )}
               </span>
-              <span className="text-[9px] tracking-[0.4em] text-white uppercase">
+              <span className="text-[9px] tracking-[0.4em] text-white uppercase drop-shadow">
                 Ver transformación
               </span>
             </button>
           </div>
 
-          {/* Minimal slide hint arrow */}
+          {/* Slide arrows */}
           {index < total - 1 && (
             <button
               type="button"
-              aria-label="Siguiente residencia"
+              aria-label="Siguiente"
               onClick={goNext}
-              className="absolute top-1/2 right-3 z-30 -translate-y-1/2 text-white/70 transition hover:text-white md:right-5"
+              className="absolute top-1/2 right-3 z-30 -translate-y-1/2 text-white/80 md:right-4"
             >
               <motion.span
-                animate={
-                  hintVisible
-                    ? { x: [0, 6, 0], opacity: [0.45, 1, 0.45] }
-                    : { x: 0, opacity: 0.7 }
-                }
+                animate={hintVisible ? { x: [0, 5, 0] } : { x: 0 }}
                 transition={
                   hintVisible
-                    ? { duration: 1.6, repeat: Infinity, ease: "easeInOut" }
-                    : { duration: 0.3 }
+                    ? { duration: 1.5, repeat: Infinity, ease: "easeInOut" }
+                    : undefined
                 }
-                className="flex flex-col items-center gap-1"
               >
-                <ChevronRight size={22} strokeWidth={1.25} />
-                {hintVisible && (
-                  <span className="text-[8px] tracking-[0.28em] uppercase">
-                    Slide
-                  </span>
-                )}
+                <ChevronRight size={24} strokeWidth={1.2} />
               </motion.span>
             </button>
           )}
-
           {index > 0 && (
             <button
               type="button"
-              aria-label="Residencia anterior"
+              aria-label="Anterior"
               onClick={goPrev}
-              className="absolute top-1/2 left-3 z-30 -translate-y-1/2 rotate-180 text-white/55 transition hover:text-white md:left-5"
+              className="absolute top-1/2 left-3 z-30 -translate-y-1/2 rotate-180 text-white/70 md:left-4"
             >
-              <ChevronRight size={20} strokeWidth={1.25} />
+              <ChevronRight size={22} strokeWidth={1.2} />
             </button>
           )}
 
-          {/* Vertical progress */}
-          <div className="absolute top-[18%] right-2 z-20 w-[88px] rounded-lg bg-black/55 px-2.5 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.45)] backdrop-blur-md md:right-5 md:w-[110px] md:px-3 md:py-3.5">
-            <p className="text-[9px] font-semibold leading-tight tracking-[0.14em] text-[#e0c57a] uppercase md:text-[10px]">
+          {/* Progress panel — bottom-right of hero, clear of top row */}
+          <div className="absolute right-3 bottom-4 z-20 w-[100px] rounded-lg bg-black/65 px-2.5 py-2.5 backdrop-blur-md md:right-6 md:bottom-6 md:w-[118px]">
+            <p className="text-[9px] font-semibold tracking-[0.12em] text-[#e0c57a] uppercase">
               <AnimatedCounter value={current.progress} className="tabular-nums" />
               % Completado
             </p>
-            <div className="mt-2 h-0.5 overflow-hidden rounded-full bg-white/15">
+            <div className="mt-1.5 h-0.5 overflow-hidden rounded-full bg-white/15">
               <motion.div
+                key={`bar-${current.id}`}
                 className="h-full bg-[#e0c57a]"
                 initial={{ width: 0 }}
-                animate={{ width: `${progressFill}%` }}
-                transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+                animate={{ width: `${current.progress}%` }}
+                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
               />
             </div>
-            <div className="mt-3">
+            <div className="mt-2.5">
               {PIPELINE.map((label, i) => {
                 const done = i < stageIdx;
                 const active = i === stageIdx;
                 return (
                   <div key={label} className="flex gap-2">
-                    <div className="flex w-2.5 flex-col items-center">
-                      <motion.span
-                        animate={
+                    <div className="flex w-2 flex-col items-center">
+                      <span
+                        className={`mt-0.5 rounded-full ${
                           active
-                            ? { scale: [1, 1.35, 1], opacity: [1, 0.75, 1] }
-                            : { scale: 1, opacity: 1 }
-                        }
-                        transition={
-                          active
-                            ? { duration: 1.8, repeat: Infinity, ease: "easeInOut" }
-                            : { duration: 0.2 }
-                        }
-                        className={`mt-[3px] rounded-full ${
-                          active
-                            ? "h-2 w-2 bg-[#e0c57a] shadow-[0_0_10px_rgba(224,197,122,0.95)]"
+                            ? "h-1.5 w-1.5 bg-[#e0c57a] shadow-[0_0_8px_rgba(224,197,122,0.9)]"
                             : done
-                              ? "h-1.5 w-1.5 bg-[#e0c57a]"
-                              : "h-1.5 w-1.5 bg-white/50"
+                              ? "h-1 w-1 bg-[#e0c57a]"
+                              : "h-1 w-1 bg-white/40"
                         }`}
                       />
                       {i < PIPELINE.length - 1 && (
                         <span
-                          className={`w-px flex-1 min-h-[14px] ${
-                            done || active ? "bg-[#e0c57a]/70" : "bg-white/30"
+                          className={`w-px flex-1 min-h-[11px] ${
+                            done || active ? "bg-[#e0c57a]/60" : "bg-white/25"
                           }`}
                         />
                       )}
                     </div>
                     <p
-                      className={`pb-2.5 text-[9px] font-medium tracking-[0.1em] uppercase drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)] md:text-[10px] ${
+                      className={`pb-1.5 text-[8px] font-medium tracking-[0.08em] uppercase md:text-[9px] ${
                         active
                           ? "text-[#e0c57a]"
                           : done
                             ? "text-white"
-                            : "text-white/75"
+                            : "text-white/65"
                       }`}
                     >
                       {label}
@@ -398,21 +385,23 @@ export function VideoResidenceFeed() {
           </div>
         </div>
 
-        {/* ═══ ZONE 2: Info panel ═══ */}
-        <div className="relative z-10 bg-[#0a0a0a] px-4 pb-5 pt-5 md:px-8 md:pb-7 md:pt-6">
-          <AnimatePresence mode="wait">
+        {/* INFO PANEL — clear slide swap */}
+        <div className="relative z-10 overflow-hidden bg-[#0a0a0a] px-4 pb-5 pt-5 md:px-8 md:pb-7 md:pt-6">
+          <AnimatePresence initial={false} custom={direction} mode="wait">
             <motion.div
               key={current.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                 <p className="text-[10px] tracking-[0.35em] text-[#c4a574] uppercase">
                   {current.code}
                 </p>
-                <span className="inline-flex items-center gap-1.5 text-[9px] tracking-[0.16em] text-emerald-300/90 uppercase">
+                <span className="inline-flex items-center gap-1.5 text-[9px] tracking-[0.16em] text-emerald-300 uppercase">
                   <span className="live-dot !bg-emerald-400" />
                   <AnimatedCounter value={viewersNow} className="tabular-nums" />{" "}
                   en vivo
@@ -426,7 +415,8 @@ export function VideoResidenceFeed() {
                   % terminación
                 </span>
               </div>
-              <h2 className="mt-1.5 text-[clamp(1.85rem,7vw,3.25rem)] font-semibold tracking-[0.04em] text-white uppercase">
+
+              <h2 className="mt-2 text-[clamp(1.85rem,7vw,3.25rem)] font-semibold tracking-[0.04em] text-white uppercase">
                 {current.name}
               </h2>
               <p className="mt-1 text-[13px] text-white/55">{current.location}</p>
@@ -435,8 +425,8 @@ export function VideoResidenceFeed() {
                 <motion.div
                   className="h-full rounded-full bg-gradient-to-r from-[#9a8660] to-[#e0c57a]"
                   initial={{ width: 0 }}
-                  animate={{ width: `${progressFill}%` }}
-                  transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
+                  animate={{ width: `${current.progress}%` }}
+                  transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
                 />
               </div>
 
@@ -445,15 +435,7 @@ export function VideoResidenceFeed() {
                   <span className="mr-2 text-[11px] font-normal tracking-[0.28em] text-[#c4a574] uppercase">
                     Desde
                   </span>
-                  <motion.span
-                    key={current.priceFrom}
-                    initial={{ opacity: 0.4, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.45 }}
-                    className="inline-block tabular-nums"
-                  >
-                    {formatUsd(current.priceFrom)}
-                  </motion.span>
+                  {formatUsd(current.priceFrom)}
                 </p>
                 <p className="mt-1 text-[9px] tracking-[0.28em] text-[#c4a574] uppercase">
                   Acceso pre-construcción
@@ -512,7 +494,6 @@ export function VideoResidenceFeed() {
             Acceso privado · Cupos limitados
           </p>
 
-          {/* Thumbs with live viewers + progress */}
           <div className="mt-5 flex gap-2.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {residences.map((r, i) => {
               const active = i === index;
@@ -521,7 +502,7 @@ export function VideoResidenceFeed() {
                 <button
                   key={r.id}
                   type="button"
-                  onClick={() => goTo(i)}
+                  onClick={() => goTo(i, i > index ? 1 : -1)}
                   className={`relative h-[72px] w-[120px] shrink-0 overflow-hidden rounded-md border md:h-[80px] md:w-[140px] ${
                     active ? "border-[#c4a574]" : "border-white/20"
                   }`}
@@ -537,7 +518,7 @@ export function VideoResidenceFeed() {
                   <div className="absolute inset-x-0 top-0 p-1.5">
                     <div className="h-0.5 overflow-hidden rounded-full bg-white/20">
                       <div
-                        className="h-full bg-[#e0c57a] transition-[width] duration-700"
+                        className="h-full bg-[#e0c57a]"
                         style={{ width: `${r.progress}%` }}
                       />
                     </div>
@@ -549,7 +530,7 @@ export function VideoResidenceFeed() {
                     </p>
                     <p className="flex items-center gap-1 text-[8px] text-[#c4a574]">
                       <AnimatedCounter value={r.progress} className="tabular-nums" />
-                      % obra
+                      %
                       <span className="text-white/35">·</span>
                       <span className="inline-flex items-center gap-1 text-emerald-300">
                         <span className="live-dot !h-1.5 !w-1.5 !bg-emerald-400" />
@@ -562,7 +543,7 @@ export function VideoResidenceFeed() {
             })}
           </div>
         </div>
-      </motion.div>
+      </div>
 
       <UnlockModal
         residence={current}
