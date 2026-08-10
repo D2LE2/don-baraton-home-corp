@@ -51,14 +51,9 @@ body {
 }
 
 /*
- * Hero fills at least one small viewport — no JS height lock, no max-height.
- * Forced pixel heights + scroll transforms were causing the section handoff jank.
+ * Light launch hero — content-driven height, no forced vh locks.
  */
 .hero-viewport {
-  display: flex;
-  flex-direction: column;
-  min-height: 100svh;
-  min-height: 100dvh;
   width: 100%;
 }
 

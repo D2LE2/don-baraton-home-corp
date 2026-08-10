@@ -78,7 +78,7 @@ export function Countdown({
     size === "lg"
       ? { value: "text-3xl md:text-5xl", unit: "text-[9px] md:text-[10px]", gap: "gap-3 md:gap-5" }
       : size === "sm"
-        ? { value: "text-lg", unit: "text-[8px]", gap: "gap-2" }
+        ? { value: "text-[13px]", unit: "text-[7px]", gap: "gap-1.5" }
         : { value: "text-2xl md:text-3xl", unit: "text-[9px]", gap: "gap-2.5 md:gap-4" };
 
   if (time.done) {
@@ -99,19 +99,32 @@ export function Countdown({
       )}
       <div className={`flex items-end ${sizing.gap}`}>
         {units.map((u, i) => (
-          <div key={u.label} className="flex items-end gap-2.5 md:gap-4">
-            <div className="min-w-[3.25rem] text-center md:min-w-[4rem]">
+          <div
+            key={u.label}
+            className={`flex items-end ${size === "sm" ? "gap-1.5" : "gap-2.5 md:gap-4"}`}
+          >
+            <div
+              className={
+                size === "sm"
+                  ? "min-w-[2.1rem] text-center"
+                  : "min-w-[3.25rem] text-center md:min-w-[4rem]"
+              }
+            >
               <p
                 className={`font-light tabular-nums tracking-wide ${sizing.value} ${tone.value}`}
               >
                 {pad(u.value)}
               </p>
-              <p className={`mt-1 tracking-[0.22em] uppercase ${sizing.unit} ${tone.unit}`}>
+              <p className={`mt-0.5 tracking-[0.18em] uppercase ${sizing.unit} ${tone.unit}`}>
                 {u.label}
               </p>
             </div>
             {i < units.length - 1 && (
-              <span className={`mb-5 text-lg font-light ${tone.sep}`}>|</span>
+              <span
+                className={`font-light ${tone.sep} ${size === "sm" ? "mb-3 text-xs" : "mb-5 text-lg"}`}
+              >
+                |
+              </span>
             )}
           </div>
         ))}

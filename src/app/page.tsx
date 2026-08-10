@@ -4,337 +4,190 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
-  Camera,
-  Crown,
+  Bath,
+  BedDouble,
+  CalendarDays,
+  Car,
+  ChevronDown,
   Lock,
   Menu,
-  Play,
-  Users,
+  Ruler,
   X,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+import { Countdown } from "@/components/Countdown";
 import { Logo } from "@/components/Logo";
 import { VideoResidenceFeed } from "@/components/VideoResidenceFeed";
-import { useNova } from "@/context/NovaContext";
-import {
-  getActiveResidenceCount,
-  getActiveResidences,
-  playResidenceAvance,
-} from "@/data/residences";
-
-const LIST_AVATARS = [
-  { initials: "MR", tone: "bg-[#3d3428]" },
-  { initials: "AL", tone: "bg-[#2a3340]" },
-  { initials: "JS", tone: "bg-[#3a2f3a]" },
-  { initials: "CK", tone: "bg-[#2f3a32]" },
-  { initials: "DN", tone: "bg-[#403528]" },
-];
+import { residences } from "@/data/residences";
 
 export default function HomePage() {
-  const { membership } = useNova();
   const [menuOpen, setMenuOpen] = useState(false);
-  const activeCount = getActiveResidenceCount();
-  const activeResidences = getActiveResidences();
-  const featured = activeResidences[0];
-  const listNow = Math.min(
-    99,
-    activeResidences.reduce((sum, r) => sum + Math.round(r.waitlistCount * 0.08), 0) || 24,
-  );
+  const featured = residences[0];
 
   return (
-    <main className="overflow-x-hidden bg-ink">
-      {/* PRIMERA SECCIÓN — hero + social + residencias activas */}
-      <section className="bg-black text-white">
-        {/* Hero media */}
-        <div className="hero-viewport relative isolate flex flex-col overflow-hidden">
-          <div className="absolute inset-0">
+    <main className="overflow-x-hidden bg-white">
+      {/* PRIMERA SECCIÓN — light launch hero (mockup) */}
+      <section className="relative bg-white text-ink">
+        <header className="relative z-30 flex items-center justify-between px-5 pt-5 md:px-10 md:pt-7">
+          <Logo size="md" />
+          <button
+            type="button"
+            aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+            onClick={() => setMenuOpen((v) => !v)}
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-[#e8e2d8] bg-white text-ink shadow-sm"
+          >
+            {menuOpen ? <X size={16} /> : <Menu size={16} />}
+          </button>
+        </header>
+
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.nav
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="absolute top-[4.25rem] right-5 z-40 w-48 border border-[#e8e2d8] bg-white p-4 shadow-lg md:right-10"
+            >
+              <div className="flex flex-col gap-3 text-[11px] tracking-[0.22em] text-ink/70 uppercase">
+                <Link href="/#casas" onClick={() => setMenuOpen(false)}>
+                  Colección
+                </Link>
+                <Link href="/residences" onClick={() => setMenuOpen(false)}>
+                  Showroom
+                </Link>
+                <Link href="/private" onClick={() => setMenuOpen(false)}>
+                  Omar Private
+                </Link>
+              </div>
+            </motion.nav>
+          )}
+        </AnimatePresence>
+
+        {/* Copy block */}
+        <div className="relative z-10 px-5 pt-8 md:px-10 md:pt-10 lg:px-16">
+          <div className="mx-auto max-w-xl md:mx-0">
+            <p className="text-[11px] tracking-[0.35em] text-[#b8924a] uppercase">
+              Modern living. Reimagined.
+            </p>
+            <h1 className="mt-4 text-[clamp(2.4rem,9vw,4.75rem)] font-semibold leading-[0.95] tracking-[0.02em] text-ink uppercase">
+              El futuro
+              <br />
+              de vivir
+            </h1>
+            <p className="script mt-1 text-[clamp(1.85rem,5vw,2.75rem)] text-[#c4a574]">
+              Comienza aquí.
+            </p>
+            <p className="mt-4 max-w-sm text-[14px] leading-relaxed text-[#8a847a] md:text-[15px]">
+              Casas modernas diseñadas para una nueva forma de vivir en Indiana.
+            </p>
+
+            <Link
+              href="/private"
+              className="mt-7 inline-flex w-full max-w-sm items-center justify-center gap-2.5 rounded-md bg-ink px-6 py-3.5 text-[11px] font-medium tracking-[0.18em] text-[#e0c57a] uppercase transition hover:bg-ink/90 sm:w-auto"
+            >
+              Únete a la lista privada
+              <ArrowRight size={14} />
+            </Link>
+            <p className="mt-3 flex items-center gap-1.5 text-[9px] tracking-[0.2em] text-[#9a948c] uppercase">
+              <Lock size={10} />
+              Acceso exclusivo. Cupos limitados.
+            </p>
+          </div>
+        </div>
+
+        {/* Image + overlapping launch card */}
+        <div className="relative mt-8 md:mt-10">
+          <div className="relative mx-auto h-[42vh] min-h-[280px] max-h-[420px] w-full overflow-hidden md:h-[48vh] md:max-h-[520px]">
             <Image
-              src={featured?.image ?? "/images/monroe.jpg"}
-              alt={featured?.name ?? "Omar Corp residence"}
+              src={featured.image}
+              alt={featured.name}
               fill
               priority
-              className="object-cover object-[center_40%]"
+              className="object-cover object-[center_45%]"
               sizes="100vw"
             />
-          </div>
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.62)_0%,rgba(5,5,5,0.2)_32%,rgba(5,5,5,0.45)_62%,rgba(5,5,5,0.94)_100%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_40%,transparent_0%,rgba(0,0,0,0.5)_100%)]" />
-
-          <header className="absolute inset-x-0 top-0 z-30 flex items-center justify-between px-5 py-5 md:px-10 md:py-6">
-            <Logo light size="md" />
-            <div className="flex items-center gap-2.5">
-              <Link
-                href={membership.status === "approved" ? "/private/status" : "/private"}
-                className="inline-flex items-center gap-2 rounded-full border border-[#c4a574]/70 px-3.5 py-2 text-[9px] tracking-[0.22em] text-[#e0c57a] uppercase backdrop-blur-md"
-              >
-                <Lock size={11} strokeWidth={1.75} />
-                {membership.status === "approved" ? "Miembro" : "Private"}
-              </Link>
-              <button
-                type="button"
-                aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
-                onClick={() => setMenuOpen((v) => !v)}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 text-white backdrop-blur-md"
-              >
-                {menuOpen ? <X size={16} /> : <Menu size={16} />}
-              </button>
-            </div>
-          </header>
-
-          <AnimatePresence>
-            {menuOpen && (
-              <motion.nav
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="absolute top-[4.5rem] right-5 z-40 w-48 border border-white/15 bg-black/90 p-4 backdrop-blur-md md:right-10"
-              >
-                <div className="flex flex-col gap-3 text-[11px] tracking-[0.22em] text-white/80 uppercase">
-                  <Link href="/#casas" onClick={() => setMenuOpen(false)}>
-                    Colección
-                  </Link>
-                  <Link href="/residences" onClick={() => setMenuOpen(false)}>
-                    Showroom
-                  </Link>
-                  <Link href="/private" onClick={() => setMenuOpen(false)}>
-                    Omar Private
-                  </Link>
-                </div>
-              </motion.nav>
-            )}
-          </AnimatePresence>
-
-          {/* Upper stage: play + (desktop) progress — never over the CTAs */}
-          <div className="relative z-10 flex min-h-0 flex-1 flex-col px-5 pt-[4.75rem] md:px-10 lg:px-16">
-            <div className="relative flex flex-1 items-center justify-center">
-              <button
-                type="button"
-                onClick={() => playResidenceAvance(featured?.id)}
-                aria-label="Ver avance"
-                className="flex h-14 w-14 items-center justify-center rounded-full border border-white/60 bg-black/25 text-white backdrop-blur-[2px] transition hover:border-[#e0c57a] hover:bg-black/40 md:h-[4.5rem] md:w-[4.5rem]"
-              >
-                <Play size={20} fill="currentColor" className="ml-0.5 md:h-[22px] md:w-[22px]" />
-              </button>
-
-              {featured && (
-                <div className="absolute top-1/2 right-0 hidden w-32 -translate-y-1/2 md:block lg:w-36">
-                  <p className="text-[2.5rem] font-light leading-none tracking-tight text-[#e0c57a] tabular-nums lg:text-[2.75rem]">
-                    {featured.progress}%
-                  </p>
-                  <p className="mt-1.5 text-[9px] tracking-[0.28em] text-white/70 uppercase">
-                    Transformed
-                  </p>
-                  <div className="relative mt-3 h-[2px] bg-white/20">
-                    <div
-                      className="absolute inset-y-0 left-0 bg-[#e0c57a]"
-                      style={{ width: `${featured.progress}%` }}
-                    />
-                    <span
-                      className="absolute top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-white"
-                      style={{ left: `calc(${featured.progress}% - 4px)` }}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
           </div>
 
-          {/* Bottom copy — exclusive layer, no absolute overlays here */}
-          <div className="relative z-20 px-5 pb-7 md:px-10 md:pb-10 lg:px-16">
-            <div className="max-w-xl">
-              <p className="text-[11px] tracking-[0.28em] text-white/85 uppercase">
-                <span className="font-medium">01</span>
-                <span className="text-white/40">
-                  {" "}
-                  / {String(activeCount).padStart(2, "0")}
-                </span>
+          {/* Floating card */}
+          <div className="relative z-20 -mt-14 px-4 pb-2 md:-mt-16 md:px-10 lg:px-16">
+            <div className="mx-auto max-w-lg rounded-2xl border border-[#ece7df] bg-white p-4 shadow-[0_16px_48px_rgba(20,16,10,0.12)] md:max-w-xl md:p-5">
+              <p className="text-[10px] tracking-[0.32em] text-[#b8924a] uppercase">
+                Próximo lanzamiento
               </p>
 
-              <p className="mt-3 inline-flex items-center gap-2 text-[10px] tracking-[0.28em] text-[#e0c57a] uppercase">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#e0c57a]" />
-                Proyecto en transformación
-              </p>
-
-              <h1 className="mt-3 text-[clamp(1.7rem,6vw,3.75rem)] font-light leading-[1.05] tracking-[0.02em] text-white">
-                VE LA CASA ANTES
-                <br />
-                DE QUE SEA{" "}
-                <span className="text-[#e0c57a]">HOGAR.</span>
-              </h1>
-
-              <p className="mt-3 max-w-sm text-[13px] leading-relaxed text-white/75 md:mt-4 md:text-[15px]">
-                Sigue cada avance en tiempo real y sé el primero en elegir tu futura casa.
-              </p>
-
-              {/* Progress on mobile — in flow, not floating over the button */}
-              {featured && (
-                <div className="mt-5 md:hidden">
-                  <div className="flex items-end justify-between gap-4">
-                    <div>
-                      <p className="text-[2rem] font-light leading-none tracking-tight text-[#e0c57a] tabular-nums">
-                        {featured.progress}%
-                      </p>
-                      <p className="mt-1 text-[9px] tracking-[0.28em] text-white/55 uppercase">
-                        Transformed
-                      </p>
-                    </div>
-                    <div className="mb-2 min-w-0 flex-1">
-                      <div className="relative h-[2px] bg-white/20">
-                        <div
-                          className="absolute inset-y-0 left-0 bg-[#e0c57a]"
-                          style={{ width: `${featured.progress}%` }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="mt-5 flex flex-col gap-2.5 sm:mt-6 sm:flex-row sm:items-center sm:gap-3">
-                <Link
-                  href="/#casas"
-                  className="group inline-flex w-full items-center justify-center gap-2.5 rounded-md bg-[#c4a574] px-6 py-3.5 text-[11px] font-semibold tracking-[0.2em] text-ink uppercase transition hover:bg-[#e0c57a] sm:w-auto"
-                >
-                  Entrar a la colección
-                  <ArrowRight size={14} className="transition group-hover:translate-x-1" />
-                </Link>
-                <Link
-                  href="/private"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-[#c4a574]/55 px-5 py-3.5 text-[10px] tracking-[0.2em] text-[#e0c57a] uppercase transition hover:border-[#e0c57a] hover:bg-white/5 sm:w-auto"
-                >
-                  <Lock size={12} />
-                  Lista privada
-                </Link>
-              </div>
-
-              <p className="mt-4 inline-flex items-center gap-2 text-[9px] tracking-[0.22em] text-white/70 uppercase">
-                <span className="live-dot !bg-emerald-400" />
-                Actualizaciones en vivo
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Social proof capsule */}
-        <div className="relative z-10 px-4 pt-5 md:px-10 md:pt-6 lg:px-16">
-          <div className="mx-auto flex max-w-5xl flex-col gap-3 rounded-2xl border border-white/10 bg-[#121212] px-4 py-3.5 shadow-[0_12px_40px_rgba(0,0,0,0.45)] sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5">
-            <p className="inline-flex items-center gap-2 text-[10px] tracking-[0.18em] text-[#e0c57a] uppercase">
-              <Users size={14} strokeWidth={1.75} />
-              {listNow} en la lista ahora
-            </p>
-            <div className="flex items-center gap-2">
-              <div className="flex -space-x-2">
-                {LIST_AVATARS.map((a) => (
-                  <span
-                    key={a.initials}
-                    className={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#121212] text-[9px] font-medium tracking-wide text-white/80 ${a.tone}`}
-                  >
-                    {a.initials}
-                  </span>
-                ))}
-              </div>
-              <span className="text-[11px] text-white/45">+{Math.max(listNow - 5, 19)}</span>
-            </div>
-            <p className="inline-flex items-center gap-2 text-[10px] tracking-[0.12em] text-white/65 uppercase sm:tracking-[0.16em]">
-              <span className="live-dot !bg-emerald-400" />
-              María S. se unió hace 2 min
-            </p>
-          </div>
-        </div>
-
-        {/* Residencias activas */}
-        <div className="px-5 pt-10 pb-8 md:px-10 md:pt-14 md:pb-10 lg:px-16">
-          <div className="mx-auto max-w-5xl">
-            <div className="flex items-end justify-between gap-4">
-              <p className="text-[11px] tracking-[0.35em] text-[#c4a574] uppercase">
-                Residencias activas
-              </p>
-              <Link
-                href="/#casas"
-                className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.22em] text-[#e0c57a] uppercase transition hover:text-white"
-              >
-                Ver todas
-                <ArrowRight size={12} />
-              </Link>
-            </div>
-
-            <div className="mt-6 grid gap-4 sm:grid-cols-3">
-              {activeResidences.map((r, i) => (
-                <button
-                  key={r.id}
-                  type="button"
-                  onClick={() => playResidenceAvance(r.id)}
-                  className="group text-left"
-                >
-                  <div className="relative aspect-[5/4] overflow-hidden rounded-lg">
-                    <Image
-                      src={r.image}
-                      alt={r.name}
-                      fill
-                      className="object-cover transition duration-500 group-hover:scale-[1.03]"
-                      sizes="(max-width: 640px) 100vw, 33vw"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                    <span className="absolute top-3 left-3 rounded-full bg-[#c4a574] px-2.5 py-1 text-[9px] font-semibold tracking-[0.16em] text-ink">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                  </div>
-                  <p className="mt-3 text-[13px] font-medium tracking-[0.16em] text-white uppercase">
-                    {r.name}
-                  </p>
-                  <p className="mt-1.5 text-[10px] tracking-[0.18em] text-[#e0c57a] uppercase tabular-nums">
-                    {r.progress}% transformed
-                  </p>
-                  <div className="mt-2 h-px overflow-hidden bg-white/15">
-                    <div
-                      className="h-full bg-[#c4a574]"
-                      style={{ width: `${r.progress}%` }}
-                    />
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            {/* Feature strip */}
-            <div className="mt-12 grid gap-6 border-t border-white/10 pt-8 sm:grid-cols-3 sm:gap-4">
-              {[
-                {
-                  icon: Camera,
-                  label: "Actualizaciones en tiempo real",
-                },
-                {
-                  icon: Crown,
-                  label: "Acceso prioritario antes que todos",
-                },
-                {
-                  icon: Lock,
-                  label: "Solo miembros acceso exclusivo",
-                },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="flex items-start gap-3 sm:flex-col sm:items-center sm:text-center"
-                >
-                  <item.icon
-                    size={18}
-                    strokeWidth={1.5}
-                    className="mt-0.5 shrink-0 text-[#c4a574] sm:mt-0"
+              <div className="mt-3 flex gap-3">
+                <div className="relative h-[72px] w-[88px] shrink-0 overflow-hidden rounded-lg md:h-20 md:w-24">
+                  <Image
+                    src={featured.image}
+                    alt=""
+                    fill
+                    className="object-cover"
+                    sizes="96px"
                   />
-                  <p className="text-[9px] leading-relaxed tracking-[0.2em] text-[#c4a574]/90 uppercase md:text-[10px]">
-                    {item.label}
-                  </p>
                 </div>
-              ))}
+                <div className="min-w-0 flex-1">
+                  <p className="text-[13px] font-semibold tracking-[0.14em] text-ink uppercase">
+                    {featured.code}
+                  </p>
+                  <p className="mt-0.5 text-[12px] text-[#8a847a]">{featured.location}</p>
+                  <div className="mt-2.5 grid grid-cols-4 gap-1 border-t border-[#f0ebe3] pt-2.5">
+                    <div className="flex flex-col items-start gap-0.5">
+                      <BedDouble size={12} className="text-[#b8924a]" strokeWidth={1.5} />
+                      <span className="text-[8px] tracking-[0.08em] text-[#6a655e] uppercase">
+                        {featured.beds} Hab.
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-start gap-0.5">
+                      <Bath size={12} className="text-[#b8924a]" strokeWidth={1.5} />
+                      <span className="text-[8px] tracking-[0.08em] text-[#6a655e] uppercase">
+                        {featured.baths} Baños
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-start gap-0.5">
+                      <Ruler size={12} className="text-[#b8924a]" strokeWidth={1.5} />
+                      <span className="text-[8px] tracking-[0.08em] text-[#6a655e] uppercase">
+                        {featured.sqft.toLocaleString()} Sq Ft
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-start gap-0.5">
+                      <Car size={12} className="text-[#b8924a]" strokeWidth={1.5} />
+                      <span className="text-[8px] tracking-[0.08em] text-[#6a655e] uppercase">
+                        {featured.garage} Garage
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-col gap-3 border-t border-[#f0ebe3] pt-3 sm:flex-row sm:items-center sm:justify-between">
+                <p className="inline-flex items-center gap-1.5 text-[9px] tracking-[0.18em] text-[#b8924a] uppercase">
+                  <CalendarDays size={13} strokeWidth={1.75} />
+                  Coming Fall 2026
+                </p>
+                <Countdown
+                  targetDate={featured.completionDate}
+                  variant="light"
+                  size="sm"
+                />
+              </div>
             </div>
+          </div>
+
+          <div className="flex flex-col items-center gap-1 pb-6 pt-5 text-[#b0aaa0]">
+            <ChevronDown size={16} className="animate-bounce" />
+            <span className="text-[9px] tracking-[0.28em] uppercase">
+              Desliza para descubrir
+            </span>
           </div>
         </div>
       </section>
 
-      {/* Video houses — the magic + unlock */}
+      {/* Colección en vivo */}
       <VideoResidenceFeed />
 
-      {/* Simple 3 steps — editorial */}
+      {/* Proceso */}
       <section className="relative bg-[#faf8f4] px-5 py-24 md:px-12 md:py-32 lg:px-16">
         <div className="mx-auto max-w-[1200px]">
           <motion.div
@@ -384,50 +237,6 @@ export default function HomePage() {
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Cinematic teaser */}
-      <section className="relative min-h-[85vh] overflow-hidden">
-        <Image
-          src="/images/harrison.jpg"
-          alt=""
-          fill
-          className="object-cover"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-ink/50" />
-        <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/75 to-transparent" />
-
-        <div className="relative z-10 flex min-h-[85vh] flex-col justify-center px-5 py-24 md:px-12 lg:px-16">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="max-w-xl"
-          >
-            <p className="inline-flex items-center gap-2 text-[11px] tracking-[0.35em] text-gold-soft uppercase">
-              <span className="live-dot" />
-              Showroom en vivo
-            </p>
-            <h2 className="mt-5 text-4xl font-light tracking-[0.05em] text-white md:text-6xl">
-              CADA CASA
-              <br />
-              ES UN LANZAMIENTO.
-            </h2>
-            <p className="mt-5 max-w-md text-base leading-relaxed text-white/60">
-              No es Zillow. No es un catálogo. Es Omar Corp: residencias activas, contador real y
-              lista de espera para quien quiere entrar primero.
-            </p>
-            <Link
-              href="/#casas"
-              className="group mt-10 inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-[12px] tracking-[0.22em] text-ink uppercase transition hover:bg-gold-soft"
-            >
-              Quiero entrar
-              <ArrowRight size={16} className="transition group-hover:translate-x-1" />
-            </Link>
-          </motion.div>
         </div>
       </section>
 
