@@ -6,11 +6,9 @@ import { ArrowRight, ChevronDown, Lock, Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { BannerLiveTicks } from "@/components/BannerLiveTicks";
-import { LaunchCard } from "@/components/LaunchCard";
+import { FeaturedLaunch } from "@/components/FeaturedLaunch";
 import { Logo } from "@/components/Logo";
-import { OmarAnnouncementBand } from "@/components/OmarAnnouncementBand";
 import { OmarCredibility } from "@/components/OmarCredibility";
-import { ProgressBar } from "@/components/ProgressBar";
 import { ResidencesCatalog } from "@/components/ResidencesCatalog";
 import { VideoResidenceFeed } from "@/components/VideoResidenceFeed";
 import { residences } from "@/data/residences";
@@ -27,7 +25,7 @@ export default function HomePage() {
   const featured = residences[0];
 
   return (
-    <main className="overflow-x-hidden bg-[#f7f4ef] text-ink">
+    <main className="overflow-x-hidden bg-[#f6f5f3] text-ink">
       {/* 1 — HERO full viewport (segunda sección solo tras scroll) */}
       <section className="relative h-[100dvh] min-h-[100dvh] overflow-hidden bg-[#1a1814]">
         <motion.div
@@ -152,91 +150,29 @@ export default function HomePage() {
         </a>
       </section>
 
-      {/* 2 — PRIMERA RESIDENCIA */}
-      <section id="lanzamiento" className="relative bg-[#f7f4ef] pt-10 md:pt-14">
-        <div className="mx-auto max-w-[1180px] px-5 md:px-12 lg:px-16">
-          <p className="mx-auto mb-8 max-w-xl text-center text-[15px] leading-relaxed text-[#6f6a63]">
-            Omar Corp documenta cada transformación. Tú eliges la residencia, sigues el avance y
-            entras a su lista — antes del mercado.
-          </p>
+      {/* 2 — Featured: photo + booking panel side by side */}
+      <FeaturedLaunch residence={featured} />
 
-          <div className="mb-4 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-[11px] font-medium tracking-[0.08em] text-[#8a6b2e]">
-                Residencia destacada
-              </p>
-              <h2 className="mt-1 text-[1.35rem] font-semibold tracking-tight text-ink md:text-[1.75rem]">
-                {featured.name}
-              </h2>
-              <p className="mt-1 text-[14px] text-[#6f6a63]">
-                {featured.location} · {featured.code}
-              </p>
-            </div>
-          </div>
-
-          <div className="relative overflow-hidden rounded-2xl bg-[#1a1814] shadow-[0_12px_40px_rgba(20,16,10,0.12)]">
-            <div className="relative aspect-[1024/682] w-full">
-              <Image
-                src="/images/monroe-featured.jpg"
-                alt={featured.name}
-                fill
-                className="object-cover object-center"
-                sizes="(max-width: 1200px) 100vw, 1180px"
-                priority
-              />
-              <div className="absolute top-4 right-4 z-20 w-[140px] md:top-5 md:right-5 md:w-[150px]">
-                <div className="rounded-xl border border-white/15 bg-black/45 px-2.5 py-1.5 backdrop-blur-md">
-                  <ProgressBar
-                    value={featured.progress}
-                    tone="dark"
-                    size="sm"
-                    showLabel
-                    label="Progreso"
-                    live
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6">
-          <OmarAnnouncementBand />
-        </div>
-
-        <div className="relative z-20 bg-[#f7f4ef] px-5 pt-6 pb-12 md:px-12 md:pt-8 md:pb-16 lg:px-16">
-          <LaunchCard residence={featured} />
-        </div>
-      </section>
-
-      {/* Soft divider */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-[#d9d0c3] to-transparent" />
-
-      {/* 3 — Colección en vivo */}
-      <VideoResidenceFeed />
-
-      {/* Soft divider into catalog */}
-      <div className="bg-[#f7f4ef] px-5 pt-2 md:px-12 lg:px-16">
-        <div className="mx-auto h-px max-w-[1100px] bg-[#e4dfd6]" />
-      </div>
-
-      {/* 3 — Catálogo */}
+      {/* 3 — Residencias en fila (Airbnb rail, no stack) */}
       <ResidencesCatalog />
 
-      {/* 4 — Credibilidad */}
+      {/* 4 — Colección en vivo */}
+      <VideoResidenceFeed />
+
+      {/* 5 — Credibilidad */}
       <OmarCredibility />
 
-      {/* 5 — Proceso */}
-      <section className="bg-[#f7f4ef] px-5 py-20 md:px-12 md:py-24 lg:px-16">
+      {/* 6 — Proceso */}
+      <section className="bg-[#f6f5f3] px-5 py-16 md:px-12 md:py-20 lg:px-16">
         <div className="mx-auto max-w-[1100px]">
           <motion.div {...fadeUp} className="max-w-xl">
-            <p className="text-[11px] font-medium tracking-[0.08em] text-[#8a6b2e]">Cómo funciona</p>
-            <h2 className="mt-2 text-[1.75rem] font-semibold leading-tight tracking-tight text-ink md:text-[2.25rem]">
+            <p className="text-[12px] font-medium text-[#8a6b2e]">Cómo funciona</p>
+            <h2 className="mt-1.5 text-[1.75rem] font-semibold leading-tight tracking-tight text-ink md:text-[2.15rem]">
               Tres pasos. Sin ruido.
             </h2>
           </motion.div>
 
-          <div className="mt-10 grid gap-4 md:mt-12 md:grid-cols-3 md:gap-5">
+          <div className="mt-8 grid gap-4 md:mt-10 md:grid-cols-3 md:gap-5">
             {[
               {
                 step: "01",
@@ -260,11 +196,11 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.5 }}
-                className="rounded-2xl border border-[#ebe4da] bg-white p-6 shadow-[0_6px_24px_rgba(20,16,10,0.04)] md:p-7"
+                className="rounded-[1.25rem] border border-[#ebe4da] bg-white p-6 shadow-[0_8px_24px_rgba(20,16,10,0.04)] md:p-7"
               >
                 <p className="text-[12px] font-medium text-[#8a6b2e]">{item.step}</p>
                 <h3 className="mt-3 text-xl font-semibold tracking-tight text-ink">{item.title}</h3>
-                <p className="mt-2.5 text-[14px] leading-relaxed text-[#6f6a63]">{item.copy}</p>
+                <p className="mt-2.5 text-[14px] leading-relaxed text-[#6a6660]">{item.copy}</p>
               </motion.div>
             ))}
           </div>
@@ -285,7 +221,7 @@ export default function HomePage() {
             </p>
             <Link
               href="/private"
-              className="mt-8 inline-flex items-center gap-2 bg-[#e0c57a] px-7 py-3.5 text-[11px] font-semibold tracking-[0.2em] text-ink uppercase transition hover:bg-white"
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#e0c57a] px-7 py-3.5 text-[14px] font-semibold text-ink transition hover:bg-white"
             >
               Solicitar membresía
               <ArrowRight size={14} />

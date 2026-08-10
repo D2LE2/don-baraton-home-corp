@@ -320,7 +320,7 @@ export function VideoResidenceFeed() {
         onClose={() => setWaitlistOpen(false)}
       />
 
-      <div className="h-12 bg-gradient-to-b from-[#141210] to-[#f7f4ef] md:h-14" />
+      <div className="h-12 bg-gradient-to-b from-[#141210] to-[#f6f5f3] md:h-14" />
     </section>
   );
 }

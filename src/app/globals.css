@@ -114,6 +114,39 @@ body {
   }
 }
 
+/* Catalog Airbnb rail — cards side by side with peek */
+.catalog-peek-scroller {
+  padding-left: 1.25rem;
+  padding-right: 18vw;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.catalog-peek-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.catalog-peek-card {
+  width: min(78vw, 340px);
+}
+
+@media (min-width: 768px) {
+  .catalog-peek-scroller {
+    padding-left: max(2.5rem, calc((100% - 1200px) / 2 + 2.5rem));
+    padding-right: max(12vw, calc((100% - 1200px) / 2 + 8rem));
+  }
+
+  .catalog-peek-card {
+    width: min(42vw, 360px);
+  }
+}
+
+@media (min-width: 1100px) {
+  .catalog-peek-card {
+    width: 340px;
+  }
+}
+
 ::selection {
   background: color-mix(in srgb, var(--gold) 40%, white);
   color: var(--ink);
