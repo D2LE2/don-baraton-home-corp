@@ -26,6 +26,7 @@ export type PreMarketHome = {
   address: string;
   city: string;
   state: string;
+  zip: string;
   neighborhood: string;
   category: HomeCategory;
   status: PreMarketStatus;
@@ -58,6 +59,7 @@ export const homes: PreMarketHome[] = [
     address: "1024 North St.",
     city: "Logansport",
     state: "IN",
+    zip: "46947",
     neighborhood: "Downtown Logansport",
     category: "renovation",
     status: "UNDER RENOVATION",
@@ -131,6 +133,7 @@ export const homes: PreMarketHome[] = [
     address: "418 Harrison Ave.",
     city: "Lafayette",
     state: "IN",
+    zip: "47901",
     neighborhood: "Riverside",
     category: "new_construction",
     status: "NEW CONSTRUCTION",
@@ -195,6 +198,7 @@ export const homes: PreMarketHome[] = [
     address: "890 Ellington Rd.",
     city: "Kokomo",
     state: "IN",
+    zip: "46901",
     neighborhood: "North Kokomo",
     category: "coming_soon",
     status: "COMING SOON",

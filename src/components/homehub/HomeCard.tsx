@@ -2,10 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart } from "lucide-react";
-import { formatPriceRange, type PreMarketHome } from "@/data/homes";
+import { Bath, BedDouble, Heart, Ruler } from "lucide-react";
+import type { PreMarketHome } from "@/data/homes";
 
 const AVATARS = ["S", "M", "A", "C", "L"];
+
+function statusLabel(home: PreMarketHome) {
+  if (home.category === "renovation") return "Under Renovation";
+  if (home.category === "new_construction") return "New Construction";
+  return "Coming Soon";
+}
 
 type HomeCardProps = {
   home: PreMarketHome;
@@ -14,12 +20,13 @@ type HomeCardProps = {
   priority?: boolean;
 };
 
+/** Airbnb-clean listing card matching HomeHub mock */
 export function HomeCard({ home, saved, onToggleSave, priority }: HomeCardProps) {
   return (
-    <article className="group">
+    <article className="group overflow-hidden rounded-[1.25rem] border border-[#efefef] bg-white shadow-[0_8px_28px_rgba(0,0,0,0.05)]">
       <Link
         href={`/homes/${home.id}`}
-        className="relative block aspect-[4/3] overflow-hidden rounded-2xl bg-[#eee]"
+        className="relative block aspect-[4/3] overflow-hidden bg-[#eee]"
       >
         <Image
           src={home.image}
@@ -29,8 +36,8 @@ export function HomeCard({ home, saved, onToggleSave, priority }: HomeCardProps)
           className="object-cover transition duration-500 group-hover:scale-[1.03]"
           sizes="(max-width: 768px) 100vw, 33vw"
         />
-        <div className="absolute top-3 left-3 rounded-full bg-white px-2.5 py-1 text-[12px] font-semibold text-[#111] shadow-sm">
-          {home.progress}%
+        <div className="absolute top-3 left-3 max-w-[78%] rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-[#111] shadow-sm">
+          {home.progress}% {statusLabel(home)}
         </div>
         <button
           type="button"
@@ -39,7 +46,7 @@ export function HomeCard({ home, saved, onToggleSave, priority }: HomeCardProps)
             e.preventDefault();
             onToggleSave?.();
           }}
-          className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-[#111] shadow-sm transition hover:scale-105"
+          className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#111] shadow-sm transition hover:scale-105"
         >
           <Heart
             size={15}
@@ -49,20 +56,31 @@ export function HomeCard({ home, saved, onToggleSave, priority }: HomeCardProps)
         </button>
       </Link>
 
-      <div className="mt-3 space-y-1">
-        <div className="flex items-start justify-between gap-2">
-          <Link href={`/homes/${home.id}`} className="min-w-0">
-            <h3 className="truncate text-[15px] font-semibold tracking-tight text-[#111]">
-              {home.address}
-            </h3>
-            <p className="mt-0.5 text-[13px] text-[#6a6a6a]">
-              {home.city}, {home.state} · {home.status.replace(/_/g, " ")}
-            </p>
-          </Link>
-        </div>
-        <p className="text-[13px] text-[#6a6a6a]">
-          Est. {home.expectedCompletion} · {formatPriceRange(home.priceMin, home.priceMax)}
+      <div className="space-y-2 px-3.5 pt-3.5 pb-4">
+        <Link href={`/homes/${home.id}`} className="block min-w-0">
+          <h3 className="truncate text-[15px] font-semibold tracking-tight text-[#111]">
+            {home.address}
+          </h3>
+          <p className="mt-0.5 text-[13px] text-[#6a6a6a]">
+            {home.city}, {home.state} {home.zip}
+          </p>
+        </Link>
+
+        <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-[#6a6a6a]">
+          <span className="inline-flex items-center gap-1">
+            <BedDouble size={13} className="text-[#8a8a8a]" />
+            {home.beds} Beds
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <Bath size={13} className="text-[#8a8a8a]" />
+            {home.baths} Baths
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <Ruler size={13} className="text-[#8a8a8a]" />
+            {home.sqft.toLocaleString()} sqft
+          </span>
         </p>
+
         <div className="flex items-center gap-2 pt-1">
           <div className="flex -space-x-1.5">
             {AVATARS.slice(0, 3).map((a) => (
