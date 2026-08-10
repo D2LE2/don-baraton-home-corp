@@ -3,16 +3,31 @@
 import { useEffect, useState } from "react";
 
 /**
- * Measure once and lock. Mobile browsers fire resize when the URL bar
- * shows/hides — updating height mid-scroll jumps the page.
- * Only remeasure on real width / orientation changes.
+ * Large viewport in px (≈ 100lvh). Must NOT use live innerHeight —
+ * with the URL bar visible that value is too short and the next
+ * section peeks; updating it later when the bar hides causes a jump.
  */
-export function measureAppVh() {
+export function measureLargeViewportHeight() {
   if (typeof window === "undefined") return 0;
-  return Math.max(
-    window.innerHeight || 0,
-    document.documentElement?.clientHeight || 0,
-  );
+
+  const probe = document.createElement("div");
+  probe.setAttribute("aria-hidden", "true");
+  probe.style.cssText =
+    "position:fixed;left:0;top:0;height:100lvh;width:0;visibility:hidden;pointer-events:none;";
+  document.documentElement.appendChild(probe);
+  let h = Math.round(probe.offsetHeight || 0);
+  probe.remove();
+
+  if (!h) {
+    h = Math.max(
+      window.innerHeight || 0,
+      document.documentElement?.clientHeight || 0,
+      window.screen?.height || 0,
+    );
+  }
+
+  // 1px buffer kills subpixel peeks on some Android browsers
+  return h > 0 ? h + 1 : 0;
 }
 
 export function useViewportHeight() {
@@ -28,10 +43,8 @@ export function useViewportHeight() {
       if (!force && locked > 0 && !widthChanged) return;
 
       lastWidth = w;
-      const h = measureAppVh();
-      if (!force && locked > 0 && Math.abs(h - locked) < 24 && !widthChanged) {
-        return;
-      }
+      const h = measureLargeViewportHeight();
+      if (h <= 0) return;
 
       locked = h;
       setHeight(h);
@@ -42,7 +55,7 @@ export function useViewportHeight() {
 
     const onResize = () => apply(false);
     const onOrientation = () => {
-      window.setTimeout(() => apply(true), 200);
+      window.setTimeout(() => apply(true), 250);
     };
 
     window.addEventListener("resize", onResize);

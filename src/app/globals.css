@@ -51,12 +51,16 @@ body {
 }
 
 /*
- * Hero height is locked via --app-vh (set once on load).
- * Do not use dvh/svh here — they change when browser chrome toggles.
+ * Hero fills the LARGE viewport (100lvh), locked once as --app-vh.
+ * Using live innerHeight/dvh is too short with browser chrome → peek.
+ * Updating height when chrome hides → scroll jump. Never do either.
  */
 .hero-viewport {
+  height: 100lvh;
   height: var(--app-vh, 100lvh);
+  min-height: 100lvh;
   min-height: var(--app-vh, 100lvh);
+  max-height: 100lvh;
   max-height: var(--app-vh, 100lvh);
 }
 

@@ -44,7 +44,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {/* Set --app-vh before paint so the hero never undersizes on mobile */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{if(document.documentElement.style.getPropertyValue('--app-vh'))return;var h=Math.max(window.innerHeight||0,document.documentElement.clientHeight||0);if(h)document.documentElement.style.setProperty('--app-vh',h+'px');}catch(e){}})();`,
+            __html: `(function(){try{var d=document.documentElement;if(d.style.getPropertyValue('--app-vh'))return;var el=document.createElement('div');el.style.cssText='position:fixed;left:0;top:0;height:100lvh;width:0;visibility:hidden;pointer-events:none';d.appendChild(el);var h=Math.round(el.offsetHeight||0);el.remove();if(!h)h=Math.max(window.innerHeight||0,d.clientHeight||0,screen.height||0);if(h)d.style.setProperty('--app-vh',(h+1)+'px');}catch(e){}})();`,
           }}
         />
       </head>
