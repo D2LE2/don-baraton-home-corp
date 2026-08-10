@@ -10,6 +10,7 @@ import { Logo } from "@/components/Logo";
 import { WaitlistJoin } from "@/components/WaitlistJoin";
 import { useNova } from "@/context/NovaContext";
 import { residences, type Residence } from "@/data/residences";
+import { formatUsd, savingsPercent } from "@/lib/pricing";
 
 const statusStyles: Record<Residence["status"], string> = {
   AVAILABLE: "border-gold-soft/50 bg-gold/20 text-gold-soft",
@@ -103,6 +104,20 @@ function ResidencePanel({
                 {residence.beds} BED · {residence.baths} BATH ·{" "}
                 {residence.sqft.toLocaleString()} SQ FT
               </p>
+
+              <div className="mt-5 inline-flex flex-col rounded-2xl border border-gold-soft/30 bg-black/40 px-4 py-3 backdrop-blur-md">
+                <p className="text-[10px] tracking-[0.24em] text-gold-soft uppercase">
+                  Precio de preventa
+                </p>
+                <p className="mt-1 display text-2xl text-white md:text-3xl">
+                  Desde {formatUsd(residence.priceFrom)}
+                </p>
+                <p className="mt-1 text-xs text-white/60">
+                  Mercado ~{formatUsd(residence.marketValue)} · ahorras{" "}
+                  {savingsPercent(residence.priceFrom, residence.marketValue)}% ·{" "}
+                  {residence.priceHook}
+                </p>
+              </div>
 
               <div className="mt-6 rounded-3xl border border-white/15 bg-black/35 px-4 py-5 backdrop-blur-md md:px-6">
                 <Countdown

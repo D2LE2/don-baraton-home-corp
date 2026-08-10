@@ -4,6 +4,7 @@ import { Lock, Sparkles, X } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useNova } from "@/context/NovaContext";
 import type { Residence } from "@/data/residences";
+import { formatUsd, savingsPercent } from "@/lib/pricing";
 
 export function UnlockModal({
   residence,
@@ -57,6 +58,18 @@ export function UnlockModal({
           <p className="text-[10px] tracking-[0.3em] text-gold-soft uppercase">Desbloquear</p>
           <h3 className="mt-2 text-2xl font-light tracking-wide">{residence.name}</h3>
           <p className="mt-2 text-sm text-white/55">{residence.teaser}</p>
+          <div className="mt-5 rounded-2xl border border-gold-soft/25 bg-white/5 px-4 py-3">
+            <p className="text-[10px] tracking-[0.22em] text-gold-soft uppercase">
+              Precio de preventa
+            </p>
+            <p className="mt-1 display text-2xl text-white">
+              Desde {formatUsd(residence.priceFrom)}
+            </p>
+            <p className="mt-1 text-xs text-white/55">
+              Mercado ~{formatUsd(residence.marketValue)} · ahorras{" "}
+              {savingsPercent(residence.priceFrom, residence.marketValue)}% · {residence.priceHook}
+            </p>
+          </div>
         </div>
 
         <div className="px-6 py-6">
@@ -65,7 +78,8 @@ export function UnlockModal({
               <Sparkles className="mx-auto text-gold" size={28} />
               <p className="mt-4 text-lg font-light text-ink">Propiedad desbloqueada</p>
               <p className="mt-2 text-sm text-muted">
-                Ya puedes ver el Build Story, el progreso completo y quedar en la lista de espera.
+                Ya puedes ver el Build Story, el progreso completo, el desglose de precio y quedar en
+                la lista de espera.
               </p>
               <button
                 type="button"
@@ -81,8 +95,8 @@ export function UnlockModal({
           ) : (
             <form onSubmit={onSubmit} className="space-y-4">
               <p className="text-sm leading-relaxed text-muted">
-                Deja tus datos para abrir el acceso completo a esta residencia — y entrar a la lista
-                de espera.
+                Deja tus datos para ver el precio completo, condiciones y abrir el Build Story —
+                además entras a la lista de espera.
               </p>
               <label className="block">
                 <span className="text-[10px] tracking-[0.2em] text-muted uppercase">Nombre</span>

@@ -13,6 +13,7 @@ import { UnlockModal } from "@/components/UnlockModal";
 import { useNova } from "@/context/NovaContext";
 import { residences, type Residence } from "@/data/residences";
 import { useLiveSocialProof } from "@/hooks/useLiveSocialProof";
+import { formatUsd, savingsAmount, savingsPercent } from "@/lib/pricing";
 
 const SLIDE_MS = 8000;
 
@@ -143,6 +144,46 @@ function VideoSlide({
             )}
           </AnimatePresence>
 
+          {/* Price curiosity */}
+          <div className="mt-5 overflow-hidden rounded-2xl border border-gold-soft/25 bg-gradient-to-br from-gold-soft/15 via-black/40 to-black/20 p-4 md:p-5">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="text-[10px] tracking-[0.28em] text-gold-soft uppercase">
+                  Precio de preventa
+                </p>
+                <p className="mt-1 flex items-baseline gap-2">
+                  <span className="text-sm text-white/55">Desde</span>
+                  <span className="display text-3xl font-light text-white md:text-4xl">
+                    {formatUsd(residence.priceFrom)}
+                  </span>
+                </p>
+                <p className="mt-2 text-sm text-white/70">{residence.priceHook}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] tracking-[0.2em] text-white/45 uppercase">Mercado</p>
+                <p className="mt-1 text-lg text-white/40 line-through">
+                  {formatUsd(residence.marketValue)}
+                </p>
+                <p className="mt-1 text-[11px] font-medium tracking-[0.12em] text-emerald-300 uppercase">
+                  Ahorras ~{formatUsd(savingsAmount(residence.priceFrom, residence.marketValue), true)}
+                  <span className="text-white/45"> · {savingsPercent(residence.priceFrom, residence.marketValue)}%</span>
+                </p>
+              </div>
+            </div>
+            {!unlocked && (
+              <p className="mt-3 border-t border-white/10 pt-3 text-[11px] text-white/60">
+                El desglose completo y condiciones están bloqueados.{" "}
+                <button
+                  type="button"
+                  onClick={onOpenUnlock}
+                  className="text-gold-soft underline-offset-2 hover:underline"
+                >
+                  Despierta tu curiosidad →
+                </button>
+              </p>
+            )}
+          </div>
+
           {/* Visual construction progress */}
           <div className="mt-6">
             <div className="mb-2 flex items-end justify-between gap-3">
@@ -180,8 +221,8 @@ function VideoSlide({
                 className="group inline-flex items-center gap-3 rounded-full bg-gold-soft px-7 py-3.5 text-[11px] font-medium tracking-[0.22em] text-ink uppercase shadow-[0_0_32px_rgba(224,197,122,0.28)] transition hover:bg-white"
               >
                 <Lock size={14} />
-                Me interesa
-                <span className="text-ink/60 transition group-hover:text-ink">· ver más</span>
+                Ver precio completo
+                <span className="text-ink/60 transition group-hover:text-ink">· desbloquear</span>
               </button>
             ) : (
               <Link
@@ -194,7 +235,7 @@ function VideoSlide({
             <p className="mt-3 text-[11px] tracking-[0.12em] text-white/70">
               {unlocked
                 ? "Ya desbloqueaste esta residencia"
-                : `${waitlistLive} personas ya están en la lista. Si te enamoras, toca.`}
+                : `Desde ${formatUsd(residence.priceFrom, true)} · ${waitlistLive} en lista. El precio sube con la obra.`}
             </p>
           </div>
         </motion.div>
@@ -431,7 +472,7 @@ export function VideoResidenceFeed() {
                     {r.name}
                   </p>
                   <p className="mt-0.5 truncate text-[10px] text-white/45">
-                    {r.progress}% obra · {r.waitlistCount}+ lista
+                    Desde {formatUsd(r.priceFrom, true)} · {r.progress}% obra
                   </p>
                 </div>
                 {active && (

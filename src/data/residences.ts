@@ -35,6 +35,12 @@ export type Residence = {
   followers: number;
   waitlistCount: number;
   waitlistLimited: boolean;
+  /** Launch / pre-sale starting price in USD */
+  priceFrom: number;
+  /** Estimated finished market value in USD */
+  marketValue: number;
+  /** Curiosity line under the price */
+  priceHook: string;
   tagline: string;
   stages: BuildStage[];
   latestUpdate?: {
@@ -64,6 +70,9 @@ export const residences: Residence[] = [
     followers: 42,
     waitlistCount: 128,
     waitlistLimited: true,
+    priceFrom: 312000,
+    marketValue: 389000,
+    priceHook: "Precio de preventa · sube con cada etapa",
     tagline: "Modern living, reimagined for Indiana.",
     latestUpdate: {
       title: "The Monroe just changed.",
@@ -157,6 +166,9 @@ export const residences: Residence[] = [
     followers: 67,
     waitlistCount: 94,
     waitlistLimited: true,
+    priceFrom: 428000,
+    marketValue: 515000,
+    priceHook: "Entrada temprana · antes del alza de obra",
     tagline: "Spacious modern family living in Lafayette.",
     latestUpdate: {
       title: "The Harrison is rising.",
@@ -250,6 +262,9 @@ export const residences: Residence[] = [
     followers: 18,
     waitlistCount: 31,
     waitlistLimited: false,
+    priceFrom: 274000,
+    marketValue: 340000,
+    priceHook: "El precio más bajo del tour · solo ahora",
     tagline: "Construction begins soon — follow early.",
     stages: [
       {

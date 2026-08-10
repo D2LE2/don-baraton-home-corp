@@ -12,6 +12,7 @@ import { ResidenceWaitlistBanner } from "@/components/ResidenceWaitlistBanner";
 import { UnlockModal } from "@/components/UnlockModal";
 import { useNova } from "@/context/NovaContext";
 import type { Residence } from "@/data/residences";
+import { formatUsd, savingsPercent } from "@/lib/pricing";
 
 export function ResidenceDetailClient({ residence }: { residence: Residence }) {
   const { ready, isUnlocked } = useNova();
@@ -59,6 +60,18 @@ export function ResidenceDetailClient({ residence }: { residence: Residence }) {
           <p className="mt-4 text-sm tracking-[0.12em] text-white/80 uppercase">
             {residence.progress}% Built · Expected {residence.expected}
           </p>
+          <div className="mt-5 inline-flex flex-col rounded-2xl border border-gold-soft/30 bg-black/45 px-4 py-3 backdrop-blur-md">
+            <p className="text-[10px] tracking-[0.24em] text-gold-soft uppercase">
+              Precio de preventa
+            </p>
+            <p className="mt-1 display text-2xl text-white md:text-3xl">
+              Desde {formatUsd(residence.priceFrom)}
+            </p>
+            <p className="mt-1 text-xs text-white/60">
+              Mercado ~{formatUsd(residence.marketValue)} · ahorras{" "}
+              {savingsPercent(residence.priceFrom, residence.marketValue)}%
+            </p>
+          </div>
         </div>
       </section>
 
@@ -73,8 +86,11 @@ export function ResidenceDetailClient({ residence }: { residence: Residence }) {
             </h2>
             <p className="script mt-2 text-3xl text-gold">Ahora desbloquea el resto.</p>
             <p className="mt-4 text-sm leading-relaxed text-muted">
-              Build Story completo, etapas con fotos, progreso en vivo y lista de espera — con tus
-              datos abres esta propiedad.
+              Precio completo, Build Story, etapas con fotos, progreso en vivo y lista de espera —
+              con tus datos abres esta propiedad.
+            </p>
+            <p className="mt-3 text-sm font-medium text-ink">
+              Desde {formatUsd(residence.priceFrom)} · {residence.priceHook}
             </p>
 
             <div className="relative mx-auto mt-10 aspect-[16/10] max-w-md overflow-hidden rounded-3xl">
