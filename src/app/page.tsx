@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+import { BannerLiveTicks } from "@/components/BannerLiveTicks";
 import { Countdown } from "@/components/Countdown";
 import { HeroActivityFeed } from "@/components/HeroActivityFeed";
 import { HeroVideo } from "@/components/HeroVideo";
@@ -66,35 +67,63 @@ export default function HomePage() {
           )}
         </AnimatePresence>
 
-        {/* Copy + banner video behind headline */}
-        <div className="relative z-10 pt-8 md:pt-10">
-          <div className="px-5 md:px-10 lg:px-16">
-            <p className="text-[11px] tracking-[0.35em] text-[#b8924a] uppercase">
-              Omar Corp · Indiana
-            </p>
-          </div>
+        {/* Headline banner — cinematic still + live ticks */}
+        <div className="relative z-10 pt-6 md:pt-8">
+          <div className="relative w-full overflow-hidden">
+            <div className="relative h-[min(42vh,320px)] min-h-[200px] w-full overflow-hidden bg-[#1a1814] sm:h-[min(46vh,380px)] md:h-[min(48vh,420px)]">
+              <motion.div
+                className="absolute inset-0"
+                initial={{ scale: 1.08 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 8, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <Image
+                  src={featured.image}
+                  alt=""
+                  fill
+                  priority
+                  className="object-cover object-[center_38%]"
+                  sizes="100vw"
+                />
+              </motion.div>
 
-          {/* Banner image — wide cinematic strip with headline */}
-          <div className="relative mt-4 w-full overflow-hidden">
-            <div className="relative aspect-[2.35/1] min-h-[132px] w-full overflow-hidden bg-[#1a1814] sm:min-h-[160px] md:aspect-[2.8/1] md:min-h-[180px] md:max-h-[240px]">
-              <Image
-                src={featured.image}
-                alt=""
-                fill
-                priority
-                className="object-cover object-[center_40%]"
-                sizes="100vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/45 to-black/20" />
-              <h1 className="absolute inset-0 flex flex-col justify-center px-5 text-[clamp(1.65rem,6.5vw,3.4rem)] font-semibold leading-[1.05] tracking-[0.04em] text-white uppercase md:px-10 lg:px-16">
-                Residencias en obra.
-                <br />
-                Acceso privado.
-              </h1>
+              <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/45 to-black/25" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/25" />
+
+              <BannerLiveTicks />
+
+              <div className="absolute inset-0 z-10 flex flex-col justify-center px-5 pb-8 md:px-10 md:pb-10 lg:px-16">
+                <motion.p
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.15 }}
+                  className="text-[10px] tracking-[0.4em] text-[#e0c57a] uppercase md:text-[11px]"
+                >
+                  Omar Corp · Indiana
+                </motion.p>
+                <motion.h1
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.75, delay: 0.28 }}
+                  className="mt-3 max-w-3xl text-[clamp(1.85rem,7vw,4rem)] font-semibold leading-[1.02] tracking-[0.04em] text-white uppercase"
+                >
+                  Residencias en obra.
+                  <br />
+                  Acceso privado.
+                </motion.h1>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.6, delay: 0.55 }}
+                  className="mt-3 max-w-sm text-[11px] leading-relaxed text-white/65 md:text-[12px]"
+                >
+                  Progreso en tiempo real. Cupos limitados en lista privada.
+                </motion.p>
+              </div>
             </div>
           </div>
 
-          <div className="mx-auto max-w-xl px-5 pt-4 md:mx-0 md:px-10 lg:px-16">
+          <div className="mx-auto max-w-xl px-5 pt-5 md:mx-0 md:px-10 lg:px-16">
             <p className="max-w-md text-[12px] leading-relaxed tracking-[0.04em] text-[#6a655e] md:text-[13px]">
               Vas a ver el progreso de cada vivienda en tiempo real — etapas, avances y
               actualizaciones mientras se transforma.
