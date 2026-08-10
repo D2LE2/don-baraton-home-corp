@@ -22,9 +22,9 @@ const greatVibes = Great_Vibes({
 });
 
 export const metadata: Metadata = {
-  title: "Omar Corp — El futuro de vivir",
+  title: "Omar Corp — Ve la casa antes de que sea hogar",
   description:
-    "Omar Corp: showroom inmobiliario en vivo. Residencias en construcción, contador real y lista de espera exclusiva.",
+    "Colección privada de residencias en transformación. Sigue cada avance, descubre propiedades y asegura prioridad en la lista.",
 };
 
 export const viewport: Viewport = {

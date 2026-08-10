@@ -2,18 +2,26 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, ArrowRight, Play } from "lucide-react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { ChevronDown, ArrowRight } from "lucide-react";
+import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/Logo";
 import { VideoResidenceFeed } from "@/components/VideoResidenceFeed";
 import { useNova } from "@/context/NovaContext";
+import { residences } from "@/data/residences";
 import { useViewportHeight } from "@/hooks/useViewportHeight";
+
+const HERO_SIGNALS = [
+  `${String(residences.length).padStart(2, "0")} residencias activas`,
+  "The Monroe +2% esta semana",
+  "Nueva actualización",
+];
 
 export default function HomePage() {
   const heroRef = useRef<HTMLElement>(null);
   const viewportH = useViewportHeight();
   const { membership } = useNova();
+  const [signalIndex, setSignalIndex] = useState(0);
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
@@ -28,9 +36,16 @@ export default function HomePage() {
     }
   }, [viewportH]);
 
+  useEffect(() => {
+    const t = window.setInterval(() => {
+      setSignalIndex((i) => (i + 1) % HERO_SIGNALS.length);
+    }, 3200);
+    return () => window.clearInterval(t);
+  }, []);
+
   return (
     <main className="overflow-x-hidden bg-ink">
-      {/* HERO — large viewport height; second section only after scroll */}
+      {/* HERO — early access to the build process, not a house listing */}
       <section
         ref={heroRef}
         className="hero-viewport relative isolate overflow-hidden"
@@ -47,7 +62,7 @@ export default function HomePage() {
         <motion.div style={{ scale: imageScale }} className="absolute inset-0">
           <Image
             src="/images/monroe.jpg"
-            alt="Omar Corp residence"
+            alt="Omar Corp residence in transformation"
             fill
             priority
             className="animate-ken object-cover object-[center_38%]"
@@ -55,87 +70,89 @@ export default function HomePage() {
           />
         </motion.div>
 
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.72)_0%,rgba(5,5,5,0.28)_35%,rgba(5,5,5,0.4)_55%,rgba(5,5,5,0.92)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.72)_0%,rgba(5,5,5,0.28)_35%,rgba(5,5,5,0.4)_55%,rgba(5,5,5,0.94)_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_40%,transparent_0%,rgba(0,0,0,0.55)_100%)]" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-transparent to-transparent" />
 
         <header className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-5 py-6 md:px-10">
           <Logo light size="md" />
-          <div className="flex items-center gap-3">
-            <span className="hidden items-center gap-2 rounded-full border border-gold-soft/30 bg-black/30 px-3 py-1.5 text-[10px] tracking-[0.22em] text-gold-soft uppercase backdrop-blur-md sm:inline-flex">
-              <span className="live-dot" />
-              En vivo
-            </span>
-            <Link
-              href={membership.status === "approved" ? "/private/status" : "/private"}
-              className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[10px] tracking-[0.2em] text-white uppercase backdrop-blur-md transition hover:border-gold-soft hover:text-gold-soft"
-            >
-              {membership.status === "approved" ? "Miembro" : "Private"}
-            </Link>
-          </div>
+          <Link
+            href={membership.status === "approved" ? "/private/status" : "/private"}
+            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[10px] tracking-[0.2em] text-white uppercase backdrop-blur-md transition hover:border-gold-soft hover:text-gold-soft"
+          >
+            {membership.status === "approved" ? "Miembro" : "Private"}
+          </Link>
         </header>
+
+        {/* Live signals — elegant, not dashboard */}
+        <div className="absolute inset-x-0 top-[4.75rem] z-20 flex justify-center px-5 md:top-24">
+          <div className="flex max-w-full items-center gap-3 overflow-hidden border-y border-white/10 bg-black/25 px-4 py-2 backdrop-blur-md md:gap-4 md:px-6">
+            <span className="live-dot shrink-0" />
+            <div className="relative h-4 min-w-0 overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={signalIndex}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.45 }}
+                  className="truncate text-[9px] tracking-[0.28em] text-white/80 uppercase md:text-[10px]"
+                >
+                  {HERO_SIGNALS[signalIndex]}
+                </motion.p>
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
 
         <motion.div
           style={{ opacity: contentOpacity, y: contentY }}
-          className="relative z-10 flex h-full flex-col justify-end px-5 pb-8 md:px-12 md:pb-12 lg:px-16"
+          className="relative z-10 flex h-full flex-col justify-end px-5 pb-7 md:px-12 md:pb-12 lg:px-16"
         >
           <motion.div
             initial={{ opacity: 0, y: 36 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-4xl"
+            className="max-w-3xl"
           >
-            <motion.p
-              initial={{ opacity: 0, letterSpacing: "0.8em" }}
-              animate={{ opacity: 1, letterSpacing: "0.55em" }}
-              transition={{ duration: 1.2, delay: 0.1 }}
-              className="text-[clamp(1.1rem,3vw,1.75rem)] font-semibold text-white"
-            >
-              OMAR
-            </motion.p>
-            <p className="mt-1 text-[10px] tracking-[0.7em] text-gold-soft uppercase md:text-xs">
-              Corp
+            <p className="text-[10px] tracking-[0.55em] text-gold-soft uppercase md:text-[11px]">
+              Omar Corp
             </p>
 
-            <div className="mt-5 h-px w-16 origin-left bg-gold-soft animate-shimmer md:w-24" />
-
-            <p className="mt-5 text-[11px] font-medium tracking-[0.38em] text-gold-soft uppercase md:text-xs">
-              Residencias en construcción · Indiana
-            </p>
-
-            <h1 className="mt-3 text-[clamp(2.4rem,7.5vw,6.5rem)] font-light leading-[0.92] tracking-[0.04em] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.75)]">
-              EL FUTURO
+            <h1 className="mt-4 text-[clamp(2.1rem,7vw,5.4rem)] font-light leading-[0.95] tracking-[0.02em] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.75)]">
+              VE LA CASA ANTES
               <br />
-              DE VIVIR
+              DE QUE SEA HOGAR.
             </h1>
 
-            <motion.p
-              initial={{ opacity: 0, x: -16 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4, duration: 0.85 }}
-              className="script mt-2 text-[clamp(1.9rem,4.5vw,3.5rem)] text-gold-soft drop-shadow-[0_2px_14px_rgba(0,0,0,0.85)]"
-            >
-              Entra ahora.
-            </motion.p>
-
-            <p className="mt-4 max-w-md text-[14px] leading-relaxed text-white/85 md:text-base drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
-              Mira cómo nace tu próxima casa. Síguele el pulso. Anótate antes de que se cierre.
+            <p className="mt-5 max-w-lg text-[13px] leading-relaxed text-white/80 md:text-[15px] drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+              Accede a nuestra colección privada de residencias en transformación.
+              Sigue cada avance, descubre nuevas propiedades y entra en la lista
+              para tener prioridad cuando estén listas.
             </p>
 
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <p className="mt-5 text-[10px] tracking-[0.22em] text-white/55 uppercase md:text-[11px]">
+              Mírala cambiar · Síguela de cerca · Sé el próximo propietario
+            </p>
+
+            <p className="mt-6 inline-flex items-center gap-2.5 text-[10px] tracking-[0.28em] text-gold-soft uppercase">
+              <span className="live-dot" />
+              Proyectos actualizándose en vivo
+            </p>
+
+            <div className="mt-6 flex flex-col items-start gap-4">
               <Link
                 href="/#casas"
-                className="group inline-flex items-center justify-center gap-3 rounded-full bg-gold-soft px-8 py-3.5 text-[12px] font-medium tracking-[0.22em] text-ink uppercase shadow-[0_0_40px_rgba(224,197,122,0.35)] transition hover:bg-white"
+                className="group inline-flex items-center justify-center gap-3 rounded-full bg-gold-soft px-8 py-3.5 text-[11px] font-medium tracking-[0.24em] text-ink uppercase shadow-[0_0_40px_rgba(224,197,122,0.35)] transition hover:bg-white"
               >
-                <Play size={14} fill="currentColor" />
-                Explorar residencias
+                Entrar a la colección
                 <ArrowRight size={16} className="transition group-hover:translate-x-1" />
               </Link>
               <Link
                 href="/private"
-                className="inline-flex items-center justify-center rounded-full border border-white/30 px-7 py-3.5 text-[11px] tracking-[0.2em] text-white uppercase transition hover:border-gold-soft hover:text-gold-soft"
+                className="text-[10px] tracking-[0.28em] text-white/45 uppercase transition hover:text-gold-soft"
               >
-                Omar Private
+                Solicitar acceso a la lista privada
               </Link>
             </div>
           </motion.div>
@@ -144,7 +161,7 @@ export default function HomePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.15, duration: 0.8 }}
-            className="mt-6 flex flex-col items-center gap-1.5 self-center text-white/40"
+            className="mt-5 flex flex-col items-center gap-1.5 self-center text-white/35"
           >
             <span className="text-[9px] tracking-[0.35em] uppercase">Desliza</span>
             <ChevronDown className="animate-bounce" size={18} />
@@ -178,17 +195,17 @@ export default function HomePage() {
               {
                 step: "01",
                 title: "Observa",
-                copy: "Recorre residencias activas con precio de preventa, avance de obra y demanda en vivo.",
+                copy: "Entra a la colección y mira cómo cambia cada residencia — avance real, no catálogo estático.",
               },
               {
                 step: "02",
-                title: "Reserva tu lugar",
-                copy: "Lista de espera limitada. Prioridad real para quien actúa a tiempo.",
+                title: "Síguela",
+                copy: "Cada actualización te acerca. Prioridad en la lista para quien ya está dentro.",
               },
               {
                 step: "03",
-                title: "Omar Private",
-                copy: "Acceso anticipado por membresía. Para quien está listo de verdad.",
+                title: "Posiciónate",
+                copy: "Acceso privado a la lista. Cuando esté lista, tú ya estabas ahí.",
               },
             ].map((item, i) => (
               <motion.div
