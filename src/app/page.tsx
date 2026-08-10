@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Lock, Menu, Play, X } from "lucide-react";
-import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { Logo } from "@/components/Logo";
 import { VideoResidenceFeed } from "@/components/VideoResidenceFeed";
 import { useNova } from "@/context/NovaContext";
@@ -12,17 +12,11 @@ import { getActiveResidenceCount, getActiveResidences, playResidenceAvance } fro
 import { useViewportHeight } from "@/hooks/useViewportHeight";
 
 export default function HomePage() {
-  const spacerRef = useRef<HTMLDivElement>(null);
   const viewportH = useViewportHeight();
   const { membership } = useNova();
   const [menuOpen, setMenuOpen] = useState(false);
   const activeCount = getActiveResidenceCount();
   const activeResidences = getActiveResidences();
-  const { scrollY } = useScroll();
-  const scrollRange = viewportH > 0 ? viewportH : 800;
-  const heroY = useTransform(scrollY, [0, scrollRange], [0, -scrollRange]);
-  const imageScale = useTransform(scrollY, [0, scrollRange], [1, 1.08]);
-  const contentOpacity = useTransform(scrollY, [0, scrollRange * 0.5], [1, 0]);
 
   useEffect(() => {
     if (viewportH > 0) {
@@ -32,15 +26,16 @@ export default function HomePage() {
 
   return (
     <main className="overflow-x-hidden bg-ink">
-      {/*
-        Fixed full-screen hero: always covers the visual viewport at load,
-        so the second section can never peek. Spacer reserves scroll room.
-      */}
-      <motion.section
-        style={{ y: heroY }}
-        className="hero-viewport fixed inset-0 z-20 isolate overflow-hidden bg-ink"
+      {/* In-flow hero — native scroll, no fixed/transform lag */}
+      <section
+        className="hero-viewport relative isolate overflow-hidden bg-ink"
+        style={
+          viewportH > 0
+            ? { height: viewportH, minHeight: viewportH }
+            : undefined
+        }
       >
-        <motion.div style={{ scale: imageScale }} className="absolute inset-0">
+        <div className="absolute inset-0">
           <Image
             src="/images/monroe.jpg"
             alt="Omar Corp residence in transformation"
@@ -49,7 +44,7 @@ export default function HomePage() {
             className="animate-ken object-cover object-[center_38%]"
             sizes="100vw"
           />
-        </motion.div>
+        </div>
 
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.55)_0%,rgba(5,5,5,0.15)_28%,rgba(5,5,5,0.35)_52%,rgba(5,5,5,0.92)_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_60%_35%,transparent_0%,rgba(0,0,0,0.45)_100%)]" />
@@ -100,10 +95,7 @@ export default function HomePage() {
         </AnimatePresence>
 
         {/* Composition — one locked viewport, mockup hierarchy */}
-        <motion.div
-          style={{ opacity: contentOpacity }}
-          className="relative z-10 flex h-full flex-col px-5 pb-4 pt-[4.75rem] md:px-12 md:pb-6 lg:px-16"
-        >
+        <div className="relative z-10 flex h-full flex-col px-5 pb-4 pt-[4.75rem] md:px-12 md:pb-6 lg:px-16">
           {/* Mid: real active count + play avance */}
           <div className="mt-[8%] flex items-center justify-between md:mt-[10%]">
             <div className="flex items-stretch gap-3">
@@ -219,16 +211,8 @@ export default function HomePage() {
               <span className="h-px w-7 bg-[#c4a574]/80" />
             </div>
           </div>
-        </motion.div>
-      </motion.section>
-
-      {/* Scroll room equal to one screen — second section starts after this */}
-      <div
-        ref={spacerRef}
-        aria-hidden
-        className="hero-spacer"
-        style={viewportH > 0 ? { height: viewportH } : undefined}
-      />
+        </div>
+      </section>
 
       {/* Video houses — the magic + unlock */}
       <VideoResidenceFeed />

@@ -26,8 +26,9 @@ export function measureLargeViewportHeight() {
     );
   }
 
-  // 1px buffer kills subpixel peeks on some Android browsers
-  return h > 0 ? h + 1 : 0;
+  // Extra buffer: covers mobile browser chrome / safe-area so section 2
+  // never peeks, without needing a fixed layer that janks on scroll.
+  return h > 0 ? h + 48 : 0;
 }
 
 export function useViewportHeight() {
