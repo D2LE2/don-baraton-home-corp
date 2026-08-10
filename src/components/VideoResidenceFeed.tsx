@@ -2,17 +2,21 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ChevronRight, Pause, Play } from "lucide-react";
+import { ArrowRight, ChevronRight, Lock, Pause, Play } from "lucide-react";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { residences } from "@/data/residences";
-import { formatUsd } from "@/lib/pricing";
+import { residences, type Residence } from "@/data/residences";
 
 const slideVariants = {
   enter: (dir: number) => ({ x: dir > 0 ? "18%" : "-18%", opacity: 0 }),
   center: { x: 0, opacity: 1 },
   exit: (dir: number) => ({ x: dir > 0 ? "-14%" : "14%", opacity: 0 }),
 };
+
+function transformLabel(residence: Residence) {
+  if (residence.status === "COMING SOON") return "Early stage";
+  return "Active transform";
+}
 
 export function VideoResidenceFeed() {
   const total = residences.length;
@@ -145,7 +149,6 @@ export function VideoResidenceFeed() {
 
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
 
-        {/* Single meta row on the frame */}
         <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-5 pt-5 md:px-10 md:pt-8">
           <p className="text-[11px] tracking-[0.28em] text-white/90 uppercase">
             <span className="font-medium text-white">
@@ -156,12 +159,11 @@ export function VideoResidenceFeed() {
               / {String(total).padStart(2, "0")}
             </span>
           </p>
-          <p className="text-[11px] tracking-[0.22em] text-[#e0c57a] uppercase">
-            {current.progress}% completed
+          <p className="text-[11px] tracking-[0.22em] text-[#e0c57a] uppercase tabular-nums">
+            {current.progress}% transformed
           </p>
         </div>
 
-        {/* Play — alone in the center */}
         <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
           <button
             type="button"
@@ -208,7 +210,7 @@ export function VideoResidenceFeed() {
         )}
       </div>
 
-      {/* 2 — RESIDENCE: decision */}
+      {/* 2 — Living transform status (no listing sheet) */}
       <div className="bg-black px-5 pb-12 pt-8 md:px-12 md:pb-16 md:pt-10 lg:px-16">
         <AnimatePresence initial={false} custom={direction} mode="wait">
           <motion.div
@@ -229,22 +231,19 @@ export function VideoResidenceFeed() {
             </h2>
             <p className="mt-2 text-[15px] text-white/50">{current.location}</p>
 
-            <div className="mt-8">
-              <p className="text-[clamp(1.85rem,5vw,2.75rem)] font-semibold tracking-tight text-white">
-                {formatUsd(current.priceFrom)}
-              </p>
-              <p className="mt-1.5 text-[10px] tracking-[0.32em] text-[#c4a574] uppercase">
-                Pre-construction
-              </p>
-            </div>
+            <p className="mt-5 inline-flex items-center gap-2 text-[10px] tracking-[0.28em] text-[#e0c57a] uppercase">
+              <span className="live-dot !bg-[#e0c57a]" />
+              {transformLabel(current)}
+            </p>
 
             <div className="mt-8">
-              <div className="flex items-baseline justify-between gap-3">
-                <p className="text-[10px] tracking-[0.28em] text-white/55 uppercase">
-                  {current.progress}% complete
-                </p>
-              </div>
-              <div className="mt-2.5 h-px overflow-hidden bg-white/15">
+              <p className="text-[clamp(2.4rem,8vw,3.5rem)] font-light leading-none tracking-tight text-white tabular-nums">
+                {current.progress}%
+              </p>
+              <p className="mt-2 text-[10px] tracking-[0.28em] text-white/45 uppercase">
+                Current progress
+              </p>
+              <div className="mt-3 h-px overflow-hidden bg-white/15">
                 <motion.div
                   key={`progress-${current.id}`}
                   className="h-full bg-[#e0c57a]"
@@ -255,21 +254,48 @@ export function VideoResidenceFeed() {
               </div>
             </div>
 
+            {current.latestUpdate && (
+              <Link
+                href={`/residences/${current.id}`}
+                className="group mt-8 block border-t border-white/10 pt-5 transition hover:border-[#c4a574]/40"
+              >
+                <p className="text-[9px] tracking-[0.28em] text-white/40 uppercase">
+                  Latest update · {current.latestUpdate.date}
+                </p>
+                <p className="mt-2 flex items-center gap-2 text-[15px] text-white/90 transition group-hover:text-[#e0c57a]">
+                  <span>{current.latestUpdate.title}</span>
+                  <ArrowRight
+                    size={14}
+                    className="shrink-0 opacity-60 transition group-hover:translate-x-1 group-hover:opacity-100"
+                  />
+                </p>
+              </Link>
+            )}
+
+            <p className="mt-8 max-w-md text-[14px] leading-relaxed text-white/55">
+              Follow every stage. Get priority when it becomes available.
+            </p>
+
             <Link
-              href={`/residences/${current.id}`}
-              className="group mt-10 inline-flex items-center gap-3 text-[12px] font-medium tracking-[0.28em] text-white uppercase transition hover:text-[#e0c57a]"
+              href={`/residences/${current.id}#follow`}
+              className="group mt-8 inline-flex items-center gap-3 text-[12px] font-medium tracking-[0.24em] text-white uppercase transition hover:text-[#e0c57a]"
             >
-              View residence
+              Follow this residence
               <ArrowRight
                 size={16}
                 className="transition group-hover:translate-x-1"
               />
             </Link>
+
+            <p className="mt-4 flex items-center gap-1.5 text-[8px] tracking-[0.22em] text-white/35 uppercase">
+              <Lock size={9} />
+              Private list · Limited access
+            </p>
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* 3 — CATALOG: discover (black → ivory bridge) */}
+      {/* 3 — CATALOG */}
       <div className="bg-[#faf8f4] px-5 py-14 md:px-12 md:py-20 lg:px-16">
         <div className="mx-auto max-w-[1100px]">
           <p className="text-[11px] tracking-[0.4em] text-[#9a8660] uppercase">

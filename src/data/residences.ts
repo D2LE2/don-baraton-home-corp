@@ -75,9 +75,9 @@ export const residences: Residence[] = [
     priceHook: "Precio de preventa · sube con cada etapa",
     tagline: "Modern living, reimagined for Indiana.",
     latestUpdate: {
-      title: "The Monroe just changed.",
-      body: "Kitchen cabinetry was installed today.",
-      date: "Today",
+      title: "Interior framing completed",
+      body: "Structural framing for the main level is complete.",
+      date: "AUG 08",
     },
     stages: [
       {
@@ -171,9 +171,9 @@ export const residences: Residence[] = [
     priceHook: "Entrada temprana · antes del alza de obra",
     tagline: "Spacious modern family living in Lafayette.",
     latestUpdate: {
-      title: "The Harrison is rising.",
+      title: "Second-floor framing rising",
       body: "Framing reached the second floor this week.",
-      date: "2 days ago",
+      date: "AUG 06",
     },
     stages: [
       {
@@ -266,6 +266,11 @@ export const residences: Residence[] = [
     marketValue: 340000,
     priceHook: "El precio más bajo del tour · solo ahora",
     tagline: "Construction begins soon — follow early.",
+    latestUpdate: {
+      title: "Site survey completed",
+      body: "Land marked and prepared for foundation work.",
+      date: "AUG 04",
+    },
     stages: [
       {
         id: "land",
