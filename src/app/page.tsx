@@ -6,6 +6,7 @@ import { ChevronDown, Lock, ArrowRight } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Logo } from "@/components/Logo";
+import { ActiveLaunch } from "@/components/ActiveLaunch";
 import { useNova } from "@/context/NovaContext";
 
 export default function HomePage() {
@@ -131,6 +132,9 @@ export default function HomePage() {
           </motion.div>
         </motion.div>
       </section>
+
+      {/* ── Active launch: countdown + waitlist ── */}
+      <ActiveLaunch />
 
       {/* ── Promise: emotion, not listings ── */}
       <section className="relative bg-[#0a0a0a] px-5 py-24 md:px-12 md:py-32 lg:px-16">

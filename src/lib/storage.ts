@@ -25,8 +25,17 @@ export type FollowAccount = {
   following: string[];
 };
 
+export type WaitlistEntry = {
+  residenceId: string;
+  name: string;
+  email: string;
+  phone?: string;
+  joinedAt: string;
+};
+
 const FOLLOW_KEY = "nova-follow";
 const MEMBER_KEY = "nova-membership";
+const WAITLIST_KEY = "nova-waitlist";
 
 export function loadFollow(): FollowAccount | null {
   if (typeof window === "undefined") return null;
@@ -54,6 +63,20 @@ export function loadMembership(): Membership {
 
 export function saveMembership(membership: Membership) {
   localStorage.setItem(MEMBER_KEY, JSON.stringify(membership));
+}
+
+export function loadWaitlist(): WaitlistEntry[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(WAITLIST_KEY);
+    return raw ? (JSON.parse(raw) as WaitlistEntry[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveWaitlist(entries: WaitlistEntry[]) {
+  localStorage.setItem(WAITLIST_KEY, JSON.stringify(entries));
 }
 
 export function generateMemberNumber() {

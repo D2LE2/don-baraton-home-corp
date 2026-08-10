@@ -2,10 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Countdown } from "@/components/Countdown";
 import { Logo } from "@/components/Logo";
+import { WaitlistJoin } from "@/components/WaitlistJoin";
+import { useNova } from "@/context/NovaContext";
 import { residences, type Residence } from "@/data/residences";
 
 const statusStyles: Record<Residence["status"], string> = {
@@ -25,13 +28,16 @@ function ResidencePanel({
   total: number;
   active: boolean;
 }) {
+  const { isOnWaitlist } = useNova();
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
+  const joined = isOnWaitlist(residence.id);
   const progressLabel =
     residence.progress < 15
       ? "CONSTRUCTION BEGINS SOON"
       : `${residence.progress}% BUILT`;
 
   return (
-    <section className="relative flex h-[100dvh] min-h-[640px] w-full shrink-0 snap-start flex-col overflow-hidden bg-ink">
+    <section className="relative flex h-[100dvh] min-h-[720px] w-full shrink-0 snap-start flex-col overflow-hidden bg-ink">
       <motion.div
         animate={active ? { scale: 1 } : { scale: 1.06 }}
         transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
@@ -46,7 +52,7 @@ function ResidencePanel({
           sizes="100vw"
         />
       </motion.div>
-      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/15 to-black/80" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/20 to-black/85" />
 
       <div className="relative z-10 flex h-full flex-col justify-between px-5 pb-28 pt-28 md:px-12 md:pb-24 md:pt-32 lg:px-16">
         <AnimatePresence mode="wait">
@@ -69,7 +75,7 @@ function ResidencePanel({
                 </span>
               </div>
 
-              <p className="mt-7 text-[11px] tracking-[0.4em] text-gold-soft uppercase">
+              <p className="mt-6 text-[11px] tracking-[0.4em] text-gold-soft uppercase">
                 {residence.code}
               </p>
               <h1 className="mt-2 text-4xl font-light tracking-[0.1em] text-white md:text-6xl lg:text-7xl">
@@ -88,38 +94,56 @@ function ResidencePanel({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               transition={{ duration: 0.5, delay: 0.05 }}
+              className="max-w-3xl"
             >
-              <p className="display text-5xl font-light text-white md:text-7xl lg:text-8xl">
+              <p className="display text-4xl font-light text-white md:text-6xl lg:text-7xl">
                 {progressLabel}
               </p>
-              <p className="mt-5 text-sm tracking-[0.14em] text-white/80 uppercase">
+              <p className="mt-4 text-sm tracking-[0.14em] text-white/80 uppercase">
                 {residence.beds} BED · {residence.baths} BATH ·{" "}
                 {residence.sqft.toLocaleString()} SQ FT
               </p>
-              <p className="mt-2 text-sm text-white/50">Expected · {residence.expected}</p>
-              <p className="mt-1 text-[11px] tracking-[0.2em] text-white/40 uppercase">
-                {residence.followers} people following
-              </p>
 
-              <div className="mt-8 flex flex-wrap items-center gap-3">
+              <div className="mt-6 rounded-3xl border border-white/15 bg-black/35 px-4 py-5 backdrop-blur-md md:px-6">
+                <Countdown
+                  targetDate={residence.completionDate}
+                  variant="gold"
+                  size="md"
+                  label={`Tiempo restante para terminarse · ${residence.expected}`}
+                />
+                <p className="mt-4 text-[10px] tracking-[0.2em] text-white/45 uppercase">
+                  {residence.waitlistCount}+ en lista de espera
+                  {residence.waitlistLimited ? " · Cupos limitados" : ""}
+                </p>
+              </div>
+
+              <div className="mt-7 flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setWaitlistOpen(true)}
+                  className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-[11px] tracking-[0.2em] text-ink uppercase transition hover:bg-gold-soft"
+                >
+                  <Lock size={14} />
+                  {joined ? "Ya estás en la lista" : "Únete a la lista de espera"}
+                </button>
                 <Link
                   href={`/residences/${residence.id}`}
-                  className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-[11px] tracking-[0.22em] text-ink uppercase transition hover:bg-gold-soft"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/25 px-6 py-3.5 text-[11px] tracking-[0.2em] text-white uppercase transition hover:border-white/50"
                 >
-                  Watch Build Story
-                  <ArrowRight size={14} className="transition group-hover:translate-x-0.5" />
-                </Link>
-                <Link
-                  href={`/residences/${residence.id}#follow`}
-                  className="rounded-full border border-white/25 px-6 py-3.5 text-[11px] tracking-[0.2em] text-white uppercase transition hover:border-white/50"
-                >
-                  Follow
+                  Build Story
+                  <ArrowRight size={14} />
                 </Link>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+      <WaitlistJoin
+        residence={residence}
+        open={waitlistOpen}
+        onClose={() => setWaitlistOpen(false)}
+      />
     </section>
   );
 }
@@ -130,12 +154,15 @@ export default function ResidencesPage() {
   const [introDone, setIntroDone] = useState(false);
   const total = residences.length;
 
-  const goTo = useCallback((index: number) => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    const clamped = Math.max(0, Math.min(total - 1, index));
-    el.scrollTo({ top: clamped * el.clientHeight, behavior: "smooth" });
-  }, [total]);
+  const goTo = useCallback(
+    (index: number) => {
+      const el = scrollerRef.current;
+      if (!el) return;
+      const clamped = Math.max(0, Math.min(total - 1, index));
+      el.scrollTo({ top: clamped * el.clientHeight, behavior: "smooth" });
+    },
+    [total],
+  );
 
   useEffect(() => {
     const el = scrollerRef.current;
@@ -153,7 +180,6 @@ export default function ResidencesPage() {
 
   return (
     <main className="relative bg-ink">
-      {/* Fixed chrome */}
       <div className="pointer-events-none fixed inset-x-0 top-0 z-40 flex items-center justify-between px-5 py-5 md:px-10">
         <Link
           href="/"
@@ -187,7 +213,6 @@ export default function ResidencesPage() {
         </Link>
       </div>
 
-      {/* Side index — desktop */}
       <aside className="pointer-events-none fixed top-1/2 right-6 z-40 hidden -translate-y-1/2 flex-col gap-4 lg:flex">
         {residences.map((r, i) => (
           <button
@@ -208,7 +233,6 @@ export default function ResidencesPage() {
         ))}
       </aside>
 
-      {/* Bottom hint */}
       {!introDone && active === 0 && (
         <div className="pointer-events-none fixed inset-x-0 bottom-6 z-40 flex flex-col items-center gap-1 text-white/40 md:bottom-8">
           <ChevronDown className="animate-bounce" size={18} />
@@ -216,10 +240,7 @@ export default function ResidencesPage() {
         </div>
       )}
 
-      <div
-        ref={scrollerRef}
-        className="snap-y-mandatory h-[100dvh] overflow-y-auto"
-      >
+      <div ref={scrollerRef} className="snap-y-mandatory h-[100dvh] overflow-y-auto">
         {residences.map((r, i) => (
           <ResidencePanel
             key={r.id}

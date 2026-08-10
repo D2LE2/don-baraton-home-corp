@@ -27,8 +27,12 @@ export type Residence = {
   garage: number;
   progress: number;
   expected: string;
+  /** ISO date — target completion for live countdown */
+  completionDate: string;
   status: ResidenceStatus;
   followers: number;
+  waitlistCount: number;
+  waitlistLimited: boolean;
   tagline: string;
   stages: BuildStage[];
   latestUpdate?: {
@@ -51,8 +55,11 @@ export const residences: Residence[] = [
     garage: 2,
     progress: 68,
     expected: "November 2026",
+    completionDate: "2026-11-15T18:00:00",
     status: "AVAILABLE",
     followers: 42,
+    waitlistCount: 128,
+    waitlistLimited: true,
     tagline: "Modern living, reimagined for Indiana.",
     latestUpdate: {
       title: "The Monroe just changed.",
@@ -139,8 +146,11 @@ export const residences: Residence[] = [
     garage: 2,
     progress: 31,
     expected: "February 2027",
+    completionDate: "2027-02-28T18:00:00",
     status: "PRIVATE LIST OPEN",
     followers: 67,
+    waitlistCount: 94,
+    waitlistLimited: true,
     tagline: "Spacious modern family living in Lafayette.",
     latestUpdate: {
       title: "The Harrison is rising.",
@@ -227,8 +237,11 @@ export const residences: Residence[] = [
     garage: 2,
     progress: 8,
     expected: "May 2027",
+    completionDate: "2027-05-15T18:00:00",
     status: "COMING SOON",
     followers: 18,
+    waitlistCount: 31,
+    waitlistLimited: false,
     tagline: "Construction begins soon — follow early.",
     stages: [
       {

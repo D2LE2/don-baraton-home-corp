@@ -6,6 +6,7 @@ import { BuildStory } from "@/components/BuildStory";
 import { FollowHome } from "@/components/FollowHome";
 import { LiveProgress } from "@/components/LiveProgress";
 import { Logo } from "@/components/Logo";
+import { ResidenceWaitlistBanner } from "@/components/ResidenceWaitlistBanner";
 import { getResidence, residences } from "@/data/residences";
 
 export function generateStaticParams() {
@@ -72,6 +73,8 @@ export default async function ResidenceDetailPage({
           </p>
         </div>
       </section>
+
+      <ResidenceWaitlistBanner residence={residence} />
 
       <BuildStory stages={residence.stages} />
       <LiveProgress progress={residence.progress} stages={residence.stages} />
