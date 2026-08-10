@@ -4,22 +4,17 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
-  Bath,
-  BedDouble,
-  CalendarDays,
-  Car,
   ChevronDown,
   Lock,
   Menu,
-  Ruler,
   X,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { BannerLiveTicks } from "@/components/BannerLiveTicks";
-import { Countdown } from "@/components/Countdown";
 import { HeroActivityFeed } from "@/components/HeroActivityFeed";
 import { HeroVideo } from "@/components/HeroVideo";
+import { LaunchCard } from "@/components/LaunchCard";
 import { Logo } from "@/components/Logo";
 import { VideoResidenceFeed } from "@/components/VideoResidenceFeed";
 import { residences } from "@/data/residences";
@@ -180,91 +175,9 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Floating card */}
+          {/* Floating launch card */}
           <div className="relative z-20 -mt-14 px-4 pb-2 md:-mt-16 md:px-10 lg:px-16">
-            <div className="mx-auto max-w-lg rounded-2xl border border-[#ece7df] bg-white p-4 shadow-[0_16px_48px_rgba(20,16,10,0.12)] md:max-w-xl md:p-5">
-              <p className="text-[10px] tracking-[0.32em] text-[#b8924a] uppercase">
-                Próximo lanzamiento
-              </p>
-
-              <div className="mt-3 flex gap-3">
-                <div className="relative h-[72px] w-[88px] shrink-0 overflow-hidden rounded-lg md:h-20 md:w-24">
-                  <Image
-                    src={featured.image}
-                    alt=""
-                    fill
-                    className="object-cover"
-                    sizes="96px"
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[13px] font-semibold tracking-[0.14em] text-ink uppercase">
-                    {featured.code}
-                  </p>
-                  <p className="mt-0.5 text-[12px] text-[#8a847a]">{featured.location}</p>
-
-                  {/* Minimal transform progress */}
-                  <div className="mt-3">
-                    <div className="flex items-baseline justify-between gap-2">
-                      <span className="text-[9px] tracking-[0.18em] text-[#9a8660] uppercase">
-                        Transformación
-                      </span>
-                      <span className="text-[11px] font-medium text-ink tabular-nums">
-                        {featured.progress}%
-                      </span>
-                    </div>
-                    <div className="mt-1.5 h-[2px] w-full overflow-hidden bg-[#ece7df]">
-                      <motion.div
-                        className="h-full bg-[#c4a574]"
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${featured.progress}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mt-2.5 grid grid-cols-4 gap-1 border-t border-[#f0ebe3] pt-2.5">
-                    <div className="flex flex-col items-start gap-0.5">
-                      <BedDouble size={12} className="text-[#b8924a]" strokeWidth={1.5} />
-                      <span className="text-[8px] tracking-[0.08em] text-[#6a655e] uppercase">
-                        {featured.beds} Hab.
-                      </span>
-                    </div>
-                    <div className="flex flex-col items-start gap-0.5">
-                      <Bath size={12} className="text-[#b8924a]" strokeWidth={1.5} />
-                      <span className="text-[8px] tracking-[0.08em] text-[#6a655e] uppercase">
-                        {featured.baths} Baños
-                      </span>
-                    </div>
-                    <div className="flex flex-col items-start gap-0.5">
-                      <Ruler size={12} className="text-[#b8924a]" strokeWidth={1.5} />
-                      <span className="text-[8px] tracking-[0.08em] text-[#6a655e] uppercase">
-                        {featured.sqft.toLocaleString()} Sq Ft
-                      </span>
-                    </div>
-                    <div className="flex flex-col items-start gap-0.5">
-                      <Car size={12} className="text-[#b8924a]" strokeWidth={1.5} />
-                      <span className="text-[8px] tracking-[0.08em] text-[#6a655e] uppercase">
-                        {featured.garage} Garage
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-4 flex flex-col gap-3 border-t border-[#f0ebe3] pt-3 sm:flex-row sm:items-center sm:justify-between">
-                <p className="inline-flex items-center gap-1.5 text-[9px] tracking-[0.18em] text-[#b8924a] uppercase">
-                  <CalendarDays size={13} strokeWidth={1.75} />
-                  Coming Fall 2026
-                </p>
-                <Countdown
-                  targetDate={featured.completionDate}
-                  variant="light"
-                  size="sm"
-                />
-              </div>
-            </div>
+            <LaunchCard residence={featured} />
           </div>
 
           <div className="flex flex-col items-center gap-1 pb-6 pt-5 text-[#b0aaa0]">
