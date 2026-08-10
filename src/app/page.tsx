@@ -140,7 +140,7 @@ export default function HomePage() {
       <VideoResidenceFeed />
 
       {/* Simple 3 steps — easy to get */}
-      <section className="relative bg-[#080808] px-5 py-24 md:px-12 md:py-28 lg:px-16">
+      <section className="relative bg-white px-5 py-24 md:px-12 md:py-28 lg:px-16">
         <div className="mx-auto max-w-6xl">
           <motion.div
             initial={{ opacity: 0, y: 28 }}
@@ -149,10 +149,10 @@ export default function HomePage() {
             transition={{ duration: 0.7 }}
             className="max-w-2xl"
           >
-            <p className="text-[11px] tracking-[0.35em] text-gold-soft uppercase">Omar Corp</p>
-            <h2 className="mt-4 text-3xl font-light leading-tight tracking-wide text-white md:text-5xl">
+            <p className="text-[11px] tracking-[0.35em] text-gold uppercase">Omar Corp</p>
+            <h2 className="mt-4 text-3xl font-light leading-tight tracking-wide text-ink md:text-5xl">
               Tan fácil como
-              <span className="script ml-2 text-gold-soft">mirar, seguir y entrar.</span>
+              <span className="script ml-2 text-gold">mirar, seguir y entrar.</span>
             </h2>
           </motion.div>
 
@@ -180,11 +180,11 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.12, duration: 0.55 }}
-                className="border-t border-gold-soft/25 pt-7"
+                className="border-t border-border pt-7"
               >
-                <p className="text-[11px] tracking-[0.3em] text-gold-soft">{item.step}</p>
-                <h3 className="mt-4 text-xl font-light tracking-wide text-white">{item.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-white/50">{item.copy}</p>
+                <p className="text-[11px] tracking-[0.3em] text-gold">{item.step}</p>
+                <h3 className="mt-4 text-xl font-light tracking-wide text-ink">{item.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted">{item.copy}</p>
               </motion.div>
             ))}
           </div>
