@@ -64,18 +64,41 @@ export default function HomePage() {
           )}
         </AnimatePresence>
 
-        {/* Copy block */}
-        <div className="relative z-10 px-5 pt-8 md:px-10 md:pt-10 lg:px-16">
-          <div className="mx-auto max-w-xl md:mx-0">
+        {/* Copy + banner video behind headline */}
+        <div className="relative z-10 pt-8 md:pt-10">
+          <div className="px-5 md:px-10 lg:px-16">
             <p className="text-[11px] tracking-[0.35em] text-[#b8924a] uppercase">
               Modern living. Reimagined.
             </p>
-            <h1 className="mt-4 text-[clamp(2.4rem,9vw,4.75rem)] font-semibold leading-[0.95] tracking-[0.02em] text-ink uppercase">
-              El futuro
-              <br />
-              de vivir
-            </h1>
-            <p className="script mt-1 text-[clamp(1.85rem,5vw,2.75rem)] text-[#c4a574]">
+          </div>
+
+          {/* Banner video — wide cinematic strip with headline */}
+          <div className="relative mt-4 w-full overflow-hidden">
+            <div className="relative aspect-[2.35/1] min-h-[132px] w-full sm:min-h-[160px] md:aspect-[2.8/1] md:min-h-[180px] md:max-h-[240px]">
+              <video
+                className="absolute inset-0 h-full w-full object-cover object-center"
+                src={featured.video}
+                poster={featured.image}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                controls={false}
+                disablePictureInPicture
+                aria-hidden
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/15" />
+              <h1 className="absolute inset-0 flex flex-col justify-center px-5 text-[clamp(2rem,8vw,4.25rem)] font-semibold leading-[0.95] tracking-[0.02em] text-white uppercase md:px-10 lg:px-16">
+                El futuro
+                <br />
+                de vivir
+              </h1>
+            </div>
+          </div>
+
+          <div className="mx-auto max-w-xl px-5 pt-4 md:mx-0 md:px-10 lg:px-16">
+            <p className="script text-[clamp(1.85rem,5vw,2.75rem)] text-[#c4a574]">
               Comienza aquí.
             </p>
             <p className="mt-4 max-w-sm text-[14px] leading-relaxed text-[#8a847a] md:text-[15px]">
