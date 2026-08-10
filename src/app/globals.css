@@ -23,6 +23,7 @@
   --color-surface: var(--surface);
   --color-ink: var(--ink);
   --font-sans: var(--font-outfit);
+  --font-display: var(--font-fraunces);
 }
 
 * {
