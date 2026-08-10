@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, Lock, ArrowRight, Play } from "lucide-react";
+import { ChevronDown, ArrowRight, Play } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Logo } from "@/components/Logo";
-import { ActiveLaunch } from "@/components/ActiveLaunch";
+import { VideoResidenceFeed } from "@/components/VideoResidenceFeed";
 import { useNova } from "@/context/NovaContext";
 
 export default function HomePage() {
@@ -103,28 +103,24 @@ export default function HomePage() {
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
               <Link
-                href="/residences"
+                href="/#casas"
                 className="group inline-flex items-center justify-center gap-3 rounded-full bg-gold-soft px-9 py-4 text-[12px] font-medium tracking-[0.22em] text-ink uppercase shadow-[0_0_40px_rgba(224,197,122,0.35)] transition hover:bg-white"
               >
                 <Play size={14} fill="currentColor" />
-                Ver residencias activas
+                Ver casas en video
                 <ArrowRight size={16} className="transition group-hover:translate-x-1" />
               </Link>
               <Link
-                href="/#lanzamiento"
+                href="/private"
                 className="inline-flex items-center justify-center rounded-full border border-white/30 px-7 py-4 text-[11px] tracking-[0.2em] text-white uppercase transition hover:border-gold-soft hover:text-gold-soft"
               >
-                Lista de espera
+                Omar Private
               </Link>
             </div>
 
-            <Link
-              href="/private"
-              className="mt-6 inline-flex items-center gap-2.5 text-[11px] tracking-[0.2em] text-white/50 uppercase transition hover:text-gold-soft"
-            >
-              <Lock size={13} className="text-gold-soft" />
-              Omar Private — acceso exclusivo
-            </Link>
+            <p className="mt-6 text-[11px] tracking-[0.18em] text-white/45 uppercase">
+              Primero sientes la magia · Luego desbloqueas con tus datos
+            </p>
           </motion.div>
 
           <motion.div
@@ -139,9 +135,8 @@ export default function HomePage() {
         </motion.div>
       </section>
 
-      <div id="lanzamiento">
-        <ActiveLaunch />
-      </div>
+      {/* Video houses — the magic + unlock */}
+      <VideoResidenceFeed />
 
       {/* Simple 3 steps — easy to get */}
       <section className="relative bg-[#080808] px-5 py-24 md:px-12 md:py-28 lg:px-16">
@@ -200,10 +195,10 @@ export default function HomePage() {
             className="mt-14"
           >
             <Link
-              href="/residences"
+              href="/#casas"
               className="group inline-flex items-center gap-3 text-[12px] tracking-[0.22em] text-gold-soft uppercase"
             >
-              Entrar al showroom ahora
+              Ver casas en video ahora
               <ArrowRight size={16} className="transition group-hover:translate-x-1" />
             </Link>
           </motion.div>
@@ -244,7 +239,7 @@ export default function HomePage() {
               lista de espera para quien quiere entrar primero.
             </p>
             <Link
-              href="/residences"
+              href="/#casas"
               className="group mt-10 inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-[12px] tracking-[0.22em] text-ink uppercase transition hover:bg-gold-soft"
             >
               Quiero entrar
@@ -303,10 +298,10 @@ export default function HomePage() {
       {/* Sticky mobile CTA */}
       <div className="fixed inset-x-4 bottom-4 z-50 md:hidden">
         <Link
-          href="/residences"
+          href="/#casas"
           className="flex w-full items-center justify-center gap-2 rounded-full bg-gold-soft py-4 text-[11px] font-medium tracking-[0.2em] text-ink uppercase shadow-2xl"
         >
-          Entrar al showroom
+          Ver casas en video
           <ArrowRight size={14} />
         </Link>
       </div>

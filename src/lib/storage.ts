@@ -33,9 +33,18 @@ export type WaitlistEntry = {
   joinedAt: string;
 };
 
+export type UnlockEntry = {
+  residenceId: string;
+  name: string;
+  email: string;
+  phone?: string;
+  unlockedAt: string;
+};
+
 const FOLLOW_KEY = "omar-follow";
 const MEMBER_KEY = "omar-membership";
 const WAITLIST_KEY = "omar-waitlist";
+const UNLOCK_KEY = "omar-unlocked";
 
 export function loadFollow(): FollowAccount | null {
   if (typeof window === "undefined") return null;
@@ -77,6 +86,20 @@ export function loadWaitlist(): WaitlistEntry[] {
 
 export function saveWaitlist(entries: WaitlistEntry[]) {
   localStorage.setItem(WAITLIST_KEY, JSON.stringify(entries));
+}
+
+export function loadUnlocked(): UnlockEntry[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(UNLOCK_KEY);
+    return raw ? (JSON.parse(raw) as UnlockEntry[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveUnlocked(entries: UnlockEntry[]) {
+  localStorage.setItem(UNLOCK_KEY, JSON.stringify(entries));
 }
 
 export function generateMemberNumber() {

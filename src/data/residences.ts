@@ -21,6 +21,8 @@ export type Residence = {
   name: string;
   location: string;
   image: string;
+  video: string;
+  teaser: string;
   beds: number;
   baths: number;
   sqft: number;
@@ -49,6 +51,8 @@ export const residences: Residence[] = [
     name: "THE MONROE",
     location: "Logansport, Indiana",
     image: "/images/monroe.jpg",
+    video: "/videos/monroe.mp4",
+    teaser: "De terreno vacío a hogar. Mira cómo despierta.",
     beds: 3,
     baths: 2.5,
     sqft: 1920,
@@ -140,6 +144,8 @@ export const residences: Residence[] = [
     name: "THE HARRISON",
     location: "Lafayette, Indiana",
     image: "/images/harrison.jpg",
+    video: "/videos/harrison.mp4",
+    teaser: "La estructura ya se siente. El resto es historia en vivo.",
     beds: 4,
     baths: 3,
     sqft: 2480,
@@ -231,6 +237,8 @@ export const residences: Residence[] = [
     name: "THE ELLINGTON",
     location: "Kokomo, Indiana",
     image: "/images/ellington.jpg",
+    video: "/videos/ellington.mp4",
+    teaser: "Aún no empezó… y ya hay gente siguiéndola.",
     beds: 3,
     baths: 2,
     sqft: 1750,

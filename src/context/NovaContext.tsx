@@ -12,13 +12,16 @@ import {
   generateMemberNumber,
   loadFollow,
   loadMembership,
+  loadUnlocked,
   loadWaitlist,
   saveFollow,
   saveMembership,
+  saveUnlocked,
   saveWaitlist,
   type FollowAccount,
   type Membership,
   type MembershipApplication,
+  type UnlockEntry,
   type WaitlistEntry,
 } from "@/lib/storage";
 
@@ -27,11 +30,19 @@ type NovaContextValue = {
   follow: FollowAccount | null;
   membership: Membership;
   waitlist: WaitlistEntry[];
+  unlocked: UnlockEntry[];
   isFollowing: (id: string) => boolean;
   isOnWaitlist: (id: string) => boolean;
+  isUnlocked: (id: string) => boolean;
   followResidence: (id: string, name: string, email: string) => void;
   unfollowResidence: (id: string) => void;
   joinWaitlist: (input: {
+    residenceId: string;
+    name: string;
+    email: string;
+    phone?: string;
+  }) => void;
+  unlockResidence: (input: {
     residenceId: string;
     name: string;
     email: string;
@@ -48,11 +59,13 @@ export function NovaProvider({ children }: { children: ReactNode }) {
   const [follow, setFollow] = useState<FollowAccount | null>(null);
   const [membership, setMembership] = useState<Membership>({ status: "none" });
   const [waitlist, setWaitlist] = useState<WaitlistEntry[]>([]);
+  const [unlocked, setUnlocked] = useState<UnlockEntry[]>([]);
 
   useEffect(() => {
     setFollow(loadFollow());
     setMembership(loadMembership());
     setWaitlist(loadWaitlist());
+    setUnlocked(loadUnlocked());
     setReady(true);
   }, []);
 
@@ -64,6 +77,11 @@ export function NovaProvider({ children }: { children: ReactNode }) {
   const isOnWaitlist = useCallback(
     (id: string) => waitlist.some((e) => e.residenceId === id),
     [waitlist],
+  );
+
+  const isUnlocked = useCallback(
+    (id: string) => unlocked.some((e) => e.residenceId === id),
+    [unlocked],
   );
 
   const followResidence = useCallback(
@@ -109,7 +127,50 @@ export function NovaProvider({ children }: { children: ReactNode }) {
         saveWaitlist(next);
         return next;
       });
-      // Also keep a simple follow profile for reuse
+      const nextFollow: FollowAccount = {
+        name: input.name,
+        email: input.email,
+        following: Array.from(new Set([...(follow?.following ?? []), input.residenceId])),
+      };
+      setFollow(nextFollow);
+      saveFollow(nextFollow);
+    },
+    [follow],
+  );
+
+  const unlockResidence = useCallback(
+    (input: { residenceId: string; name: string; email: string; phone?: string }) => {
+      setUnlocked((prev) => {
+        if (prev.some((e) => e.residenceId === input.residenceId)) return prev;
+        const next = [
+          ...prev,
+          {
+            residenceId: input.residenceId,
+            name: input.name,
+            email: input.email,
+            phone: input.phone,
+            unlockedAt: new Date().toISOString(),
+          },
+        ];
+        saveUnlocked(next);
+        return next;
+      });
+      // Unlock also puts them on waitlist + follow
+      setWaitlist((prev) => {
+        if (prev.some((e) => e.residenceId === input.residenceId)) return prev;
+        const next = [
+          ...prev,
+          {
+            residenceId: input.residenceId,
+            name: input.name,
+            email: input.email,
+            phone: input.phone,
+            joinedAt: new Date().toISOString(),
+          },
+        ];
+        saveWaitlist(next);
+        return next;
+      });
       const nextFollow: FollowAccount = {
         name: input.name,
         email: input.email,
@@ -150,11 +211,14 @@ export function NovaProvider({ children }: { children: ReactNode }) {
         follow,
         membership,
         waitlist,
+        unlocked,
         isFollowing,
         isOnWaitlist,
+        isUnlocked,
         followResidence,
         unfollowResidence,
         joinWaitlist,
+        unlockResidence,
         submitMembership,
         approveMembershipDemo,
       }}
