@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { ProgressBar } from "@/components/ProgressBar";
 import { residences } from "@/data/residences";
 
 /** Compact premium index — small tiles so every residence is easy to scan */
@@ -34,7 +35,7 @@ export function ResidencesCatalog() {
             >
               <Link
                 href={`/residences/${r.id}`}
-                className="group grid grid-cols-[72px_1fr_auto] items-center gap-3 py-4 transition md:grid-cols-[96px_1fr_auto_auto] md:gap-5 md:py-5"
+                className="group grid grid-cols-[72px_1fr_auto] items-center gap-3 py-4 transition md:grid-cols-[96px_minmax(0,1fr)_140px_auto] md:gap-5 md:py-5"
               >
                 <div className="relative h-[56px] w-[72px] overflow-hidden bg-[#f3efe8] md:h-[72px] md:w-[96px]">
                   <Image
@@ -55,30 +56,21 @@ export function ResidencesCatalog() {
                   </p>
                   <p className="mt-0.5 truncate text-[11px] text-[#8a847a]">{r.location}</p>
                   <p className="mt-1.5 text-[10px] tracking-[0.06em] text-[#6a655e] uppercase md:hidden">
-                    {r.beds} hab · {r.baths} ba · {r.progress}%
+                    {r.beds} hab · {r.baths} ba
                   </p>
+                  <ProgressBar
+                    value={r.progress}
+                    size="sm"
+                    showLabel
+                    className="mt-2 max-w-[200px] md:hidden"
+                  />
                 </div>
 
-                <div className="hidden items-center gap-8 md:flex">
-                  <p className="text-[11px] tracking-[0.08em] text-[#6a655e] uppercase">
-                    {r.beds} hab · {r.baths} ba · {r.sqft.toLocaleString()} sqft
+                <div className="hidden md:block">
+                  <p className="mb-2 text-[10px] tracking-[0.08em] text-[#6a655e] uppercase">
+                    {r.beds} hab · {r.baths} ba
                   </p>
-                  <div className="w-[88px]">
-                    <div className="flex items-baseline justify-between gap-2">
-                      <span className="text-[9px] tracking-[0.14em] text-[#9a8660] uppercase">
-                        Obra
-                      </span>
-                      <span className="text-[11px] font-medium text-ink tabular-nums">
-                        {r.progress}%
-                      </span>
-                    </div>
-                    <div className="mt-1 h-px w-full bg-[#ece7df]">
-                      <div
-                        className="h-px bg-[#c4a574] transition-[width] duration-500"
-                        style={{ width: `${r.progress}%` }}
-                      />
-                    </div>
-                  </div>
+                  <ProgressBar value={r.progress} showLabel className="w-full" />
                 </div>
 
                 <span className="flex h-8 w-8 items-center justify-center text-[#9a8660] transition group-hover:text-ink">

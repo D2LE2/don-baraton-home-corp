@@ -16,6 +16,7 @@ import { AnimatePresence, motion, useMotionTemplate, useMotionValue } from "fram
 import { useEffect, useState, type MouseEvent } from "react";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { Countdown } from "@/components/Countdown";
+import { ProgressBar } from "@/components/ProgressBar";
 import type { Residence } from "@/data/residences";
 
 const INITIALS = ["S.M.", "C.R.", "A.V.", "L.P.", "M.G."];
@@ -139,29 +140,7 @@ export function LaunchCard({ residence }: { residence: Residence }) {
               <p className="mt-0.5 text-[12px] text-[#8a847a]">{residence.location}</p>
 
               <div className="mt-3">
-                <div className="flex items-baseline justify-between gap-2">
-                  <span className="text-[9px] tracking-[0.18em] text-[#9a8660] uppercase">
-                    Transformación
-                  </span>
-                  <span className="text-[12px] font-medium text-ink tabular-nums">
-                    <AnimatedCounter value={residence.progress} />%
-                  </span>
-                </div>
-                <div className="relative mt-1.5 h-[3px] w-full overflow-hidden bg-[#ece7df]">
-                  <motion.div
-                    className="absolute inset-y-0 left-0 bg-[#c4a574]"
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${residence.progress}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
-                  />
-                  <motion.div
-                    className="absolute inset-y-0 w-8 bg-gradient-to-r from-transparent via-white/70 to-transparent"
-                    animate={{ left: ["-10%", "110%"] }}
-                    transition={{ duration: 2.2, repeat: Infinity, ease: "linear", repeatDelay: 1.4 }}
-                    style={{ width: 28 }}
-                  />
-                </div>
+                <ProgressBar value={residence.progress} showLabel label="Transformación" />
               </div>
 
               <div className="mt-3 grid grid-cols-4 gap-1 border-t border-[#f0ebe3] pt-2.5">

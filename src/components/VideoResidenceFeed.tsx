@@ -13,6 +13,7 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { residences } from "@/data/residences";
+import { ProgressBar } from "@/components/ProgressBar";
 
 /** Compact pro collection stage — video + overlay, no tall status stack */
 export function VideoResidenceFeed() {
@@ -184,13 +185,13 @@ export function VideoResidenceFeed() {
                 <MapPin size={11} className="shrink-0 opacity-70" />
                 {current.location}
               </p>
-              <div className="mt-2.5 h-[2px] max-w-[180px] overflow-hidden bg-white/15">
-                <motion.div
+              <div className="mt-2.5 max-w-[200px]">
+                <ProgressBar
                   key={current.id}
-                  className="h-full bg-[#e0c57a]"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${current.progress}%` }}
-                  transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                  value={current.progress}
+                  tone="dark"
+                  size="sm"
+                  live
                 />
               </div>
               {current.latestUpdate && (

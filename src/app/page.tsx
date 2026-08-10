@@ -16,6 +16,7 @@ import { HeroActivityFeed } from "@/components/HeroActivityFeed";
 import { HeroVideo } from "@/components/HeroVideo";
 import { LaunchCard } from "@/components/LaunchCard";
 import { Logo } from "@/components/Logo";
+import { ProgressBar } from "@/components/ProgressBar";
 import { ResidencesCatalog } from "@/components/ResidencesCatalog";
 import { VideoResidenceFeed } from "@/components/VideoResidenceFeed";
 import { residences } from "@/data/residences";
@@ -157,24 +158,15 @@ export default function HomePage() {
             <HeroActivityFeed />
 
             {/* Minimal progress — Residence 001 */}
-            <div className="absolute top-4 right-4 z-30 w-[140px] md:top-5 md:right-5 md:w-[160px]">
-              <div className="rounded-md border border-white/15 bg-black/40 px-3 py-2 backdrop-blur-sm">
-                <div className="flex items-baseline justify-between gap-2">
-                  <p className="text-[8px] tracking-[0.2em] text-white/65 uppercase">
-                    Progreso
-                  </p>
-                  <p className="text-[11px] font-medium tracking-[0.06em] text-[#e0c57a] tabular-nums">
-                    {featured.progress}%
-                  </p>
-                </div>
-                <div className="mt-1.5 h-[2px] w-full overflow-hidden rounded-full bg-white/20">
-                  <motion.div
-                    className="h-full rounded-full bg-[#e0c57a]"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${featured.progress}%` }}
-                    transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
-                  />
-                </div>
+            <div className="absolute top-4 right-4 z-30 w-[148px] md:top-5 md:right-5 md:w-[168px]">
+              <div className="rounded-md border border-white/15 bg-black/45 px-3 py-2 backdrop-blur-sm">
+                <ProgressBar
+                  value={featured.progress}
+                  tone="dark"
+                  size="sm"
+                  showLabel
+                  label="Progreso"
+                />
               </div>
             </div>
           </div>
