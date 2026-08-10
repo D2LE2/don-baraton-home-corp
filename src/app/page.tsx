@@ -160,8 +160,8 @@ export default function HomePage() {
             {[
               {
                 step: "01",
-                title: "Mira el showroom",
-                copy: "Una casa por pantalla. Ves el % construido y el tiempo que falta.",
+                title: "Explora el recorrido",
+                copy: "Desliza entre residencias activas. Ves precio de preventa, avance y demanda en vivo.",
               },
               {
                 step: "02",

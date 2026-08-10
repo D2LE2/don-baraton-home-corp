@@ -1,13 +1,17 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { Eye, Lock, Pause, Play, Users, Volume2, VolumeX } from "lucide-react";
 import {
-  AnimatePresence,
-  motion,
-  useReducedMotion,
-  type PanInfo,
-} from "framer-motion";
+  ArrowLeft,
+  ArrowRight,
+  Eye,
+  Lock,
+  Users,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { UnlockModal } from "@/components/UnlockModal";
 import { useNova } from "@/context/NovaContext";
@@ -15,23 +19,22 @@ import { residences, type Residence } from "@/data/residences";
 import { useLiveSocialProof } from "@/hooks/useLiveSocialProof";
 import { formatUsd, savingsAmount, savingsPercent } from "@/lib/pricing";
 
-const SLIDE_MS = 8000;
-
 function VideoSlide({
   residence,
   active,
   muted,
   onOpenUnlock,
+  onSelect,
 }: {
   residence: Residence;
   active: boolean;
   muted: boolean;
   onOpenUnlock: () => void;
+  onSelect: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { isUnlocked, ready } = useNova();
   const unlocked = ready && isUnlocked(residence.id);
-  const [teaserIn, setTeaserIn] = useState(false);
   const { viewers, waitlistLive, toast, currentStage } = useLiveSocialProof(
     residence,
     active,
@@ -41,10 +44,8 @@ function VideoSlide({
     const el = videoRef.current;
     if (!el) return;
     if (active) {
-      el.currentTime = 0;
       void el.play().catch(() => undefined);
-      const t = window.setTimeout(() => setTeaserIn(true), 900);
-      return () => window.clearTimeout(t);
+      return;
     }
     el.pause();
   }, [active]);
@@ -55,445 +56,387 @@ function VideoSlide({
   }, [muted]);
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-ink">
-      <motion.div
-        className="absolute inset-0"
-        initial={{ scale: 1.06 }}
-        animate={active ? { scale: 1 } : { scale: 1.06 }}
-        transition={{ duration: 7, ease: "linear" }}
-      >
-        <video
-          ref={videoRef}
-          className="pointer-events-none h-full w-full object-cover"
-          src={residence.video}
-          poster={residence.image}
-          playsInline
-          loop
-          muted={muted}
-          preload={active ? "auto" : "metadata"}
-          controls={false}
-          disablePictureInPicture
-        />
-      </motion.div>
+    <article
+      className={`relative h-[70dvh] min-h-[480px] w-[86vw] max-w-[920px] shrink-0 snap-center overflow-hidden rounded-[1.75rem] bg-ink transition-[opacity,transform] duration-500 md:h-[74dvh] md:w-[72vw] ${
+        active ? "scale-100 opacity-100" : "scale-[0.94] opacity-55"
+      }`}
+      onClick={() => {
+        if (!active) onSelect();
+      }}
+    >
+      <video
+        ref={videoRef}
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+        src={residence.video}
+        poster={residence.image}
+        playsInline
+        loop
+        muted={muted}
+        preload="auto"
+        controls={false}
+        disablePictureInPicture
+      />
 
-      <div className="pointer-events-none absolute inset-0 bg-black/25" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/85 via-black/35 to-transparent" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-[55%] bg-gradient-to-r from-black/55 via-black/25 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 bg-black/30" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/75 via-transparent to-black/90" />
 
-      {/* Live toasts */}
-      <div className="pointer-events-none absolute top-28 right-4 z-20 w-[min(100%-2rem,280px)] md:top-32 md:right-10">
+      <div className="pointer-events-none absolute top-5 right-5 z-20 w-[min(100%-2.5rem,260px)]">
         <AnimatePresence mode="popLayout">
-          {toast && (
+          {active && toast && (
             <motion.div
               key={toast.id}
-              initial={{ opacity: 0, y: -10, x: 12 }}
-              animate={{ opacity: 1, y: 0, x: 0 }}
-              exit={{ opacity: 0, y: -8, x: 8 }}
-              transition={{ duration: 0.35 }}
-              className="rounded-2xl border border-white/15 bg-black/70 px-3.5 py-3 shadow-[0_12px_40px_rgba(0,0,0,0.45)] backdrop-blur-md"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="rounded-2xl border border-white/15 bg-black/75 px-3 py-2.5 backdrop-blur-md"
             >
-              <div className="flex items-start gap-2.5">
-                <span className="live-dot mt-1.5 shrink-0" />
-                <p className="text-[12px] leading-snug text-white/90">{toast.text}</p>
+              <div className="flex items-start gap-2">
+                <span className="live-dot mt-1 shrink-0" />
+                <p className="text-[11px] leading-snug text-white/90">{toast.text}</p>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      <div className="relative z-10 flex h-full flex-col justify-end px-5 pb-28 md:px-12 md:pb-32 lg:px-16">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-2xl rounded-[1.75rem] bg-black/50 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-md md:p-7"
-        >
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/15 px-3 py-1.5 text-[10px] tracking-[0.18em] text-emerald-200 uppercase">
-              <Eye size={12} />
-              <span className="live-dot !bg-emerald-300" />
-              {viewers} mirando ahora
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-full border border-gold-soft/35 bg-gold-soft/10 px-3 py-1.5 text-[10px] tracking-[0.18em] text-gold-soft uppercase">
-              <Users size={12} />
-              {waitlistLive} en lista
-              {residence.waitlistLimited ? " · limitada" : ""}
-            </span>
-          </div>
+      <div className="relative z-10 flex h-full flex-col justify-between p-5 md:p-8">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/15 px-3 py-1.5 text-[10px] tracking-[0.16em] text-emerald-200 uppercase">
+            <Eye size={12} />
+            {viewers} mirando
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-full border border-gold-soft/35 bg-gold-soft/10 px-3 py-1.5 text-[10px] tracking-[0.16em] text-gold-soft uppercase">
+            <Users size={12} />
+            {waitlistLive} en lista
+          </span>
+        </div>
 
-          <p className="mt-4 text-[11px] tracking-[0.35em] text-gold-soft uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
+        <div className="max-w-xl rounded-[1.5rem] bg-black/55 p-5 backdrop-blur-md md:p-6">
+          <p className="text-[10px] tracking-[0.3em] text-gold-soft uppercase">
             {residence.code}
           </p>
-          <h2 className="mt-2 text-4xl font-light tracking-[0.08em] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] md:text-6xl">
+          <h2 className="mt-2 text-3xl font-light tracking-[0.08em] text-white md:text-5xl">
             {residence.name}
           </h2>
-          <p className="mt-2 text-sm text-white/85 md:text-base">{residence.location}</p>
+          <p className="mt-1 text-sm text-white/75">{residence.location}</p>
+          <p className="script mt-3 text-2xl text-gold-soft md:text-3xl">{residence.teaser}</p>
 
-          <AnimatePresence>
-            {teaserIn && (
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-                className="script mt-4 max-w-lg text-2xl text-gold-soft drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] md:text-3xl"
-              >
-                {residence.teaser}
-              </motion.p>
-            )}
-          </AnimatePresence>
-
-          {/* Price curiosity */}
-          <div className="mt-5 overflow-hidden rounded-2xl border border-gold-soft/25 bg-gradient-to-br from-gold-soft/15 via-black/40 to-black/20 p-4 md:p-5">
-            <div className="flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <p className="text-[10px] tracking-[0.28em] text-gold-soft uppercase">
-                  Precio de preventa
-                </p>
-                <p className="mt-1 flex items-baseline gap-2">
-                  <span className="text-sm text-white/55">Desde</span>
-                  <span className="display text-3xl font-light text-white md:text-4xl">
-                    {formatUsd(residence.priceFrom)}
-                  </span>
-                </p>
-                <p className="mt-2 text-sm text-white/70">{residence.priceHook}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-[10px] tracking-[0.2em] text-white/45 uppercase">Mercado</p>
-                <p className="mt-1 text-lg text-white/40 line-through">
-                  {formatUsd(residence.marketValue)}
-                </p>
-                <p className="mt-1 text-[11px] font-medium tracking-[0.12em] text-emerald-300 uppercase">
-                  Ahorras ~{formatUsd(savingsAmount(residence.priceFrom, residence.marketValue), true)}
-                  <span className="text-white/45"> · {savingsPercent(residence.priceFrom, residence.marketValue)}%</span>
-                </p>
-              </div>
-            </div>
-            {!unlocked && (
-              <p className="mt-3 border-t border-white/10 pt-3 text-[11px] text-white/60">
-                El desglose completo y condiciones están bloqueados.{" "}
-                <button
-                  type="button"
-                  onClick={onOpenUnlock}
-                  className="text-gold-soft underline-offset-2 hover:underline"
-                >
-                  Despierta tu curiosidad →
-                </button>
+          <div className="mt-5 flex flex-wrap items-end justify-between gap-4 border-t border-white/10 pt-5">
+            <div>
+              <p className="text-[10px] tracking-[0.22em] text-gold-soft uppercase">
+                Precio de preventa
               </p>
-            )}
-          </div>
-
-          {/* Visual construction progress */}
-          <div className="mt-6">
-            <div className="mb-2 flex items-end justify-between gap-3">
-              <div>
-                <p className="text-[10px] tracking-[0.28em] text-white/65 uppercase">
-                  Progreso de obra
-                </p>
-                <p className="mt-1 text-sm text-white/85">
-                  Etapa actual · {currentStage?.label ?? "En curso"}
-                </p>
-              </div>
-              <p className="display text-3xl font-light text-white md:text-4xl">
-                {residence.progress}%
+              <p className="mt-1 display text-3xl text-white">
+                {formatUsd(residence.priceFrom)}
+              </p>
+              <p className="mt-1 text-xs text-white/55">
+                Mercado {formatUsd(residence.marketValue)} · -
+                {savingsPercent(residence.priceFrom, residence.marketValue)}%
               </p>
             </div>
-            <div className="h-2.5 overflow-hidden rounded-full bg-white/15">
-              <motion.div
-                className="h-full rounded-full bg-gradient-to-r from-gold-soft/80 to-gold-soft"
-                initial={{ width: 0 }}
-                animate={{ width: active ? `${residence.progress}%` : 0 }}
-                transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-              />
-            </div>
-            <div className="mt-2 flex justify-between text-[10px] tracking-[0.16em] text-white/55 uppercase">
-              <span>Inicio</span>
-              <span>Entrega · {residence.expected}</span>
+            <div className="min-w-[140px] flex-1">
+              <div className="mb-1 flex justify-between text-[10px] tracking-[0.16em] text-white/60 uppercase">
+                <span>{currentStage?.label ?? "Obra"}</span>
+                <span>{residence.progress}%</span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-white/15">
+                <div
+                  className="h-full rounded-full bg-gold-soft transition-[width] duration-700"
+                  style={{ width: active ? `${residence.progress}%` : "0%" }}
+                />
+              </div>
             </div>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-5">
             {!unlocked ? (
               <button
                 type="button"
-                onClick={onOpenUnlock}
-                className="group inline-flex items-center gap-3 rounded-full bg-gold-soft px-7 py-3.5 text-[11px] font-medium tracking-[0.22em] text-ink uppercase shadow-[0_0_32px_rgba(224,197,122,0.28)] transition hover:bg-white"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenUnlock();
+                }}
+                className="inline-flex items-center gap-2 rounded-full bg-gold-soft px-6 py-3 text-[11px] font-medium tracking-[0.2em] text-ink uppercase"
               >
                 <Lock size={14} />
-                Ver precio completo
-                <span className="text-ink/60 transition group-hover:text-ink">· desbloquear</span>
+                Solicitar acceso
               </button>
             ) : (
               <Link
                 href={`/residences/${residence.id}`}
-                className="inline-flex items-center gap-3 rounded-full bg-gold-soft px-7 py-3.5 text-[11px] font-medium tracking-[0.22em] text-ink uppercase"
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-2 rounded-full bg-gold-soft px-6 py-3 text-[11px] font-medium tracking-[0.2em] text-ink uppercase"
               >
-                Entrar al Build Story
+                Abrir Build Story
+                <ArrowRight size={14} />
               </Link>
             )}
-            <p className="mt-3 text-[11px] tracking-[0.12em] text-white/70">
-              {unlocked
-                ? "Ya desbloqueaste esta residencia"
-                : `Desde ${formatUsd(residence.priceFrom, true)} · ${waitlistLive} en lista. El precio sube con la obra.`}
-            </p>
           </div>
-        </motion.div>
+        </div>
       </div>
-    </div>
+    </article>
   );
 }
 
 export function VideoResidenceFeed() {
   const total = residences.length;
-  const reduceMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
-  const [direction, setDirection] = useState(1);
-  const [paused, setPaused] = useState(false);
-  const [inView, setInView] = useState(false);
   const [muted, setMuted] = useState(true);
   const [unlockOpen, setUnlockOpen] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const sectionRef = useRef<HTMLElement>(null);
-  const rafRef = useRef<number | null>(null);
-  const startRef = useRef(0);
-  const heldRef = useRef(0);
-
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const current = residences[index];
-  const next = residences[(index + 1) % total];
 
-  const goTo = useCallback(
-    (nextIndex: number, dir?: number) => {
-      const wrapped = ((nextIndex % total) + total) % total;
-      setDirection(
-        dir ?? (wrapped > index || (index === total - 1 && wrapped === 0) ? 1 : -1),
-      );
-      setIndex(wrapped);
-      setProgress(0);
-      heldRef.current = 0;
-      startRef.current = performance.now();
-    },
-    [index, total],
-  );
+  const scrollToIndex = useCallback((i: number) => {
+    const clamped = Math.max(0, Math.min(total - 1, i));
+    setIndex(clamped);
+    const node = cardRefs.current[clamped];
+    node?.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  }, [total]);
 
-  const goNext = useCallback(() => goTo(index + 1, 1), [goTo, index]);
-  const goPrev = useCallback(() => goTo(index - 1, -1), [goTo, index]);
-
+  // Keep index in sync with scroll snap
   useEffect(() => {
-    const node = sectionRef.current;
-    if (!node) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setInView(entry.isIntersecting && entry.intersectionRatio >= 0.35),
-      { threshold: [0.2, 0.35, 0.55] },
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+
+    let frame = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const center = scroller.scrollLeft + scroller.clientWidth / 2;
+        let best = 0;
+        let bestDist = Infinity;
+        cardRefs.current.forEach((el, i) => {
+          if (!el) return;
+          const mid = el.offsetLeft + el.offsetWidth / 2;
+          const dist = Math.abs(mid - center);
+          if (dist < bestDist) {
+            bestDist = dist;
+            best = i;
+          }
+        });
+        setIndex(best);
+      });
+    };
+
+    scroller.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      scroller.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
+    };
   }, []);
 
-  const autoplayBlocked = paused || unlockOpen || !inView || !!reduceMotion;
-
+  // Warm-load all videos once
   useEffect(() => {
-    if (autoplayBlocked) {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      rafRef.current = null;
-      return;
-    }
-
-    startRef.current = performance.now() - heldRef.current;
-
-    const tick = (now: number) => {
-      const elapsed = now - startRef.current;
-      const ratio = Math.min(1, elapsed / SLIDE_MS);
-      setProgress(ratio);
-      if (ratio >= 1) {
-        heldRef.current = 0;
-        goNext();
-        return;
-      }
-      rafRef.current = requestAnimationFrame(tick);
-    };
-
-    rafRef.current = requestAnimationFrame(tick);
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      rafRef.current = null;
-      const elapsed = performance.now() - startRef.current;
-      heldRef.current = Math.min(SLIDE_MS, Math.max(0, elapsed));
-    };
-  }, [autoplayBlocked, goNext, index]);
-
-  function onDragEnd(_: unknown, info: PanInfo) {
-    const threshold = 70;
-    if (info.offset.x < -threshold || info.velocity.x < -500) goNext();
-    else if (info.offset.x > threshold || info.velocity.x > 500) goPrev();
-  }
-
-  const variants = {
-    enter: (dir: number) => ({
-      x: dir > 0 ? "12%" : "-12%",
-      opacity: 0,
-      scale: 1.02,
-    }),
-    center: { x: 0, opacity: 1, scale: 1 },
-    exit: (dir: number) => ({
-      x: dir > 0 ? "-10%" : "10%",
-      opacity: 0,
-      scale: 0.98,
-    }),
-  };
+    residences.forEach((r) => {
+      const link = document.createElement("link");
+      link.rel = "preload";
+      link.as = "video";
+      link.href = r.video;
+      document.head.appendChild(link);
+    });
+  }, []);
 
   return (
-    <section ref={sectionRef} id="casas" className="relative bg-ink">
-      {/* Orientation header */}
-      <div className="absolute inset-x-0 top-0 z-30 px-4 pt-5 md:px-10 md:pt-7">
-        <div className="mb-4 flex items-center justify-between gap-4 rounded-2xl bg-black/55 px-4 py-3 shadow-[0_12px_40px_rgba(0,0,0,0.35)] backdrop-blur-md md:px-5">
-          <div>
-            <p className="text-[10px] tracking-[0.32em] text-white/70 uppercase">
-              Tour de residencias
-            </p>
-            <p className="mt-1 text-sm text-white">
-              <span className="font-medium text-gold-soft">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <span className="text-white/55"> / {String(total).padStart(2, "0")}</span>
-              <span className="mx-2 text-white/35">·</span>
-              <span className="tracking-[0.08em]">{current.name}</span>
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              aria-label={paused ? "Reanudar tour" : "Pausar tour"}
-              onClick={() => setPaused((p) => !p)}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-black/55 text-white backdrop-blur-md"
-            >
-              {paused || unlockOpen ? <Play size={14} /> : <Pause size={14} />}
-            </button>
-            <button
-              type="button"
-              aria-label={muted ? "Activar sonido" : "Silenciar"}
-              onClick={() => setMuted((m) => !m)}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-black/55 text-white backdrop-blur-md"
-            >
-              {muted ? <VolumeX size={14} /> : <Volume2 size={14} />}
-            </button>
-          </div>
+    <section id="casas" className="relative overflow-hidden bg-ink">
+      <div className="mx-auto flex max-w-6xl items-end justify-between gap-6 px-5 pb-6 pt-14 md:px-10 md:pt-16">
+        <div>
+          <p className="text-[11px] tracking-[0.32em] text-gold-soft uppercase">
+            Residencias activas
+          </p>
+          <h2 className="mt-2 text-3xl font-light tracking-wide text-white md:text-4xl">
+            Recorrido en vivo
+          </h2>
+          <p className="mt-2 max-w-md text-sm text-white/55">
+            Desliza para pasar de una residencia a otra. Hay más al lado.
+          </p>
         </div>
-
-        {/* Story progress segments */}
-        <div className="flex gap-1.5 rounded-full bg-black/40 p-1.5 backdrop-blur-sm">
-          {residences.map((r, i) => {
-            const fill =
-              i < index ? 1 : i === index ? (reduceMotion ? 1 : progress) : 0;
-            return (
-              <button
-                key={r.id}
-                type="button"
-                aria-label={`Ir a ${r.name}`}
-                onClick={() => goTo(i, i > index ? 1 : -1)}
-                className="group h-1.5 flex-1 overflow-hidden rounded-full bg-white/30"
-              >
-                <span
-                  className="block h-full origin-left rounded-full bg-gold-soft transition-[width] duration-75 ease-linear group-hover:bg-white"
-                  style={{ width: `${fill * 100}%` }}
-                />
-              </button>
-            );
-          })}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            aria-label={muted ? "Activar sonido" : "Silenciar"}
+            onClick={() => setMuted((m) => !m)}
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-white"
+          >
+            {muted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+          </button>
+          <button
+            type="button"
+            aria-label="Anterior"
+            disabled={index === 0}
+            onClick={() => scrollToIndex(index - 1)}
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-white disabled:opacity-30"
+          >
+            <ArrowLeft size={16} />
+          </button>
+          <button
+            type="button"
+            aria-label="Siguiente"
+            disabled={index === total - 1}
+            onClick={() => scrollToIndex(index + 1)}
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-white disabled:opacity-30"
+          >
+            <ArrowRight size={16} />
+          </button>
         </div>
       </div>
 
-      {/* Stage */}
-      <div className="relative h-[88dvh] min-h-[560px] overflow-hidden touch-pan-y">
-        <AnimatePresence initial={false} custom={direction} mode="popLayout">
-          <motion.div
-            key={current.id}
-            custom={direction}
-            variants={variants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.14}
-            onDragStart={() => setPaused(true)}
-            onDragEnd={(e, info) => {
-              onDragEnd(e, info);
-              setPaused(false);
+      <div
+        ref={scrollerRef}
+        className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-[7vw] pb-4 pt-2 [-ms-overflow-style:none] [scrollbar-width:none] md:gap-6 md:px-[14vw] [&::-webkit-scrollbar]:hidden"
+      >
+        {residences.map((r, i) => (
+          <div
+            key={r.id}
+            ref={(el) => {
+              cardRefs.current[i] = el;
             }}
-            className="absolute inset-0 cursor-grab active:cursor-grabbing"
+            className="snap-center"
           >
             <VideoSlide
-              residence={current}
-              active={inView}
+              residence={r}
+              active={i === index}
               muted={muted}
-              onOpenUnlock={() => {
-                setPaused(true);
-                setUnlockOpen(true);
-              }}
+              onSelect={() => scrollToIndex(i)}
+              onOpenUnlock={() => setUnlockOpen(true)}
             />
-          </motion.div>
-        </AnimatePresence>
+          </div>
+        ))}
+      </div>
 
-        {/* Next peek label */}
-        <div className="pointer-events-none absolute right-5 bottom-36 z-20 hidden rounded-xl bg-black/55 px-3 py-2 text-right backdrop-blur-md md:right-10 md:block">
-          <p className="text-[9px] tracking-[0.28em] text-white/70 uppercase">Siguiente</p>
-          <p className="mt-1 text-xs tracking-[0.14em] text-white">{next.name}</p>
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 pb-10 pt-2 md:px-10">
+        <p className="text-sm text-white/70">
+          <span className="text-gold-soft">{String(index + 1).padStart(2, "0")}</span>
+          <span className="text-white/35"> / {String(total).padStart(2, "0")}</span>
+          <span className="mx-2 text-white/25">·</span>
+          {current.name}
+        </p>
+        <div className="flex items-center gap-2">
+          {residences.map((r, i) => (
+            <button
+              key={r.id}
+              type="button"
+              aria-label={r.name}
+              onClick={() => scrollToIndex(i)}
+              className={`h-1.5 rounded-full transition-all ${
+                i === index ? "w-8 bg-gold-soft" : "w-1.5 bg-white/30 hover:bg-white/60"
+              }`}
+            />
+          ))}
         </div>
       </div>
 
-      {/* Filmstrip — always know where you are */}
-      <div className="border-t border-white/8 bg-[#070707] px-4 py-4 md:px-10">
-        <div className="mx-auto flex max-w-6xl gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {residences.map((r, i) => {
-            const active = i === index;
-            return (
-              <button
-                key={r.id}
-                type="button"
-                onClick={() => goTo(i, i > index ? 1 : -1)}
-                className={`relative flex min-w-[148px] flex-1 items-center gap-3 rounded-2xl border px-3 py-2.5 text-left transition ${
-                  active
-                    ? "border-gold-soft/45 bg-gold-soft/10"
-                    : "border-white/10 bg-white/[0.03] hover:border-white/25"
-                }`}
-              >
-                <div
-                  className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-cover bg-center"
-                  style={{ backgroundImage: `url(${r.image})` }}
-                />
-                <div className="min-w-0">
-                  <p
-                    className={`truncate text-[11px] tracking-[0.16em] uppercase ${
-                      active ? "text-gold-soft" : "text-white/70"
-                    }`}
-                  >
-                    {r.name}
-                  </p>
-                  <p className="mt-0.5 truncate text-[10px] text-white/45">
-                    Desde {formatUsd(r.priceFrom, true)} · {r.progress}% obra
-                  </p>
-                </div>
-                {active && (
-                  <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-gold-soft" />
-                )}
-              </button>
-            );
-          })}
+      {/* Catalog showcase */}
+      <div className="border-t border-white/10 bg-[#0a0a0a] px-5 py-16 md:px-10 md:py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <div>
+              <p className="text-[11px] tracking-[0.32em] text-gold-soft uppercase">
+                Catálogo Omar Corp
+              </p>
+              <h3 className="mt-2 text-3xl font-light text-white md:text-4xl">
+                Tres residencias. Una decisión.
+              </h3>
+              <p className="mt-2 max-w-lg text-sm text-white/50">
+                Compara precio de preventa, avance de obra y demanda. Elige la que quieres seguir.
+              </p>
+            </div>
+            <Link
+              href="/residences"
+              className="inline-flex items-center gap-2 text-[11px] tracking-[0.22em] text-gold-soft uppercase"
+            >
+              Ver showroom completo
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {residences.map((r, i) => {
+              const selected = i === index;
+              const save = savingsAmount(r.priceFrom, r.marketValue);
+              return (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => {
+                    scrollToIndex(i);
+                    document.getElementById("casas")?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }}
+                  className={`group overflow-hidden rounded-[1.75rem] border text-left transition ${
+                    selected
+                      ? "border-gold-soft/50 bg-gold-soft/5"
+                      : "border-white/10 bg-white/[0.02] hover:border-white/25"
+                  }`}
+                >
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    <Image
+                      src={r.image}
+                      alt={r.name}
+                      fill
+                      className="object-cover transition duration-700 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    <div className="absolute top-3 left-3 flex gap-2">
+                      <span className="rounded-full bg-black/55 px-2.5 py-1 text-[9px] tracking-[0.18em] text-white uppercase backdrop-blur-md">
+                        {r.progress}% obra
+                      </span>
+                      {selected && (
+                        <span className="rounded-full bg-gold-soft px-2.5 py-1 text-[9px] tracking-[0.18em] text-ink uppercase">
+                          En vista
+                        </span>
+                      )}
+                    </div>
+                    <div className="absolute inset-x-0 bottom-0 p-4">
+                      <p className="text-[10px] tracking-[0.25em] text-gold-soft uppercase">
+                        {r.code}
+                      </p>
+                      <p className="mt-1 text-xl tracking-[0.06em] text-white">{r.name}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-3 p-4">
+                    <div className="flex items-end justify-between gap-3">
+                      <div>
+                        <p className="text-[10px] tracking-[0.2em] text-white/40 uppercase">
+                          Desde
+                        </p>
+                        <p className="display text-2xl text-white">{formatUsd(r.priceFrom)}</p>
+                      </div>
+                      <p className="text-right text-[11px] text-emerald-300">
+                        Ahorras {formatUsd(save, true)}
+                      </p>
+                    </div>
+                    <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+                      <div
+                        className="h-full rounded-full bg-gold-soft"
+                        style={{ width: `${r.progress}%` }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between text-[11px] text-white/45">
+                      <span>{r.waitlistCount}+ en lista</span>
+                      <span className="tracking-[0.14em] text-gold-soft uppercase">
+                        Ver en vivo →
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
-        <p className="mx-auto mt-3 max-w-6xl text-center text-[10px] tracking-[0.2em] text-white/30 uppercase md:text-left">
-          {autoplayBlocked ? "Tour en pausa" : "Avance automático"} · desliza o toca otra casa
-        </p>
       </div>
 
       <UnlockModal
         residence={current}
         open={unlockOpen}
-        onClose={() => {
-          setUnlockOpen(false);
-          setPaused(false);
-        }}
+        onClose={() => setUnlockOpen(false)}
       />
     </section>
   );
