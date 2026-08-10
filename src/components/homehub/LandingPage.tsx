@@ -4,24 +4,105 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
+  Bath,
+  BedDouble,
   Bell,
   Box,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  Heart,
   Home,
   KeyRound,
   MapPin,
+  Menu,
   Play,
+  Ruler,
+  Search,
   ShieldCheck,
   Star,
+  User,
+  X,
 } from "lucide-react";
 import { useRef, useState } from "react";
-import { HomeCard } from "@/components/homehub/HomeCard";
 import { JoinListModal } from "@/components/homehub/JoinListModal";
-import { homes } from "@/data/homes";
+import { homes, type PreMarketHome } from "@/data/homes";
 
 const AVATARS = ["S", "M", "A", "C"];
+
+function statusLabel(home: PreMarketHome) {
+  if (home.category === "renovation") return "Under Renovation";
+  if (home.category === "new_construction") return "New Construction";
+  return "Coming Soon";
+}
+
+function ProjectCard({
+  home,
+  priority,
+}: {
+  home: PreMarketHome;
+  priority?: boolean;
+}) {
+  return (
+    <article className="w-[280px] shrink-0 overflow-hidden rounded-[1.25rem] border border-[#efefef] bg-white shadow-[0_8px_28px_rgba(0,0,0,0.06)] sm:w-[300px]">
+      <Link href={`/homes/${home.id}`} className="relative block aspect-[4/3] bg-[#eee]">
+        <Image
+          src={home.image}
+          alt={home.address}
+          fill
+          priority={priority}
+          className="object-cover"
+          sizes="300px"
+        />
+        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+          <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-[#111] shadow-sm">
+            {home.progress}%
+          </span>
+          <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-[#111] shadow-sm">
+            {statusLabel(home)}
+          </span>
+        </div>
+        <span className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#111] shadow-sm">
+          <Heart size={14} strokeWidth={1.75} />
+        </span>
+      </Link>
+      <div className="space-y-2 px-3.5 pt-3.5 pb-4">
+        <Link href={`/homes/${home.id}`}>
+          <h3 className="text-[15px] font-semibold tracking-tight text-[#111]">{home.address}</h3>
+          <p className="mt-0.5 text-[13px] text-[#6a6a6a]">
+            {home.city}, {home.state} {home.zip}
+          </p>
+        </Link>
+        <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-[#6a6a6a]">
+          <span className="inline-flex items-center gap-1">
+            <BedDouble size={13} /> {home.beds} Beds
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <Bath size={13} /> {home.baths} Baths
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <Ruler size={13} /> {home.sqft.toLocaleString()} sqft
+          </span>
+        </p>
+        <div className="flex items-center gap-2 pt-0.5">
+          <div className="flex -space-x-1.5">
+            {AVATARS.slice(0, 3).map((a) => (
+              <span
+                key={a}
+                className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-[#e8e8e8] text-[9px] font-semibold"
+              >
+                {a}
+              </span>
+            ))}
+          </div>
+          <p className="text-[12px] text-[#6a6a6a]">
+            <span className="font-semibold text-[#111]">{home.interested}</span> interested
+          </p>
+        </div>
+      </div>
+    </article>
+  );
+}
 
 const VALUE = [
   {
@@ -31,7 +112,7 @@ const VALUE = [
   },
   {
     icon: Bell,
-    title: "Follow & Get Updates",
+    title: "Follow & Updates",
     copy: "See real progress with photos, videos and updates.",
   },
   {
@@ -42,11 +123,11 @@ const VALUE = [
   {
     icon: ShieldCheck,
     title: "Trusted & Secure",
-    copy: "Verified projects, clear process, and secure communication.",
+    copy: "Verified projects, clear process, and secure payments.",
   },
 ] as const;
 
-const BOTTOM = [
+const CATEGORIES = [
   {
     href: "/discover",
     title: "Rentals",
@@ -70,28 +151,33 @@ const BOTTOM = [
   },
 ] as const;
 
+const MOBILE_TABS = [
+  { id: "homes", label: "Homes", Icon: Home },
+  { id: "rentals", label: "Rentals", Icon: KeyRound },
+  { id: "things", label: "Things", Icon: Box },
+] as const;
+
 export function LandingPage() {
   const featured = homes[0];
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [joinOpen, setJoinOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [tab, setTab] = useState<(typeof MOBILE_TABS)[number]["id"]>("homes");
 
   const scrollProjects = (dir: -1 | 1) => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    el.scrollBy({ left: dir * 340, behavior: "smooth" });
+    scrollerRef.current?.scrollBy({ left: dir * 300, behavior: "smooth" });
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#111]">
-      {/* Header */}
+    <div className="min-h-screen bg-white text-[#111] pb-[72px] md:pb-0">
+      {/* Header — mobile: logo | location | hamburger */}
       <header className="sticky top-0 z-50 border-b border-[#f0f0f0] bg-white/95 backdrop-blur-md">
-        <div className="mx-auto flex h-[64px] max-w-[1200px] items-center justify-between gap-4 px-5 md:px-8">
+        <div className="mx-auto flex h-[56px] max-w-[1200px] items-center justify-between gap-3 px-4 md:h-[64px] md:px-8">
           <Link href="/" className="flex shrink-0 items-center gap-2">
             <span className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#111] text-white">
-              <Home size={15} strokeWidth={2} />
+              <Home size={15} />
             </span>
-            <span className="text-[17px] font-semibold tracking-tight">HomeHub</span>
+            <span className="text-[16px] font-semibold tracking-tight md:text-[17px]">HomeHub</span>
           </Link>
 
           <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 text-[14px] font-medium text-[#5c5c5c] lg:flex">
@@ -112,14 +198,14 @@ export function LandingPage() {
             </Link>
           </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             <button
               type="button"
-              className="hidden items-center gap-1 rounded-full px-2 py-1.5 text-[13px] font-medium text-[#5c5c5c] md:inline-flex"
+              className="inline-flex items-center gap-1 rounded-full px-1.5 py-1 text-[12px] font-medium text-[#5c5c5c] md:text-[13px]"
             >
               <MapPin size={14} className="text-[#111]" />
-              Logansport, IN
-              <ChevronDown size={14} className="text-[#8a8a8a]" />
+              <span className="max-w-[110px] truncate sm:max-w-none">Logansport, IN</span>
+              <ChevronDown size={14} className="hidden text-[#8a8a8a] sm:block" />
             </button>
             <Link
               href="/discover"
@@ -129,63 +215,68 @@ export function LandingPage() {
             </Link>
             <Link
               href="/early-access"
-              className="rounded-full bg-[#111] px-4 py-2.5 text-[13px] font-semibold text-white"
+              className="hidden rounded-full bg-[#111] px-4 py-2.5 text-[13px] font-semibold text-white sm:inline-flex"
             >
               Get Early Access
             </Link>
             <button
               type="button"
-              className="rounded-full border border-[#e8e8e8] px-3 py-2 text-[12px] font-medium lg:hidden"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              className="flex h-10 w-10 items-center justify-center rounded-full text-[#111] lg:hidden"
               onClick={() => setMenuOpen((v) => !v)}
             >
-              Menu
+              {menuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
+
         {menuOpen && (
-          <div className="border-t border-[#f0f0f0] px-5 py-3 lg:hidden">
-            <div className="flex flex-col gap-2.5 text-[14px] font-medium text-[#5c5c5c]">
+          <div className="border-t border-[#f0f0f0] px-4 py-4 lg:hidden">
+            <div className="flex flex-col gap-3 text-[15px] font-medium text-[#5c5c5c]">
               <Link href="/discover" onClick={() => setMenuOpen(false)}>
                 Homes
               </Link>
               <Link href="/#how" onClick={() => setMenuOpen(false)}>
                 How it works
               </Link>
-              <Link href="/#about" onClick={() => setMenuOpen(false)}>
-                About us
+              <Link href="/early-access" onClick={() => setMenuOpen(false)}>
+                Get Early Access
+              </Link>
+              <Link href="/discover" onClick={() => setMenuOpen(false)}>
+                Log in
               </Link>
             </div>
           </div>
         )}
       </header>
 
-      {/* Hero */}
-      <section className="mx-auto grid max-w-[1200px] items-center gap-10 px-5 pt-10 pb-12 md:px-8 md:pt-14 md:pb-16 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14">
+      {/* Hero — stacked on mobile like mock */}
+      <section className="mx-auto max-w-[1200px] px-4 pt-7 md:px-8 md:pt-14 lg:grid lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-14 lg:pb-8">
         <div>
-          <span className="inline-flex rounded-full bg-[#f3ebe3] px-3.5 py-1.5 text-[11px] font-semibold tracking-[0.06em] text-[#a67c52] uppercase">
+          <span className="inline-flex rounded-full bg-[#f3ebe3] px-3.5 py-1.5 text-[11px] font-semibold tracking-[0.04em] text-[#a67c52] uppercase">
             New way to buy a home
           </span>
 
-          <h1 className="mt-5 max-w-[520px] text-[clamp(2.15rem,4.8vw,3.4rem)] font-semibold leading-[1.08] tracking-tight text-[#111]">
+          <h1 className="mt-4 max-w-[520px] text-[clamp(1.85rem,7vw,3.4rem)] font-semibold leading-[1.1] tracking-tight text-[#111]">
             Discover homes{" "}
-            <span className="italic font-semibold text-[#111]">before</span> they hit the market
+            <span className="text-[#c4a07a]">before they hit the market</span>
           </h1>
 
-          <p className="mt-4 max-w-[420px] text-[16px] leading-relaxed text-[#6a6a6a]">
+          <p className="mt-3.5 max-w-[420px] text-[15px] leading-relaxed text-[#6a6a6a] md:text-[16px]">
             Follow the transformation. Get early access. Be first when the perfect home is ready.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-3">
+          <div className="mt-6 flex flex-col gap-2.5 sm:mt-8 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
             <Link
               href="/early-access"
-              className="inline-flex items-center gap-2 rounded-full bg-[#111] px-6 py-3.5 text-[14px] font-semibold text-white shadow-[0_8px_24px_rgba(0,0,0,0.12)]"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#111] px-6 py-3.5 text-[14px] font-semibold text-white sm:w-auto"
             >
               Join Early Access
               <ArrowRight size={16} />
             </Link>
             <Link
               href="/#how"
-              className="inline-flex items-center gap-2.5 rounded-full border border-[#e8e8e8] bg-white px-5 py-3.5 text-[14px] font-semibold text-[#111]"
+              className="inline-flex w-full items-center justify-center gap-2.5 rounded-full border border-[#e8e8e8] bg-white px-5 py-3.5 text-[14px] font-semibold text-[#111] sm:w-auto"
             >
               <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f4f4f4]">
                 <Play size={11} fill="currentColor" className="ml-0.5" />
@@ -194,43 +285,44 @@ export function LandingPage() {
             </Link>
           </div>
 
-          <div className="mt-9 flex items-center gap-3">
+          <div className="mt-6 flex items-center gap-3 md:mt-8">
             <div className="flex -space-x-2">
               {AVATARS.map((a) => (
                 <span
                   key={a}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border-[2.5px] border-white bg-[#e9e9e9] text-[11px] font-semibold text-[#444]"
+                  className="flex h-8 w-8 items-center justify-center rounded-full border-[2.5px] border-white bg-[#e9e9e9] text-[11px] font-semibold text-[#444] md:h-9 md:w-9"
                 >
                   {a}
                 </span>
               ))}
             </div>
-            <p className="max-w-[280px] text-[13px] leading-snug text-[#6a6a6a]">
-              <span className="font-semibold text-[#111]">1,248+</span> people getting early access.
-              Join a growing community of future homeowners.
+            <p className="text-[13px] leading-snug text-[#6a6a6a]">
+              <span className="font-semibold text-[#111]">1,248+</span> people getting early access
             </p>
           </div>
         </div>
 
-        <div className="relative">
-          <div className="relative aspect-[5/4] overflow-hidden rounded-[1.75rem] bg-[#eee] shadow-[0_24px_60px_rgba(0,0,0,0.1)] md:aspect-[4/3]">
+        {/* Featured visual */}
+        <div className="relative mt-8 lg:mt-0">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem] bg-[#eee] shadow-[0_20px_50px_rgba(0,0,0,0.1)] sm:aspect-[5/4] md:aspect-[4/3] md:rounded-[1.75rem]">
             <Image
               src="/images/monroe-featured.jpg"
               alt={featured.address}
               fill
               priority
-              className="object-cover"
+              className="object-cover object-center"
               sizes="(max-width: 1024px) 100vw, 560px"
             />
           </div>
 
-          {/* Summit-style progress card — top left */}
-          <div className="absolute top-4 left-4 w-[min(100%,210px)] rounded-2xl bg-white/95 p-3.5 shadow-[0_12px_30px_rgba(0,0,0,0.12)] backdrop-blur-sm md:top-5 md:left-5">
-            <p className="text-[13px] font-semibold text-[#111]">The Monroe Project</p>
-            <p className="mt-0.5 text-[12px] text-[#6a6a6a]">
+          <div className="absolute top-3 left-3 w-[min(72%,200px)] rounded-2xl bg-white/95 p-3 shadow-[0_10px_28px_rgba(0,0,0,0.12)] backdrop-blur-sm md:top-5 md:left-5 md:w-[210px] md:p-3.5">
+            <p className="text-[12px] font-semibold text-[#111] md:text-[13px]">
+              The Monroe Project
+            </p>
+            <p className="mt-0.5 text-[11px] text-[#6a6a6a] md:text-[12px]">
               {featured.progress}% Under Renovation
             </p>
-            <div className="mt-2.5 h-[6px] overflow-hidden rounded-full bg-[#ececec]">
+            <div className="mt-2 h-[5px] overflow-hidden rounded-full bg-[#ececec] md:mt-2.5 md:h-[6px]">
               <div
                 className="h-full rounded-full bg-[#111]"
                 style={{ width: `${featured.progress}%` }}
@@ -238,13 +330,14 @@ export function LandingPage() {
             </div>
           </div>
 
-          {/* Priority list — bottom right */}
-          <div className="absolute right-4 bottom-4 left-4 rounded-2xl bg-white p-4 shadow-[0_16px_40px_rgba(0,0,0,0.14)] md:right-5 md:bottom-5 md:left-auto md:w-[300px]">
-            <p className="text-[14px] font-semibold text-[#111]">Join the priority list</p>
-            <p className="mt-1 text-[12px] leading-snug text-[#6a6a6a]">
+          <div className="absolute right-3 bottom-3 left-3 rounded-2xl bg-white p-3.5 shadow-[0_14px_36px_rgba(0,0,0,0.14)] md:right-5 md:bottom-5 md:left-auto md:w-[300px] md:p-4">
+            <p className="text-[13px] font-semibold text-[#111] md:text-[14px]">
+              Join the priority list
+            </p>
+            <p className="mt-1 text-[11px] leading-snug text-[#6a6a6a] md:text-[12px]">
               Get notified and be the first to schedule a tour.
             </p>
-            <div className="mt-3 flex items-center gap-2">
+            <div className="mt-2.5 flex items-center gap-2">
               <div className="flex -space-x-1.5">
                 {AVATARS.slice(0, 3).map((a) => (
                   <span
@@ -255,7 +348,7 @@ export function LandingPage() {
                   </span>
                 ))}
               </div>
-              <p className="text-[12px] text-[#6a6a6a]">
+              <p className="text-[11px] text-[#6a6a6a] md:text-[12px]">
                 <span className="font-semibold text-[#111]">{featured.interested}</span> people ahead
                 of you
               </p>
@@ -263,7 +356,7 @@ export function LandingPage() {
             <button
               type="button"
               onClick={() => setJoinOpen(true)}
-              className="mt-3.5 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-[#111] py-2.5 text-[13px] font-semibold text-white"
+              className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-[#111] py-2.5 text-[13px] font-semibold text-white"
             >
               Join the List
               <ArrowRight size={14} />
@@ -272,97 +365,114 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Value bar */}
-      <section id="how" className="bg-[#f7f7f7]">
-        <div className="mx-auto grid max-w-[1200px] gap-8 px-5 py-11 sm:grid-cols-2 md:px-8 lg:grid-cols-4 lg:gap-6 lg:py-12">
+      {/* Category toggle — mobile mock */}
+      <div className="mx-auto mt-2 flex max-w-[1200px] justify-center px-4 md:mt-4 md:px-8 lg:hidden">
+        <div className="inline-flex rounded-full border border-[#ececec] bg-[#f7f7f7] p-1">
+          {MOBILE_TABS.map(({ id, label, Icon }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setTab(id)}
+              className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[12px] font-semibold transition ${
+                tab === id
+                  ? "bg-[#f3ebe3] text-[#8a6b2e]"
+                  : "text-[#6a6a6a]"
+              }`}
+            >
+              <Icon size={14} strokeWidth={1.75} />
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Value props */}
+      <section id="how" className="mt-8 bg-[#f7f7f7] md:mt-10">
+        <div className="mx-auto grid max-w-[1200px] grid-cols-2 gap-6 px-4 py-9 md:grid-cols-4 md:gap-6 md:px-8 md:py-12">
           {VALUE.map(({ icon: Icon, title, copy }) => (
-            <div key={title} className="flex gap-3.5">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#f0e6dc] text-[#a67c52]">
-                <Icon size={18} strokeWidth={1.75} />
+            <div key={title} className="flex flex-col items-start gap-2.5 sm:flex-row sm:gap-3.5">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f0e6dc] text-[#a67c52]">
+                <Icon size={17} strokeWidth={1.75} />
               </span>
               <div>
-                <p className="text-[14px] font-semibold text-[#111]">{title}</p>
-                <p className="mt-1 text-[13px] leading-relaxed text-[#6a6a6a]">{copy}</p>
+                <p className="text-[13px] font-semibold text-[#111] md:text-[14px]">{title}</p>
+                <p className="mt-1 text-[12px] leading-relaxed text-[#6a6a6a] md:text-[13px]">
+                  {copy}
+                </p>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Browse active projects */}
-      <section id="browse" className="mx-auto max-w-[1200px] px-5 py-14 md:px-8 md:py-16">
-        <div className="mb-7 flex items-end justify-between gap-4">
+      {/* Browse */}
+      <section id="browse" className="mx-auto max-w-[1200px] px-4 py-10 md:px-8 md:py-16">
+        <div className="mb-5 flex items-end justify-between gap-3 md:mb-7">
           <div>
-            <h2 className="text-[1.55rem] font-semibold tracking-tight text-[#111] md:text-[1.85rem]">
+            <p className="text-[11px] font-semibold tracking-[0.14em] text-[#c4a07a] uppercase">
+              Homes in progress
+            </p>
+            <h2 className="mt-1 text-[1.35rem] font-semibold tracking-tight text-[#111] md:text-[1.85rem]">
               Browse active projects
             </h2>
-            <p className="mt-1.5 text-[14px] text-[#6a6a6a]">
-              Homes currently being transformed and coming soon to the market.
-            </p>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1.5">
             <Link
               href="/discover"
-              className="mr-1 hidden text-[13px] font-semibold text-[#111] underline-offset-4 hover:underline sm:inline"
+              className="mr-1 hidden text-[13px] font-semibold text-[#111] sm:inline"
             >
-              View all projects
+              View all
             </Link>
             <button
               type="button"
               aria-label="Previous"
               onClick={() => scrollProjects(-1)}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e8e8e8] bg-white hover:border-[#111]"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-[#e8e8e8] bg-white md:h-9 md:w-9"
             >
-              <ChevronLeft size={16} />
+              <ChevronLeft size={15} />
             </button>
             <button
               type="button"
               aria-label="Next"
               onClick={() => scrollProjects(1)}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e8e8e8] bg-white hover:border-[#111]"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-[#e8e8e8] bg-white md:h-9 md:w-9"
             >
-              <ChevronRight size={16} />
+              <ChevronRight size={15} />
             </button>
           </div>
         </div>
 
         <div
           ref={scrollerRef}
-          className="flex gap-5 overflow-x-auto scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex gap-4 overflow-x-auto scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {homes.map((home, i) => (
-            <div key={home.id} className="w-[300px] shrink-0 sm:w-[320px]">
-              <HomeCard home={home} priority={i === 0} />
-            </div>
+            <ProjectCard key={home.id} home={home} priority={i === 0} />
           ))}
         </div>
       </section>
 
-      {/* Bottom category cards */}
-      <section id="categories" className="bg-[#f7f7f7] py-12 md:py-14">
-        <div className="mx-auto grid max-w-[1200px] gap-4 px-5 md:grid-cols-3 md:gap-5 md:px-8">
-          {BOTTOM.map(({ href, title, copy, image, Icon }) => (
+      {/* Secondary category cards */}
+      <section id="categories" className="bg-[#f7f7f7] py-10 md:py-14">
+        <div className="mx-auto grid max-w-[1200px] gap-3 px-4 sm:grid-cols-3 md:gap-5 md:px-8">
+          {CATEGORIES.map(({ href, title, copy, image, Icon }) => (
             <Link
               key={title}
               href={href}
-              className="group relative overflow-hidden rounded-[1.5rem] border border-[#ececec] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.04)]"
+              className="flex items-stretch overflow-hidden rounded-[1.35rem] border border-[#ececec] bg-[#f0f0f0]"
             >
-              <div className="relative h-[150px]">
-                <Image
-                  src={image}
-                  alt=""
-                  fill
-                  className="object-cover transition duration-500 group-hover:scale-[1.03]"
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
-                <span className="absolute top-3 left-3 flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#111] shadow-sm">
-                  <Icon size={16} strokeWidth={1.75} />
+              <div className="flex min-w-0 flex-1 flex-col justify-center p-4 md:p-5">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#111] shadow-sm">
+                  <Icon size={15} strokeWidth={1.75} />
+                </span>
+                <p className="mt-3 text-[15px] font-semibold text-[#111]">{title}</p>
+                <p className="mt-1 text-[12px] leading-relaxed text-[#6a6a6a]">{copy}</p>
+                <span className="mt-3 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white text-[#111]">
+                  <ArrowRight size={13} />
                 </span>
               </div>
-              <div className="p-5">
-                <p className="text-[16px] font-semibold text-[#111]">{title}</p>
-                <p className="mt-1 text-[13px] leading-relaxed text-[#6a6a6a]">{copy}</p>
+              <div className="relative w-[38%] min-w-[110px] self-stretch">
+                <Image src={image} alt="" fill className="object-cover" sizes="140px" />
               </div>
             </Link>
           ))}
@@ -370,18 +480,12 @@ export function LandingPage() {
       </section>
 
       <footer id="about" className="border-t border-[#f0f0f0] bg-white">
-        <div className="mx-auto flex max-w-[1200px] flex-col gap-5 px-5 py-10 md:flex-row md:items-center md:justify-between md:px-8">
-          <div className="flex items-start gap-3">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[#111] text-white">
-              <Home size={15} />
-            </span>
-            <div>
-              <p className="text-[15px] font-semibold text-[#111]">HomeHub</p>
-              <p className="mt-1 max-w-md text-[13px] text-[#6a6a6a]">
-                Pre-market homes. Follow renovations, join early access, and get in line before the
-                open market.
-              </p>
-            </div>
+        <div className="mx-auto flex max-w-[1200px] flex-col gap-4 px-4 py-8 md:flex-row md:items-center md:justify-between md:px-8">
+          <div>
+            <p className="text-[15px] font-semibold text-[#111]">HomeHub</p>
+            <p className="mt-1 max-w-md text-[13px] text-[#6a6a6a]">
+              Pre-market homes. Follow renovations and get early access before the open market.
+            </p>
           </div>
           <Link
             href="/early-access"
@@ -392,6 +496,30 @@ export function LandingPage() {
           </Link>
         </div>
       </footer>
+
+      {/* Mobile bottom nav — matches mock */}
+      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-[#ececec] bg-white/95 backdrop-blur-md md:hidden">
+        <div className="flex items-center justify-around px-1 py-2">
+          {[
+            { href: "/", label: "Home", Icon: Home, active: true },
+            { href: "/discover", label: "Search", Icon: Search, active: false },
+            { href: "/saved", label: "Saved", Icon: Heart, active: false },
+            { href: "/updates", label: "Updates", Icon: Bell, active: false },
+            { href: "/profile", label: "Profile", Icon: User, active: false },
+          ].map(({ href, label, Icon, active }) => (
+            <Link
+              key={label}
+              href={href}
+              className={`flex min-w-[56px] flex-col items-center gap-0.5 px-2 py-1 text-[10px] font-medium ${
+                active ? "text-[#a67c52]" : "text-[#8a8a8a]"
+              }`}
+            >
+              <Icon size={20} strokeWidth={active ? 2 : 1.6} />
+              {label}
+            </Link>
+          ))}
+        </div>
+      </nav>
 
       <JoinListModal home={featured} open={joinOpen} onClose={() => setJoinOpen(false)} />
     </div>

@@ -36,8 +36,13 @@ export function HomeCard({ home, saved, onToggleSave, priority }: HomeCardProps)
           className="object-cover transition duration-500 group-hover:scale-[1.03]"
           sizes="(max-width: 768px) 100vw, 33vw"
         />
-        <div className="absolute top-3 left-3 max-w-[78%] rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-[#111] shadow-sm">
-          {home.progress}% {statusLabel(home)}
+        <div className="absolute top-3 left-3 flex max-w-[80%] flex-wrap gap-1.5">
+          <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-[#111] shadow-sm">
+            {home.progress}%
+          </span>
+          <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-[#111] shadow-sm">
+            {statusLabel(home)}
+          </span>
         </div>
         <button
           type="button"
