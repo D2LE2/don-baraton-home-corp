@@ -171,15 +171,17 @@ export function VideoResidenceFeed() {
 
         {/* 01 / 03 EXCLUSIVE RESIDENCE */}
         <div className="absolute top-16 left-4 z-20 md:top-20 md:left-8">
-          <p className="text-[10px] tracking-[0.28em] text-white/85 uppercase">
-            <span className="text-white">
+          <p className="rounded-md bg-black/55 px-2.5 py-1.5 text-[10px] tracking-[0.28em] text-white uppercase shadow-[0_4px_20px_rgba(0,0,0,0.35)] backdrop-blur-sm md:text-[11px]">
+            <span className="font-semibold text-white">
               {String(index + 1).padStart(2, "0")}
             </span>
-            <span className="text-white/40">
+            <span className="text-white/70">
               {" "}
               / {String(total).padStart(2, "0")}
             </span>
-            <span className="ml-3 tracking-[0.32em]">Exclusive Residence</span>
+            <span className="ml-3 font-medium tracking-[0.32em] text-white">
+              Exclusive Residence
+            </span>
           </p>
         </div>
 
@@ -204,8 +206,8 @@ export function VideoResidenceFeed() {
         </div>
 
         {/* Vertical progress — ALWAYS visible like mock */}
-        <div className="absolute top-[22%] right-3 z-20 w-[72px] md:right-6 md:w-24">
-          <p className="text-[8px] leading-tight tracking-[0.12em] text-[#c4a574] uppercase md:text-[9px]">
+        <div className="absolute top-[18%] right-2 z-20 w-[88px] rounded-lg bg-black/55 px-2.5 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.45)] backdrop-blur-md md:right-5 md:w-[110px] md:px-3 md:py-3.5">
+          <p className="text-[9px] font-semibold leading-tight tracking-[0.14em] text-[#e0c57a] uppercase md:text-[10px]">
             {current.progress}% Completado
           </p>
           <div className="mt-3">
@@ -218,27 +220,27 @@ export function VideoResidenceFeed() {
                     <span
                       className={`mt-[3px] rounded-full ${
                         active
-                          ? "h-2 w-2 bg-[#c4a574] shadow-[0_0_10px_rgba(196,165,116,0.9)]"
+                          ? "h-2 w-2 bg-[#e0c57a] shadow-[0_0_10px_rgba(224,197,122,0.95)]"
                           : done
-                            ? "h-1.5 w-1.5 bg-[#c4a574]"
-                            : "h-1.5 w-1.5 bg-white/30"
+                            ? "h-1.5 w-1.5 bg-[#e0c57a]"
+                            : "h-1.5 w-1.5 bg-white/50"
                       }`}
                     />
                     {i < PIPELINE.length - 1 && (
                       <span
                         className={`w-px flex-1 min-h-[14px] ${
-                          done || active ? "bg-[#c4a574]/60" : "bg-white/20"
+                          done || active ? "bg-[#e0c57a]/70" : "bg-white/30"
                         }`}
                       />
                     )}
                   </div>
                   <p
-                    className={`pb-2.5 text-[8px] tracking-[0.12em] uppercase md:text-[9px] ${
+                    className={`pb-2.5 text-[9px] font-medium tracking-[0.1em] uppercase drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)] md:text-[10px] ${
                       active
-                        ? "font-medium text-[#c4a574]"
+                        ? "text-[#e0c57a]"
                         : done
-                          ? "text-white/75"
-                          : "text-white/35"
+                          ? "text-white"
+                          : "text-white/75"
                     }`}
                   >
                     {label}
