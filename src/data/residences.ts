@@ -58,7 +58,7 @@ export const residences: Residence[] = [
     code: "RESIDENCE 001",
     name: "THE MONROE",
     location: "Logansport, Indiana",
-    image: "/images/monroe.jpg",
+    image: "/images/monroe-hero.png",
     video: "/videos/monroe.mp4",
     teaser: "De terreno vacío a hogar. Mira cómo despierta.",
     beds: 3,
