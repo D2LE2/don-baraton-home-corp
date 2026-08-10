@@ -1,99 +1,83 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Eye, Home } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { residences } from "@/data/residences";
-
-type ActivityKind = "viewing" | "purchased";
 
 type ActivityItem = {
   id: number;
-  kind: ActivityKind;
-  title: string;
-  detail: string;
+  accent: "gold" | "mute" | "soft";
+  line: string;
+  meta: string;
 };
 
-const FIRST = ["Sofía M.", "Carlos R.", "Ana V.", "Luis P.", "María G.", "Diego H."];
-const CITIES = ["Indianapolis", "Fort Wayne", "South Bend", "Carmel", "Fishers"];
+const INITIALS = ["S.M.", "C.R.", "A.V.", "L.P.", "M.G.", "D.H.", "I.T.", "J.N."];
 
-function relativeAgo(minutes: number) {
-  if (minutes < 1) return "hace unos segundos";
-  if (minutes === 1) return "hace 1 min";
-  if (minutes < 60) return `hace ${minutes} min`;
-  const h = Math.floor(minutes / 60);
-  return h === 1 ? "hace 1 h" : `hace ${h} h`;
+function ago(seconds: number) {
+  if (seconds < 45) return "hace un momento";
+  if (seconds < 90) return "hace 1 min";
+  if (seconds < 3600) return `hace ${Math.round(seconds / 60)} min`;
+  return `hace ${Math.round(seconds / 3600)} h`;
 }
 
-/** Soft live toasts — quieter, more believable social proof */
+/** Compact, discreet live activity — waitlist + presence, no playful chrome */
 export function HeroActivityFeed() {
   const [visible, setVisible] = useState(false);
   const [item, setItem] = useState<ActivityItem | null>(null);
-
-  const pool = useMemo(() => {
-    const r0 = residences[0];
-    const r1 = residences[1];
-    const viewersNow = 6 + (r0.followers % 5); // 6–10 feels real, not inflated
-    const closedYtd = 11;
-
-    const items: Omit<ActivityItem, "id">[] = [
-      {
-        kind: "viewing",
-        title: `${viewersNow} personas viendo residencias`,
-        detail: `${relativeAgo(0)} · en la plataforma`,
-      },
-      {
-        kind: "purchased",
-        title: `${FIRST[1]} cerró una compra`,
-        detail: `${CITIES[0]} · vía Omar Corp · ${relativeAgo(14)}`,
-      },
-      {
-        kind: "viewing",
-        title: `${FIRST[0]} abrió ${r0.code}`,
-        detail: `${r0.location} · ${relativeAgo(2)}`,
-      },
-      {
-        kind: "purchased",
-        title: `${closedYtd} residencias entregadas con Omar Corp`,
-        detail: `Indiana · actualizado hoy`,
-      },
-      {
-        kind: "viewing",
-        title: `${3 + (r0.waitlistCount % 4)} mirando ${r1?.code ?? r0.code}`,
-        detail: `${r1?.location ?? r0.location} · ${relativeAgo(5)}`,
-      },
-      {
-        kind: "purchased",
-        title: `${FIRST[4]} reservó preventa`,
-        detail: `${CITIES[3]} · Omar Private · ${relativeAgo(38)}`,
-      },
-      {
-        kind: "viewing",
-        title: `${FIRST[2]} sigue el avance de ${r0.code}`,
-        detail: `${r0.progress}% transformada · ${relativeAgo(1)}`,
-      },
-    ];
-    return items;
-  }, []);
+  const [waitlists, setWaitlists] = useState(() =>
+    Object.fromEntries(residences.map((r) => [r.id, r.waitlistCount])),
+  );
 
   useEffect(() => {
     let cancelled = false;
     let tick = 0;
     let hideTimer: number | undefined;
+    const listCounts: Record<string, number> = Object.fromEntries(
+      residences.map((r) => [r.id, r.waitlistCount]),
+    );
 
     const showNext = () => {
       if (cancelled) return;
-      const next = pool[tick % pool.length];
       tick += 1;
+      const person = INITIALS[tick % INITIALS.length];
+      const residence = residences[tick % residences.length];
+      const mode = tick % 5; // bias toward waitlist
+
+      let next: Omit<ActivityItem, "id">;
+
+      if (mode === 0 || mode === 1 || mode === 2) {
+        listCounts[residence.id] = (listCounts[residence.id] ?? residence.waitlistCount) + 1;
+        setWaitlists({ ...listCounts });
+        const count = listCounts[residence.id];
+        next = {
+          accent: "gold",
+          line: `${person} · lista de espera · ${residence.code}`,
+          meta: `${count} en espera · ${residence.location.split(",")[0]} · ${ago(6 + (tick % 50))}`,
+        };
+      } else if (mode === 3) {
+        const viewers = 4 + ((residence.followers + tick) % 6);
+        next = {
+          accent: "soft",
+          line: `${viewers} viendo ${residence.code}`,
+          meta: `${residence.location.split(",")[0]} · ${ago(tick % 30)}`,
+        };
+      } else {
+        next = {
+          accent: "mute",
+          line: `Cierre vía Omar Corp`,
+          meta: `${11 + (tick % 3)} residencias · Indiana · ${ago(1200)}`,
+        };
+      }
+
       setItem({ ...next, id: tick });
       setVisible(true);
       hideTimer = window.setTimeout(() => {
         if (!cancelled) setVisible(false);
-      }, 4200);
+      }, 3600);
     };
 
-    const start = window.setTimeout(showNext, 2200);
-    const loop = window.setInterval(showNext, 6800);
+    const start = window.setTimeout(showNext, 2400);
+    const loop = window.setInterval(showNext, 7000);
 
     return () => {
       cancelled = true;
@@ -101,37 +85,62 @@ export function HeroActivityFeed() {
       window.clearInterval(loop);
       if (hideTimer) window.clearTimeout(hideTimer);
     };
-  }, [pool]);
+  }, []);
 
   return (
     <div
-      className="pointer-events-none absolute bottom-20 left-4 z-20 w-[min(72%,260px)] md:bottom-24 md:left-5 md:w-[280px]"
+      className="pointer-events-none absolute bottom-20 left-4 z-20 w-[min(70%,200px)] md:bottom-24 md:left-5 md:w-[214px]"
       aria-live="polite"
     >
+      <div className="border border-white/12 bg-black/50 px-2 py-1.5 backdrop-blur-sm">
+        <p className="text-[7px] tracking-[0.24em] text-white/40 uppercase">
+          Lista de espera · en vivo
+        </p>
+        <ul className="mt-1 space-y-0.5">
+          {residences.map((r) => (
+            <li
+              key={r.id}
+              className="flex items-baseline justify-between gap-2 text-[9px] text-white/70"
+            >
+              <span className="truncate tracking-[0.08em] uppercase">{r.code.replace("RESIDENCE ", "R.")}</span>
+              <motion.span
+                key={waitlists[r.id]}
+                initial={{ opacity: 0.4 }}
+                animate={{ opacity: 1 }}
+                className="font-medium text-[#e0c57a] tabular-nums"
+              >
+                {waitlists[r.id] ?? r.waitlistCount}
+              </motion.span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       <AnimatePresence mode="wait">
         {visible && item && (
           <motion.div
             key={item.id}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 6 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="flex items-start gap-2.5 rounded-lg border border-white/70 bg-white/92 px-3 py-2.5 shadow-[0_10px_28px_rgba(20,16,10,0.16)] backdrop-blur-md"
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mt-1.5 border border-white/12 bg-black/55 px-2 py-1.5 backdrop-blur-sm"
           >
-            <span
-              className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
-                item.kind === "viewing"
-                  ? "bg-[#f0ebe3] text-[#7a6540]"
-                  : "bg-ink text-[#e0c57a]"
-              }`}
-            >
-              {item.kind === "viewing" ? <Eye size={13} /> : <Home size={13} />}
-            </span>
-            <div className="min-w-0 pt-0.5">
-              <p className="text-[11.5px] leading-snug font-medium text-ink">{item.title}</p>
-              <p className="mt-0.5 text-[10px] text-[#8a847a]">{item.detail}</p>
+            <div className="flex items-center gap-1.5">
+              <span
+                className={`h-px w-2.5 shrink-0 ${
+                  item.accent === "gold"
+                    ? "bg-[#e0c57a]"
+                    : item.accent === "mute"
+                      ? "bg-white/55"
+                      : "bg-white/30"
+                }`}
+              />
+              <p className="min-w-0 truncate text-[9px] leading-tight text-white/85">
+                {item.line}
+              </p>
             </div>
-            <span className="mt-1 ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500/80" />
+            <p className="mt-0.5 pl-[14px] text-[8px] text-white/40">{item.meta}</p>
           </motion.div>
         )}
       </AnimatePresence>
