@@ -492,53 +492,77 @@ export function VideoResidenceFeed() {
             Acceso privado · Cupos limitados
           </p>
 
-          <div className="mt-5 flex gap-2.5 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {residences.map((r, i) => {
-              const active = i === index;
-              const v = liveViewers[r.id] ?? 0;
-              return (
-                <button
-                  key={r.id}
-                  type="button"
-                  onClick={() => goTo(i, i > index ? 1 : -1)}
-                  className={`relative h-[72px] w-[120px] shrink-0 overflow-hidden rounded-md border md:h-[80px] md:w-[140px] ${
-                    active ? "border-[#c4a574]" : "border-white/20"
-                  }`}
-                >
-                  <Image
-                    src={r.image}
-                    alt={r.name}
-                    fill
-                    className="object-cover"
-                    sizes="140px"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent" />
-                  <div className="absolute inset-x-0 top-0 p-1.5">
-                    <div className="h-0.5 overflow-hidden rounded-full bg-white/20">
-                      <div
-                        className="h-full bg-[#e0c57a]"
-                        style={{ width: `${r.progress}%` }}
-                      />
+          {/* Catalog — clear and obvious */}
+          <div className="mt-7 border-t border-white/15 pt-5">
+            <div className="mb-3 flex items-end justify-between gap-3">
+              <div>
+                <p className="text-[10px] tracking-[0.32em] text-[#c4a574] uppercase">
+                  Catálogo
+                </p>
+                <p className="mt-1 text-sm text-white/80">
+                  Elige otra residencia · desliza o toca
+                </p>
+              </div>
+              <p className="text-[10px] tracking-[0.2em] text-white/40 uppercase">
+                {total} disponibles
+              </p>
+            </div>
+
+            <div className="flex gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {residences.map((r, i) => {
+                const active = i === index;
+                const v = liveViewers[r.id] ?? 0;
+                return (
+                  <button
+                    key={r.id}
+                    type="button"
+                    onClick={() => goTo(i, i > index ? 1 : -1)}
+                    className={`relative h-[108px] w-[168px] shrink-0 overflow-hidden rounded-xl border-2 transition md:h-[120px] md:w-[200px] ${
+                      active
+                        ? "border-[#c4a574] shadow-[0_0_0_1px_rgba(196,165,116,0.35)]"
+                        : "border-white/20 opacity-80 hover:opacity-100"
+                    }`}
+                  >
+                    <Image
+                      src={r.image}
+                      alt={r.name}
+                      fill
+                      className="object-cover"
+                      sizes="200px"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/10" />
+                    <div className="absolute inset-x-0 top-0 p-2">
+                      <div className="h-1 overflow-hidden rounded-full bg-white/20">
+                        <div
+                          className="h-full bg-[#e0c57a]"
+                          style={{ width: `${r.progress}%` }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="absolute inset-x-0 bottom-0 space-y-0.5 p-1.5 text-left">
-                    <p className="text-[8px] font-medium tracking-[0.14em] text-white uppercase">
-                      {String(i + 1).padStart(2, "0")}{" "}
-                      {r.name.replace(/^THE\s+/i, "")}
-                    </p>
-                    <p className="flex items-center gap-1 text-[8px] text-[#c4a574]">
-                      <AnimatedCounter value={r.progress} className="tabular-nums" />
-                      %
-                      <span className="text-white/35">·</span>
-                      <span className="inline-flex items-center gap-1 text-emerald-300">
-                        <span className="live-dot !h-1.5 !w-1.5 !bg-emerald-400" />
-                        <AnimatedCounter value={v} className="tabular-nums" />
+                    {active && (
+                      <span className="absolute top-2 right-2 rounded bg-[#c4a574] px-1.5 py-0.5 text-[8px] font-semibold tracking-[0.14em] text-black uppercase">
+                        Vista
                       </span>
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
+                    )}
+                    <div className="absolute inset-x-0 bottom-0 space-y-1 p-2.5 text-left">
+                      <p className="text-[11px] font-semibold tracking-[0.14em] text-white uppercase">
+                        {String(i + 1).padStart(2, "0")}{" "}
+                        {r.name.replace(/^THE\s+/i, "")}
+                      </p>
+                      <p className="flex items-center gap-1.5 text-[10px] text-[#e0c57a]">
+                        <AnimatedCounter value={r.progress} className="tabular-nums" />
+                        % obra
+                        <span className="text-white/35">·</span>
+                        <span className="inline-flex items-center gap-1 text-emerald-300">
+                          <span className="live-dot !h-1.5 !w-1.5 !bg-emerald-400" />
+                          <AnimatedCounter value={v} className="tabular-nums" />
+                        </span>
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

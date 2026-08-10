@@ -22,8 +22,11 @@ export default function HomePage() {
 
   return (
     <main className="overflow-x-hidden bg-ink">
-      {/* HERO — brand first, full-bleed, one job */}
-      <section ref={heroRef} className="relative h-[100dvh] min-h-[700px] overflow-hidden">
+      {/* HERO — full viewport only; next section hidden until scroll */}
+      <section
+        ref={heroRef}
+        className="relative isolate h-svh max-h-svh min-h-svh overflow-hidden"
+      >
         <motion.div style={{ scale: imageScale }} className="absolute inset-0">
           <Image
             src="/images/monroe.jpg"
@@ -57,7 +60,7 @@ export default function HomePage() {
 
         <motion.div
           style={{ opacity: contentOpacity, y: contentY }}
-          className="relative z-10 flex h-full flex-col justify-end px-5 pb-20 md:px-12 md:pb-24 lg:px-16"
+          className="relative z-10 flex h-full flex-col justify-end px-5 pb-8 md:px-12 md:pb-12 lg:px-16"
         >
           <motion.div
             initial={{ opacity: 0, y: 36 }}
@@ -77,13 +80,13 @@ export default function HomePage() {
               Corp
             </p>
 
-            <div className="mt-6 h-px w-16 origin-left bg-gold-soft animate-shimmer md:w-24" />
+            <div className="mt-5 h-px w-16 origin-left bg-gold-soft animate-shimmer md:w-24" />
 
-            <p className="mt-7 text-[11px] font-medium tracking-[0.38em] text-gold-soft uppercase md:text-xs">
+            <p className="mt-5 text-[11px] font-medium tracking-[0.38em] text-gold-soft uppercase md:text-xs">
               Residencias en construcción · Indiana
             </p>
 
-            <h1 className="mt-4 text-[clamp(2.75rem,8vw,6.5rem)] font-light leading-[0.92] tracking-[0.04em] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.75)]">
+            <h1 className="mt-3 text-[clamp(2.4rem,7.5vw,6.5rem)] font-light leading-[0.92] tracking-[0.04em] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.75)]">
               EL FUTURO
               <br />
               DE VIVIR
@@ -93,19 +96,19 @@ export default function HomePage() {
               initial={{ opacity: 0, x: -16 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4, duration: 0.85 }}
-              className="script mt-3 text-[clamp(2.1rem,5vw,3.5rem)] text-gold-soft drop-shadow-[0_2px_14px_rgba(0,0,0,0.85)]"
+              className="script mt-2 text-[clamp(1.9rem,4.5vw,3.5rem)] text-gold-soft drop-shadow-[0_2px_14px_rgba(0,0,0,0.85)]"
             >
               Entra ahora.
             </motion.p>
 
-            <p className="mt-5 max-w-md text-[15px] leading-relaxed text-white/85 md:text-base drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+            <p className="mt-4 max-w-md text-[14px] leading-relaxed text-white/85 md:text-base drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
               Mira cómo nace tu próxima casa. Síguele el pulso. Anótate antes de que se cierre.
             </p>
 
-            <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
               <Link
                 href="/#casas"
-                className="group inline-flex items-center justify-center gap-3 rounded-full bg-gold-soft px-9 py-4 text-[12px] font-medium tracking-[0.22em] text-ink uppercase shadow-[0_0_40px_rgba(224,197,122,0.35)] transition hover:bg-white"
+                className="group inline-flex items-center justify-center gap-3 rounded-full bg-gold-soft px-8 py-3.5 text-[12px] font-medium tracking-[0.22em] text-ink uppercase shadow-[0_0_40px_rgba(224,197,122,0.35)] transition hover:bg-white"
               >
                 <Play size={14} fill="currentColor" />
                 Explorar residencias
@@ -113,22 +116,18 @@ export default function HomePage() {
               </Link>
               <Link
                 href="/private"
-                className="inline-flex items-center justify-center rounded-full border border-white/30 px-7 py-4 text-[11px] tracking-[0.2em] text-white uppercase transition hover:border-gold-soft hover:text-gold-soft"
+                className="inline-flex items-center justify-center rounded-full border border-white/30 px-7 py-3.5 text-[11px] tracking-[0.2em] text-white uppercase transition hover:border-gold-soft hover:text-gold-soft"
               >
                 Omar Private
               </Link>
             </div>
-
-            <p className="mt-6 text-[11px] tracking-[0.18em] text-white/45 uppercase">
-              Primero sientes la magia · Luego desbloqueas con tus datos
-            </p>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.15, duration: 0.8 }}
-            className="mt-12 flex flex-col items-center gap-2 self-center text-white/35"
+            className="mt-6 flex flex-col items-center gap-1.5 self-center text-white/40"
           >
             <span className="text-[9px] tracking-[0.35em] uppercase">Desliza</span>
             <ChevronDown className="animate-bounce" size={18} />
