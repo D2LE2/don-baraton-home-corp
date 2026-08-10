@@ -253,7 +253,6 @@ export function VideoResidenceFeed() {
                   </Link>
                 </div>
               </div>
-            </div>
           </div>
         </div>
       </div>
