@@ -9,74 +9,49 @@ const ANNOUNCEMENTS = [
   "13 familias en su hogar",
   "Listas privadas · acceso anticipado",
   "Residencias en obra · documentadas en vivo",
-  "Prioridad real antes del mercado",
 ];
 
-/** Black strip under featured residence — brand + proof announcements */
+/** Slim proof strip — calm, readable, not a second hero */
 export function OmarAnnouncementBand() {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
     const id = window.setInterval(() => {
       setIndex((i) => (i + 1) % ANNOUNCEMENTS.length);
-    }, 3200);
+    }, 3400);
     return () => window.clearInterval(id);
   }, []);
 
   return (
-    <section className="relative overflow-hidden bg-[#0a0908] text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(224,197,122,0.08),transparent_60%)]" />
+    <section className="bg-[#111110] text-white">
+      <div className="mx-auto flex max-w-[1180px] flex-col items-center justify-between gap-4 px-5 py-6 md:flex-row md:px-12 md:py-7 lg:px-16">
+        <p className="text-[12px] font-medium tracking-[0.12em] text-[#e0c57a] uppercase">
+          Omar Corp
+        </p>
 
-      <div className="relative mx-auto flex max-w-[1100px] flex-col items-center gap-5 px-5 py-10 md:flex-row md:justify-between md:gap-8 md:px-12 md:py-12 lg:px-16">
-        <div className="text-center md:text-left">
-          <p className="text-[10px] tracking-[0.4em] text-[#e0c57a] uppercase">Omar Corp</p>
-          <p className="mt-2 text-[13px] text-white/45 md:max-w-xs">
-            Transformaciones reales. Acceso privado.
-          </p>
-        </div>
-
-        <div className="flex min-h-[2.5rem] w-full max-w-md items-center justify-center md:justify-end">
+        <div className="flex min-h-[1.5rem] items-center justify-center">
           <AnimatePresence mode="wait">
             <motion.p
               key={index}
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.35 }}
-              className="text-center text-[15px] tracking-[0.08em] text-white/90 uppercase md:text-right md:text-base"
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.3 }}
+              className="text-center text-[14px] text-white/85 md:text-[15px]"
             >
               {ANNOUNCEMENTS[index]}
             </motion.p>
           </AnimatePresence>
         </div>
 
-        <div className="hidden items-center gap-6 lg:flex">
-          <div className="text-right">
-            <p className="text-2xl font-light tabular-nums text-[#e0c57a]">14</p>
-            <p className="mt-0.5 text-[9px] tracking-[0.2em] text-white/40 uppercase">
-              Vendidas
-            </p>
-          </div>
-          <div className="h-8 w-px bg-white/15" />
-          <div className="text-right">
-            <p className="text-2xl font-light tabular-nums text-[#e0c57a]">13</p>
-            <p className="mt-0.5 text-[9px] tracking-[0.2em] text-white/40 uppercase">
-              Familias
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-[1100px] gap-6 overflow-hidden px-5 py-3 md:px-12 lg:px-16">
-          <div className="flex animate-[omar-marquee_28s_linear_infinite] gap-10 whitespace-nowrap text-[10px] tracking-[0.22em] text-white/35 uppercase">
-            {[...ANNOUNCEMENTS, ...ANNOUNCEMENTS].map((line, i) => (
-              <span key={`${line}-${i}`} className="inline-flex items-center gap-10">
-                {line}
-                <span className="text-[#e0c57a]/50">·</span>
-              </span>
-            ))}
-          </div>
+        <div className="flex items-center gap-5 text-[12px] text-white/45">
+          <span>
+            <span className="font-semibold text-[#e0c57a]">14</span> vendidas
+          </span>
+          <span className="h-3 w-px bg-white/15" />
+          <span>
+            <span className="font-semibold text-[#e0c57a]">13</span> familias
+          </span>
         </div>
       </div>
     </section>

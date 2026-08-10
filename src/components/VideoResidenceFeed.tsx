@@ -114,17 +114,20 @@ export function VideoResidenceFeed() {
   }, [scrollToIndex]);
 
   return (
-    <section id="casas" className="relative bg-[#0f0e0c] text-white">
-      <div className="flex items-center justify-between gap-4 px-5 py-5 md:px-12 md:py-6 lg:px-16">
+    <section id="casas" className="relative bg-[#141210] text-white">
+      <div className="mx-auto flex max-w-[1180px] items-end justify-between gap-4 px-5 py-8 md:px-12 md:py-10 lg:px-16">
         <div>
-          <p className="text-[10px] tracking-[0.35em] text-[#c4a574] uppercase">
+          <p className="text-[11px] font-medium tracking-[0.08em] text-[#e0c57a]">
             Colección en vivo
           </p>
-          <p className="mt-1.5 text-[12px] text-white/40">
-            Desliza — hay más residencias al lado
+          <h2 className="mt-1.5 text-[1.45rem] font-semibold tracking-tight text-white md:text-[1.75rem]">
+            Mira cómo se transforman
+          </h2>
+          <p className="mt-1.5 text-[14px] text-white/45">
+            Desliza para ver la siguiente residencia
           </p>
         </div>
-        <p className="text-[10px] tracking-[0.22em] text-white/40 uppercase tabular-nums">
+        <p className="text-[13px] font-medium text-white/40 tabular-nums">
           {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
         </p>
       </div>
@@ -164,7 +167,7 @@ export function VideoResidenceFeed() {
                   cardRefs.current[i] = el;
                 }}
                 data-active={active ? "true" : "false"}
-                className="residence-peek-card relative shrink-0 snap-start overflow-hidden bg-[#1a1814]"
+                className="residence-peek-card relative shrink-0 snap-start overflow-hidden rounded-2xl bg-[#1c1916]"
                 onClick={() => {
                   if (!active) scrollToIndex(i);
                 }}
@@ -195,11 +198,10 @@ export function VideoResidenceFeed() {
                     priority={i === 0}
                   />
 
-                  {/* Active: soft bottom fade only. Peek cards stay bright so they read on dark UI */}
                   <div
                     className={`pointer-events-none absolute inset-0 transition ${
                       active
-                        ? "bg-gradient-to-t from-black/55 via-transparent to-transparent"
+                        ? "bg-gradient-to-t from-black/50 via-transparent to-transparent"
                         : "bg-gradient-to-r from-transparent via-transparent to-black/10"
                     }`}
                   />
@@ -223,12 +225,12 @@ export function VideoResidenceFeed() {
                   )}
 
                   {!active && (
-                    <div className="absolute inset-y-0 left-0 z-10 flex w-[42%] items-end bg-gradient-to-r from-black/55 to-transparent p-3 md:p-4">
+                    <div className="absolute inset-y-0 left-0 z-10 flex w-[48%] items-end bg-gradient-to-r from-black/60 to-transparent p-4">
                       <div>
-                        <p className="text-[9px] tracking-[0.28em] text-[#e0c57a] uppercase">
-                          {r.code}
+                        <p className="text-[11px] font-medium text-[#e0c57a]">
+                          {r.code.replace("RESIDENCE ", "R.")}
                         </p>
-                        <p className="mt-1 text-sm font-semibold tracking-[0.06em] text-white uppercase">
+                        <p className="mt-1 text-[15px] font-semibold tracking-tight text-white">
                           {r.name}
                         </p>
                       </div>
@@ -237,17 +239,17 @@ export function VideoResidenceFeed() {
                 </div>
 
                 {active && (
-                  <div className="border-t border-white/10 bg-[#12100e] px-4 py-4 md:px-5 md:py-5">
+                  <div className="border-t border-white/10 bg-[#1c1916] px-4 py-4 md:px-5 md:py-5">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                       <div className="min-w-0">
-                        <p className="text-[10px] tracking-[0.28em] text-[#c4a574] uppercase">
+                        <p className="text-[11px] font-medium text-[#e0c57a]">
                           {r.code}
                         </p>
-                        <h2 className="mt-1 text-lg font-semibold tracking-[0.05em] text-white uppercase md:text-xl">
+                        <h3 className="mt-1 text-xl font-semibold tracking-tight text-white">
                           {r.name}
-                        </h2>
-                        <p className="mt-1.5 flex items-center gap-1 text-[12px] text-white/45">
-                          <MapPin size={12} className="shrink-0 opacity-70" />
+                        </h3>
+                        <p className="mt-1.5 flex items-center gap-1 text-[13px] text-white/50">
+                          <MapPin size={13} className="shrink-0 opacity-70" />
                           {r.location}
                         </p>
                         <div className="mt-3 max-w-[180px]">
@@ -264,7 +266,7 @@ export function VideoResidenceFeed() {
                       </div>
                       <div className="flex shrink-0 gap-2">
                         {joined ? (
-                          <span className="inline-flex items-center border border-white/20 px-3.5 py-2.5 text-[10px] tracking-[0.16em] text-white/65 uppercase">
+                          <span className="inline-flex items-center rounded-full border border-white/20 px-4 py-2.5 text-[12px] font-medium text-white/70">
                             En esta lista
                           </span>
                         ) : (
@@ -274,7 +276,7 @@ export function VideoResidenceFeed() {
                               e.stopPropagation();
                               setWaitlistOpen(true);
                             }}
-                            className="bg-[#c4a574] px-4 py-2.5 text-[10px] font-semibold tracking-[0.16em] text-ink uppercase transition hover:bg-[#e0c57a]"
+                            className="rounded-full bg-[#e0c57a] px-4 py-2.5 text-[12px] font-semibold text-ink transition hover:bg-white"
                           >
                             Unirse a lista
                           </button>
@@ -282,7 +284,7 @@ export function VideoResidenceFeed() {
                         <Link
                           href={`/residences/${r.id}`}
                           onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1.5 border border-white/25 px-3.5 py-2.5 text-[10px] tracking-[0.16em] text-white/85 uppercase transition hover:border-white"
+                          className="inline-flex items-center gap-1.5 rounded-full border border-white/25 px-4 py-2.5 text-[12px] font-medium text-white/90 transition hover:border-white"
                         >
                           Ver
                           <ArrowRight size={12} />
@@ -318,7 +320,7 @@ export function VideoResidenceFeed() {
         onClose={() => setWaitlistOpen(false)}
       />
 
-      <div className="h-10 bg-gradient-to-b from-[#0f0e0c] to-[#f7f4ef] md:h-12" />
+      <div className="h-12 bg-gradient-to-b from-[#141210] to-[#f7f4ef] md:h-14" />
     </section>
   );
 }

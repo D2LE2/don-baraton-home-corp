@@ -97,11 +97,11 @@ export default function HomePage() {
           >
             Omar Corp · Indiana
           </motion.p>
-          <motion.h1
+              <motion.h1
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.22 }}
-            className="mt-3 max-w-3xl text-[clamp(2.15rem,7vw,4.25rem)] font-semibold leading-[1.02] tracking-[0.04em] text-white uppercase"
+            className="mt-3 max-w-3xl text-[clamp(2.25rem,7vw,4.25rem)] font-semibold leading-[1.05] tracking-tight text-white"
           >
             Residencias en obra.
             <br />
@@ -111,7 +111,7 @@ export default function HomePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.55, delay: 0.4 }}
-            className="mt-3 max-w-md text-[13px] leading-relaxed text-white/65 md:text-[14px]"
+            className="mt-4 max-w-md text-[15px] leading-relaxed text-white/70 md:text-[16px]"
           >
             Mira el progreso en tiempo real. Únete a la lista de la residencia que quieres.
           </motion.p>
@@ -121,20 +121,20 @@ export default function HomePage() {
             transition={{ duration: 0.55, delay: 0.5 }}
             className="mt-7 flex flex-wrap items-center gap-3"
           >
-            <Link
-              href="#lanzamiento"
-              className="inline-flex items-center gap-2 bg-[#e0c57a] px-5 py-3 text-[11px] font-semibold tracking-[0.18em] text-ink uppercase transition hover:bg-white"
-            >
-              Ver primer lanzamiento
-              <ArrowRight size={14} />
-            </Link>
-            <Link
-              href="/private"
-              className="inline-flex items-center gap-1.5 border border-white/25 px-4 py-3 text-[10px] tracking-[0.16em] text-white/80 uppercase transition hover:border-white"
-            >
-              <Lock size={11} />
-              Omar Private
-            </Link>
+                <Link
+                  href="#lanzamiento"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#e0c57a] px-6 py-3.5 text-[13px] font-semibold text-ink transition hover:bg-white"
+                >
+                  Ver primer lanzamiento
+                  <ArrowRight size={14} />
+                </Link>
+                <Link
+                  href="/private"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/5 px-5 py-3.5 text-[13px] font-medium text-white/90 backdrop-blur-sm transition hover:border-white hover:bg-white/10"
+                >
+                  <Lock size={12} />
+                  Omar Private
+                </Link>
           </motion.div>
         </div>
 
@@ -152,35 +152,40 @@ export default function HomePage() {
         </a>
       </section>
 
-      {/* 2 — PRIMERA RESIDENCIA (foto + card Próximo lanzamiento) */}
-      <section id="lanzamiento" className="relative bg-[#f7f4ef] pt-8 md:pt-12">
-        <div className="px-5 pb-3 md:px-10 lg:px-16">
-          <p className="mx-auto mb-8 max-w-lg text-center text-[13px] leading-relaxed text-[#6a655e] md:mb-10">
+      {/* 2 — PRIMERA RESIDENCIA */}
+      <section id="lanzamiento" className="relative bg-[#f7f4ef] pt-10 md:pt-14">
+        <div className="mx-auto max-w-[1180px] px-5 md:px-12 lg:px-16">
+          <p className="mx-auto mb-8 max-w-xl text-center text-[15px] leading-relaxed text-[#6f6a63]">
             Omar Corp documenta cada transformación. Tú eliges la residencia, sigues el avance y
             entras a su lista — antes del mercado.
           </p>
-          <p className="text-[10px] tracking-[0.35em] text-[#9a8660] uppercase">
-            Residencia destacada
-          </p>
-          <h2 className="mt-1.5 text-xl font-light tracking-[0.04em] text-ink md:text-2xl">
-            {featured.code} · {featured.location}
-          </h2>
-        </div>
 
-        <div className="relative">
-          <div className="relative w-full overflow-hidden bg-[#0c0b0a]">
-            <div className="relative mx-auto w-full max-w-[1200px] aspect-[1024/682]">
+          <div className="mb-4 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-[11px] font-medium tracking-[0.08em] text-[#8a6b2e]">
+                Residencia destacada
+              </p>
+              <h2 className="mt-1 text-[1.35rem] font-semibold tracking-tight text-ink md:text-[1.75rem]">
+                {featured.name}
+              </h2>
+              <p className="mt-1 text-[14px] text-[#6f6a63]">
+                {featured.location} · {featured.code}
+              </p>
+            </div>
+          </div>
+
+          <div className="relative overflow-hidden rounded-2xl bg-[#1a1814] shadow-[0_12px_40px_rgba(20,16,10,0.12)]">
+            <div className="relative aspect-[1024/682] w-full">
               <Image
                 src="/images/monroe-featured.jpg"
                 alt={featured.name}
                 fill
                 className="object-cover object-center"
-                sizes="(max-width: 1200px) 100vw, 1200px"
+                sizes="(max-width: 1200px) 100vw, 1180px"
                 priority
               />
-
-              <div className="absolute top-4 right-4 z-20 w-[140px] md:top-5 md:right-6 md:w-[150px]">
-                <div className="border border-white/15 bg-black/45 px-2.5 py-1.5 backdrop-blur-sm">
+              <div className="absolute top-4 right-4 z-20 w-[140px] md:top-5 md:right-5 md:w-[150px]">
+                <div className="rounded-xl border border-white/15 bg-black/45 px-2.5 py-1.5 backdrop-blur-md">
                   <ProgressBar
                     value={featured.progress}
                     tone="dark"
@@ -193,12 +198,14 @@ export default function HomePage() {
               </div>
             </div>
           </div>
+        </div>
 
+        <div className="mt-6">
           <OmarAnnouncementBand />
+        </div>
 
-          <div className="relative z-20 bg-[#f7f4ef] px-4 pt-6 pb-10 md:px-10 md:pt-8 md:pb-14 lg:px-16">
-            <LaunchCard residence={featured} />
-          </div>
+        <div className="relative z-20 bg-[#f7f4ef] px-5 pt-6 pb-12 md:px-12 md:pt-8 md:pb-16 lg:px-16">
+          <LaunchCard residence={featured} />
         </div>
       </section>
 
@@ -223,13 +230,13 @@ export default function HomePage() {
       <section className="bg-[#f7f4ef] px-5 py-20 md:px-12 md:py-24 lg:px-16">
         <div className="mx-auto max-w-[1100px]">
           <motion.div {...fadeUp} className="max-w-xl">
-            <p className="text-[10px] tracking-[0.35em] text-[#9a8660] uppercase">Cómo funciona</p>
-            <h2 className="mt-3 text-3xl font-light leading-tight tracking-[0.03em] text-ink md:text-4xl">
+            <p className="text-[11px] font-medium tracking-[0.08em] text-[#8a6b2e]">Cómo funciona</p>
+            <h2 className="mt-2 text-[1.75rem] font-semibold leading-tight tracking-tight text-ink md:text-[2.25rem]">
               Tres pasos. Sin ruido.
             </h2>
           </motion.div>
 
-          <div className="mt-12 grid gap-0 border-t border-[#e4dfd6] md:grid-cols-3">
+          <div className="mt-10 grid gap-4 md:mt-12 md:grid-cols-3 md:gap-5">
             {[
               {
                 step: "01",
@@ -253,11 +260,11 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.5 }}
-                className="border-[#e4dfd6] py-8 md:border-r md:px-7 md:py-10 md:first:pl-0 md:last:border-r-0 md:last:pr-0"
+                className="rounded-2xl border border-[#ebe4da] bg-white p-6 shadow-[0_6px_24px_rgba(20,16,10,0.04)] md:p-7"
               >
-                <p className="text-[10px] tracking-[0.35em] text-[#9a8660]">{item.step}</p>
-                <h3 className="mt-4 text-xl font-light text-ink">{item.title}</h3>
-                <p className="mt-3 text-[13px] leading-relaxed text-[#8a847a]">{item.copy}</p>
+                <p className="text-[12px] font-medium text-[#8a6b2e]">{item.step}</p>
+                <h3 className="mt-3 text-xl font-semibold tracking-tight text-ink">{item.title}</h3>
+                <p className="mt-2.5 text-[14px] leading-relaxed text-[#6f6a63]">{item.copy}</p>
               </motion.div>
             ))}
           </div>

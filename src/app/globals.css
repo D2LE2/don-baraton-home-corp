@@ -87,8 +87,8 @@ body {
 
 .residence-peek-card {
   width: min(78vw, 880px);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
 }
 
 .residence-peek-card[data-active="true"] {
