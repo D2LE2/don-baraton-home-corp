@@ -167,31 +167,34 @@ export default function HomePage() {
         </div>
 
         <div className="relative">
-          <div className="relative mx-auto h-[42vh] min-h-[260px] max-h-[400px] w-full overflow-hidden bg-[#1a1814] md:h-[46vh] md:max-h-[460px]">
-            <Image
-              src={featured.image}
-              alt={featured.name}
-              fill
-              className="object-cover object-[center_45%]"
-              sizes="100vw"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+          <div className="relative mx-auto w-full max-w-[440px] px-5 md:px-0">
+            <div className="relative overflow-hidden bg-[#ece7df]">
+              <Image
+                src={featured.image}
+                alt={featured.name}
+                width={576}
+                height={1024}
+                className="h-auto w-full"
+                sizes="(max-width: 768px) 100vw, 440px"
+                priority
+              />
 
-            <div className="absolute top-4 right-4 z-20 w-[140px] md:top-5 md:right-6 md:w-[160px]">
-              <div className="border border-white/15 bg-black/45 px-2.5 py-1.5 backdrop-blur-sm">
-                <ProgressBar
-                  value={featured.progress}
-                  tone="dark"
-                  size="sm"
-                  showLabel
-                  label="Progreso"
-                  live
-                />
+              <div className="absolute top-4 right-4 z-20 w-[140px] md:top-5 md:right-5 md:w-[150px]">
+                <div className="border border-white/15 bg-black/45 px-2.5 py-1.5 backdrop-blur-sm">
+                  <ProgressBar
+                    value={featured.progress}
+                    tone="dark"
+                    size="sm"
+                    showLabel
+                    label="Progreso"
+                    live
+                  />
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="relative z-20 -mt-10 px-4 pb-10 md:-mt-12 md:px-10 md:pb-14 lg:px-16">
+          <div className="relative z-20 mt-5 px-4 pb-10 md:mt-6 md:px-10 md:pb-14 lg:px-16">
             <LaunchCard residence={featured} />
           </div>
         </div>
