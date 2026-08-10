@@ -47,6 +47,8 @@ export type Residence = {
     title: string;
     body: string;
     date: string;
+    /** Optional thumbnail for the latest-update card */
+    image?: string;
   };
 };
 
@@ -78,6 +80,7 @@ export const residences: Residence[] = [
       title: "Interior framing completed",
       body: "Structural framing for the main level is complete.",
       date: "AUG 08",
+      image: "/images/framing.jpg",
     },
     stages: [
       {
@@ -174,6 +177,7 @@ export const residences: Residence[] = [
       title: "Second-floor framing rising",
       body: "Framing reached the second floor this week.",
       date: "AUG 06",
+      image: "/images/framing.jpg",
     },
     stages: [
       {
@@ -270,6 +274,7 @@ export const residences: Residence[] = [
       title: "Site survey completed",
       body: "Land marked and prepared for foundation work.",
       date: "AUG 04",
+      image: "/images/land.jpg",
     },
     stages: [
       {

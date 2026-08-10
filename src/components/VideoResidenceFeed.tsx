@@ -2,9 +2,23 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ChevronRight, Lock, Pause, Play } from "lucide-react";
+import {
+  ArrowLeftRight,
+  ArrowRight,
+  CalendarDays,
+  ChevronRight,
+  Lock,
+  MapPin,
+  Menu,
+  Pause,
+  Play,
+  UserRound,
+  X,
+} from "lucide-react";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Logo } from "@/components/Logo";
+import { useNova } from "@/context/NovaContext";
 import { residences, type Residence } from "@/data/residences";
 
 const slideVariants = {
@@ -24,7 +38,9 @@ export function VideoResidenceFeed() {
   const [direction, setDirection] = useState(1);
   const [playing, setPlaying] = useState(false);
   const [hintVisible, setHintVisible] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const { membership } = useNova();
 
   const current = residences[index];
 
@@ -99,7 +115,7 @@ export function VideoResidenceFeed() {
 
   return (
     <section id="casas" className="relative bg-black text-white">
-      {/* 1 — VIDEO: emotion only */}
+      {/* 1 — VIDEO */}
       <div className="residence-video-frame relative overflow-hidden">
         <motion.div
           className="absolute inset-0 touch-pan-y"
@@ -147,9 +163,54 @@ export function VideoResidenceFeed() {
           </AnimatePresence>
         </motion.div>
 
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/55 via-transparent to-black/75" />
 
-        <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-5 pt-5 md:px-10 md:pt-8">
+        {/* Feed header — visible once hero has scrolled away */}
+        <header className="absolute inset-x-0 top-0 z-30 flex items-center justify-between px-5 pt-5 md:px-10 md:pt-6">
+          <Logo light size="sm" />
+          <div className="flex items-center gap-2.5">
+            <Link
+              href={membership.status === "approved" ? "/private/status" : "/private"}
+              className="inline-flex items-center gap-2 rounded-full border border-[#c4a574]/70 px-3 py-1.5 text-[9px] tracking-[0.2em] text-[#e0c57a] uppercase backdrop-blur-md"
+            >
+              <Lock size={10} strokeWidth={1.75} />
+              {membership.status === "approved" ? "Miembro" : "Private"}
+            </Link>
+            <button
+              type="button"
+              aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+              onClick={() => setMenuOpen((v) => !v)}
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/25 text-white backdrop-blur-md"
+            >
+              {menuOpen ? <X size={14} /> : <Menu size={14} />}
+            </button>
+          </div>
+        </header>
+
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.nav
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="absolute top-[3.75rem] right-5 z-40 w-44 border border-white/15 bg-black/90 p-4 backdrop-blur-md md:right-10"
+            >
+              <div className="flex flex-col gap-3 text-[11px] tracking-[0.22em] text-white/80 uppercase">
+                <Link href="/" onClick={() => setMenuOpen(false)}>
+                  Inicio
+                </Link>
+                <Link href="/residences" onClick={() => setMenuOpen(false)}>
+                  Showroom
+                </Link>
+                <Link href="/private" onClick={() => setMenuOpen(false)}>
+                  Omar Private
+                </Link>
+              </div>
+            </motion.nav>
+          )}
+        </AnimatePresence>
+
+        <div className="absolute inset-x-0 top-[3.85rem] z-20 flex items-center justify-between px-5 md:top-[4.25rem] md:px-10">
           <p className="text-[11px] tracking-[0.28em] text-white/90 uppercase">
             <span className="font-medium text-white">
               {String(index + 1).padStart(2, "0")}
@@ -178,6 +239,11 @@ export function VideoResidenceFeed() {
             )}
           </button>
         </div>
+
+        <p className="pointer-events-none absolute inset-x-0 bottom-5 z-20 flex items-center justify-center gap-2 text-[9px] tracking-[0.28em] text-white/55 uppercase">
+          <ArrowLeftRight size={12} strokeWidth={1.5} />
+          Drag to explore
+        </p>
 
         {index < total - 1 && (
           <button
@@ -210,8 +276,8 @@ export function VideoResidenceFeed() {
         )}
       </div>
 
-      {/* 2 — Living transform status (no listing sheet) */}
-      <div className="bg-black px-5 pb-12 pt-8 md:px-12 md:pb-16 md:pt-10 lg:px-16">
+      {/* 2 — Living transform status (mockup) */}
+      <div className="bg-black px-5 pb-12 pt-7 md:px-12 md:pb-16 md:pt-9 lg:px-16">
         <AnimatePresence initial={false} custom={direction} mode="wait">
           <motion.div
             key={current.id}
@@ -226,68 +292,91 @@ export function VideoResidenceFeed() {
             <p className="text-[10px] tracking-[0.4em] text-[#c4a574] uppercase">
               {current.code}
             </p>
-            <h2 className="mt-3 text-[clamp(2rem,7vw,3.5rem)] font-semibold tracking-[0.04em] text-white uppercase">
+            <h2 className="mt-2.5 text-[clamp(2rem,7vw,3.5rem)] font-semibold tracking-[0.04em] text-white uppercase">
               {current.name}
             </h2>
-            <p className="mt-2 text-[15px] text-white/50">{current.location}</p>
 
-            <p className="mt-5 inline-flex items-center gap-2 text-[10px] tracking-[0.28em] text-[#e0c57a] uppercase">
-              <span className="live-dot !bg-[#e0c57a]" />
+            <p className="mt-2.5 flex items-center gap-1.5 text-[13px] text-white/50">
+              <MapPin size={13} className="shrink-0 text-white/40" />
+              {current.location}
+            </p>
+
+            <p className="mt-4 inline-flex items-center gap-2 text-[10px] tracking-[0.28em] text-emerald-400 uppercase">
+              <span className="live-dot !bg-emerald-400" />
               {transformLabel(current)}
             </p>
 
-            <div className="mt-8">
-              <p className="text-[clamp(2.4rem,8vw,3.5rem)] font-light leading-none tracking-tight text-white tabular-nums">
-                {current.progress}%
-              </p>
-              <p className="mt-2 text-[10px] tracking-[0.28em] text-white/45 uppercase">
-                Current progress
-              </p>
-              <div className="mt-3 h-px overflow-hidden bg-white/15">
-                <motion.div
-                  key={`progress-${current.id}`}
-                  className="h-full bg-[#e0c57a]"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${current.progress}%` }}
-                  transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-                />
+            {/* Progress: big % + bar beside */}
+            <div className="mt-7 flex items-end gap-4">
+              <div className="shrink-0">
+                <p className="text-[clamp(2.6rem,9vw,3.75rem)] font-light leading-none tracking-tight text-[#e0c57a] tabular-nums">
+                  {current.progress}%
+                </p>
+                <p className="mt-2 text-[9px] tracking-[0.28em] text-white/40 uppercase">
+                  Current progress
+                </p>
+              </div>
+              <div className="mb-7 min-w-0 flex-1">
+                <div className="h-[2px] overflow-hidden rounded-full bg-white/15">
+                  <motion.div
+                    key={`progress-${current.id}`}
+                    className="h-full bg-[#e0c57a]"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${current.progress}%` }}
+                    transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                  />
+                </div>
               </div>
             </div>
 
             {current.latestUpdate && (
               <Link
                 href={`/residences/${current.id}`}
-                className="group mt-8 block border-t border-white/10 pt-5 transition hover:border-[#c4a574]/40"
+                className="group mt-7 flex items-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-white/[0.04] p-3 transition hover:border-[#c4a574]/45 hover:bg-white/[0.06]"
               >
-                <p className="text-[9px] tracking-[0.28em] text-white/40 uppercase">
-                  Latest update · {current.latestUpdate.date}
-                </p>
-                <p className="mt-2 flex items-center gap-2 text-[15px] text-white/90 transition group-hover:text-[#e0c57a]">
-                  <span>{current.latestUpdate.title}</span>
-                  <ArrowRight
-                    size={14}
-                    className="shrink-0 opacity-60 transition group-hover:translate-x-1 group-hover:opacity-100"
-                  />
-                </p>
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#c4a574]/15 text-[#e0c57a]">
+                  <CalendarDays size={16} strokeWidth={1.75} />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[9px] tracking-[0.24em] text-[#e0c57a] uppercase">
+                    Latest update · {current.latestUpdate.date}
+                  </p>
+                  <p className="mt-1 flex items-center gap-1.5 text-[13px] text-white">
+                    <span className="truncate">{current.latestUpdate.title}</span>
+                    <ArrowRight
+                      size={13}
+                      className="shrink-0 opacity-70 transition group-hover:translate-x-0.5"
+                    />
+                  </p>
+                </div>
+                {current.latestUpdate.image && (
+                  <span className="relative h-14 w-[4.5rem] shrink-0 overflow-hidden rounded-md">
+                    <Image
+                      src={current.latestUpdate.image}
+                      alt=""
+                      fill
+                      className="object-cover"
+                      sizes="72px"
+                    />
+                  </span>
+                )}
               </Link>
             )}
 
-            <p className="mt-8 max-w-md text-[14px] leading-relaxed text-white/55">
-              Follow every stage. Get priority when it becomes available.
+            <p className="mt-7 flex items-start gap-2 text-[11px] leading-relaxed tracking-[0.06em] text-white/50 uppercase">
+              <UserRound size={14} className="mt-0.5 shrink-0 text-white/35" />
+              Sigue cada avance. Obtén prioridad cuando esté disponible.
             </p>
 
             <Link
               href={`/residences/${current.id}#follow`}
-              className="group mt-8 inline-flex items-center gap-3 text-[12px] font-medium tracking-[0.24em] text-white uppercase transition hover:text-[#e0c57a]"
+              className="mt-5 flex w-full items-center justify-center gap-2.5 rounded-lg bg-[#c4a574] px-5 py-3.5 text-[11px] font-semibold tracking-[0.22em] text-ink uppercase transition hover:bg-[#e0c57a]"
             >
               Follow this residence
-              <ArrowRight
-                size={16}
-                className="transition group-hover:translate-x-1"
-              />
+              <ArrowRight size={15} />
             </Link>
 
-            <p className="mt-4 flex items-center gap-1.5 text-[8px] tracking-[0.22em] text-white/35 uppercase">
+            <p className="mt-4 flex items-center justify-center gap-1.5 text-[8px] tracking-[0.22em] text-white/35 uppercase">
               <Lock size={9} />
               Private list · Limited access
             </p>
