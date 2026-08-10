@@ -22,7 +22,7 @@ export function Logo({
     <>
       <span className={`font-semibold ${sizes.brand}`}>OMAR</span>
       <span
-        className={`mt-1.5 font-light ${light ? "text-gold-soft" : "text-gold"} ${sizes.sub}`}
+        className={`mt-1.5 font-light ${light ? "text-white/85" : "text-gold"} ${sizes.sub}`}
       >
         CORP
       </span>

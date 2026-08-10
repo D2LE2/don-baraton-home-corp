@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, ArrowRight } from "lucide-react";
+import { ArrowRight, Lock, Menu, Play, X } from "lucide-react";
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/Logo";
@@ -11,17 +11,11 @@ import { useNova } from "@/context/NovaContext";
 import { residences } from "@/data/residences";
 import { useViewportHeight } from "@/hooks/useViewportHeight";
 
-const HERO_SIGNALS = [
-  `${String(residences.length).padStart(2, "0")} residencias activas`,
-  "The Monroe +2% esta semana",
-  "Nueva actualización",
-];
-
 export default function HomePage() {
   const heroRef = useRef<HTMLElement>(null);
   const viewportH = useViewportHeight();
   const { membership } = useNova();
-  const [signalIndex, setSignalIndex] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
@@ -35,16 +29,9 @@ export default function HomePage() {
     }
   }, [viewportH]);
 
-  useEffect(() => {
-    const t = window.setInterval(() => {
-      setSignalIndex((i) => (i + 1) % HERO_SIGNALS.length);
-    }, 3200);
-    return () => window.clearInterval(t);
-  }, []);
-
   return (
     <main className="overflow-x-hidden bg-ink">
-      {/* HERO — early access to the build process, not a house listing */}
+      {/* HERO — matches exclusivity mockup */}
       <section
         ref={heroRef}
         className="hero-viewport relative isolate overflow-hidden"
@@ -69,75 +56,172 @@ export default function HomePage() {
           />
         </motion.div>
 
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.72)_0%,rgba(5,5,5,0.28)_35%,rgba(5,5,5,0.4)_55%,rgba(5,5,5,0.94)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_40%,transparent_0%,rgba(0,0,0,0.55)_100%)]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,5,0.55)_0%,rgba(5,5,5,0.15)_28%,rgba(5,5,5,0.35)_52%,rgba(5,5,5,0.92)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_60%_35%,transparent_0%,rgba(0,0,0,0.45)_100%)]" />
 
-        <header className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-5 py-6 md:px-10">
+        {/* Header */}
+        <header className="absolute inset-x-0 top-0 z-30 flex items-center justify-between px-5 py-5 md:px-10 md:py-6">
           <Logo light size="md" />
-          <Link
-            href={membership.status === "approved" ? "/private/status" : "/private"}
-            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[10px] tracking-[0.2em] text-white uppercase backdrop-blur-md transition hover:border-gold-soft hover:text-gold-soft"
-          >
-            {membership.status === "approved" ? "Miembro" : "Private"}
-          </Link>
+          <div className="flex items-center gap-2.5">
+            <Link
+              href={membership.status === "approved" ? "/private/status" : "/private"}
+              className="inline-flex items-center gap-2 rounded-full border border-[#c4a574]/70 px-3.5 py-2 text-[9px] tracking-[0.22em] text-[#e0c57a] uppercase backdrop-blur-md transition hover:border-[#e0c57a] hover:bg-black/30"
+            >
+              <Lock size={11} strokeWidth={1.75} />
+              {membership.status === "approved" ? "Miembro" : "Private"}
+            </Link>
+            <button
+              type="button"
+              aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+              onClick={() => setMenuOpen((v) => !v)}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 text-white backdrop-blur-md"
+            >
+              {menuOpen ? <X size={16} /> : <Menu size={16} />}
+            </button>
+          </div>
         </header>
 
-        {/* Live signals — elegant, not dashboard */}
-        <div className="absolute inset-x-0 top-[4.75rem] z-20 flex justify-center px-5 md:top-24">
-          <div className="flex max-w-full items-center gap-3 overflow-hidden border-y border-white/10 bg-black/25 px-4 py-2 backdrop-blur-md md:gap-4 md:px-6">
-            <span className="live-dot shrink-0" />
-            <div className="relative h-4 min-w-0 overflow-hidden">
-              <AnimatePresence mode="wait">
-                <motion.p
-                  key={signalIndex}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.45 }}
-                  className="truncate text-[9px] tracking-[0.28em] text-white/80 uppercase md:text-[10px]"
-                >
-                  {HERO_SIGNALS[signalIndex]}
-                </motion.p>
-              </AnimatePresence>
-            </div>
-          </div>
-        </div>
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.nav
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="absolute top-[4.5rem] right-5 z-40 w-48 border border-white/15 bg-black/90 p-4 backdrop-blur-md md:right-10"
+            >
+              <div className="flex flex-col gap-3 text-[11px] tracking-[0.22em] text-white/80 uppercase">
+                <Link href="/#casas" onClick={() => setMenuOpen(false)}>
+                  Colección
+                </Link>
+                <Link href="/residences" onClick={() => setMenuOpen(false)}>
+                  Showroom
+                </Link>
+                <Link href="/private" onClick={() => setMenuOpen(false)}>
+                  Omar Private
+                </Link>
+              </div>
+            </motion.nav>
+          )}
+        </AnimatePresence>
 
+        {/* Composition — one locked viewport, mockup hierarchy */}
         <motion.div
           style={{ opacity: contentOpacity }}
-          className="relative z-10 flex h-full flex-col justify-end px-5 pb-7 md:px-12 md:pb-12 lg:px-16"
+          className="relative z-10 flex h-full flex-col px-5 pb-4 pt-[4.75rem] md:px-12 md:pb-6 lg:px-16"
         >
-          <motion.div
-            initial={{ opacity: 0, y: 36 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-3xl"
-          >
-            <h1 className="text-[clamp(2.2rem,7.5vw,5.6rem)] font-light leading-[0.95] tracking-[0.02em] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.75)]">
-              VE LA CASA ANTES
-              <br />
-              DE QUE SEA HOGAR.
-            </h1>
+          {/* Mid: count + play */}
+          <div className="mt-[8%] flex items-center justify-between md:mt-[10%]">
+            <div className="flex items-stretch gap-3">
+              <span className="w-px bg-[#c4a574]/85" />
+              <div>
+                <p className="text-[1.75rem] font-light leading-none tracking-[0.06em] text-white md:text-[2rem]">
+                  {String(residences.length).padStart(2, "0")}
+                </p>
+                <p className="mt-1.5 max-w-[7.5rem] text-[9px] leading-snug tracking-[0.2em] text-white/70 uppercase">
+                  Residencias activas
+                </p>
+              </div>
+            </div>
 
             <Link
               href="/#casas"
-              className="group mt-8 inline-flex items-center justify-center gap-3 rounded-full bg-gold-soft px-8 py-3.5 text-[11px] font-medium tracking-[0.24em] text-ink uppercase shadow-[0_0_40px_rgba(224,197,122,0.35)] transition hover:bg-white"
+              className="group flex flex-col items-center gap-2 text-white"
             >
-              Entrar a la colección
-              <ArrowRight size={16} className="transition group-hover:translate-x-1" />
+              <span className="flex h-14 w-14 items-center justify-center rounded-full border border-white/75 transition group-hover:border-[#e0c57a] group-hover:text-[#e0c57a] md:h-[3.75rem] md:w-[3.75rem]">
+                <Play size={18} fill="currentColor" className="ml-0.5" />
+              </span>
+              <span className="text-[9px] tracking-[0.28em] text-white/75 uppercase">
+                Ver avance
+              </span>
             </Link>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.15, duration: 0.8 }}
-            className="mt-8 flex flex-col items-center gap-1.5 self-center text-white/35"
-          >
-            <span className="text-[9px] tracking-[0.35em] uppercase">Desliza</span>
-            <ChevronDown className="animate-bounce" size={18} />
-          </motion.div>
+          <div className="mt-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+              className="max-w-xl"
+            >
+              <h1 className="text-[clamp(1.7rem,6.2vw,3.75rem)] font-light leading-[1.05] tracking-[0.02em] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.75)]">
+                VE LA CASA ANTES
+                <br />
+                DE QUE{" "}
+                <span className="text-[#e0c57a]">SEA HOGAR.</span>
+              </h1>
+
+              <div className="mt-3.5 flex items-center gap-3">
+                <span className="h-px w-7 shrink-0 bg-[#c4a574]" />
+                <p className="text-[8px] tracking-[0.2em] text-white/80 uppercase md:text-[10px]">
+                  Acceso exclusivo a residencias en transformación
+                </p>
+              </div>
+
+              <p className="mt-2.5 inline-flex items-center gap-2 text-[8px] tracking-[0.22em] text-[#e0c57a] uppercase md:text-[9px]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#e0c57a]" />
+                Proyectos en transformación
+              </p>
+
+              <Link
+                href="/#casas"
+                className="group mt-4 inline-flex w-full max-w-sm items-center justify-center gap-3 rounded-md bg-[#c4a574] px-5 py-3.5 text-[10px] font-semibold tracking-[0.2em] text-ink uppercase transition hover:bg-[#e0c57a] sm:w-auto md:text-[11px]"
+              >
+                Entrar a la colección
+                <ArrowRight size={14} className="transition group-hover:translate-x-1" />
+              </Link>
+
+              <p className="mt-2.5 flex items-center gap-1.5 text-[8px] tracking-[0.2em] text-white/45 uppercase">
+                <Lock size={9} />
+                Lista privada · Acceso limitado
+              </p>
+            </motion.div>
+
+            <div className="mt-4 flex gap-2.5 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] md:gap-3 [&::-webkit-scrollbar]:hidden">
+              {residences.map((r, i) => (
+                <Link
+                  key={r.id}
+                  href="/#casas"
+                  className={`relative w-[140px] shrink-0 overflow-hidden rounded-md border bg-black/50 backdrop-blur-md transition md:w-[160px] ${
+                    i === 0
+                      ? "border-[#c4a574]/85"
+                      : "border-white/15 hover:border-white/35"
+                  }`}
+                >
+                  <div className="relative h-[64px] w-full md:h-[72px]">
+                    <Image
+                      src={r.image}
+                      alt={r.name}
+                      fill
+                      className="object-cover"
+                      sizes="160px"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 to-transparent" />
+                  </div>
+                  <div className="space-y-1 px-2 py-2">
+                    <p className="truncate text-[8px] font-medium tracking-[0.14em] text-white uppercase md:text-[9px]">
+                      {String(i + 1).padStart(2, "0")} {r.name}
+                    </p>
+                    <p className="text-[7px] tracking-[0.12em] text-[#e0c57a] uppercase md:text-[8px]">
+                      {r.progress}% completado
+                    </p>
+                    <div className="h-px overflow-hidden bg-white/15">
+                      <div
+                        className="h-full bg-[#c4a574]"
+                        style={{ width: `${r.progress}%` }}
+                      />
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <div className="mt-3.5 flex flex-col items-center gap-1 self-center">
+              <span className="text-[8px] tracking-[0.3em] text-white/45 uppercase">
+                Desliza para explorar
+              </span>
+              <span className="h-px w-7 bg-[#c4a574]/80" />
+            </div>
+          </div>
         </motion.div>
       </section>
 
