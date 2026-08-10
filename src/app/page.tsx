@@ -129,7 +129,7 @@ export default function HomePage() {
             <HeroActivityFeed />
 
             {/* Minimal progress — Residence 001 */}
-            <div className="absolute top-4 right-4 z-20 w-[148px] md:top-5 md:right-5 md:w-[168px]">
+            <div className="absolute top-4 right-4 z-30 w-[140px] md:top-5 md:right-5 md:w-[160px]">
               <div className="rounded-md border border-white/15 bg-black/40 px-3 py-2 backdrop-blur-sm">
                 <div className="flex items-baseline justify-between gap-2">
                   <p className="text-[8px] tracking-[0.2em] text-white/65 uppercase">

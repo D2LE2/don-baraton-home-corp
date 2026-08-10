@@ -105,16 +105,16 @@ export function HeroActivityFeed() {
 
   return (
     <div
-      className="pointer-events-none absolute top-4 left-4 z-30 w-[min(100%-2rem,292px)] md:top-5 md:left-5"
+      className="pointer-events-none absolute bottom-20 left-4 z-20 w-[min(72%,260px)] md:bottom-24 md:left-5 md:w-[280px]"
       aria-live="polite"
     >
       <AnimatePresence mode="wait">
         {visible && item && (
           <motion.div
             key={item.id}
-            initial={{ opacity: 0, y: -8, x: -4 }}
-            animate={{ opacity: 1, y: 0, x: 0 }}
-            exit={{ opacity: 0, y: -4 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 6 }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="flex items-start gap-2.5 rounded-lg border border-white/70 bg-white/92 px-3 py-2.5 shadow-[0_10px_28px_rgba(20,16,10,0.16)] backdrop-blur-md"
           >

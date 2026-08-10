@@ -25,7 +25,7 @@ function transformLabel(residence: Residence) {
 export function VideoResidenceFeed() {
   const total = residences.length;
   const [index, setIndex] = useState(0);
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const current = residences[index];
@@ -35,7 +35,7 @@ export function VideoResidenceFeed() {
       const next = Math.max(0, Math.min(total - 1, i));
       if (next === index) return;
       setIndex(next);
-      setPlaying(false);
+      setPlaying(true);
     },
     [index, total],
   );
@@ -51,8 +51,20 @@ export function VideoResidenceFeed() {
   useEffect(() => {
     const el = videoRef.current;
     if (!el) return;
+
+    el.muted = true;
     if (playing) {
-      void el.play().catch(() => undefined);
+      const attempt = el.play();
+      if (attempt) {
+        attempt.catch(() => {
+          // Retry once data is ready (mobile autoplay quirks)
+          const onReady = () => {
+            void el.play().catch(() => undefined);
+            el.removeEventListener("canplay", onReady);
+          };
+          el.addEventListener("canplay", onReady);
+        });
+      }
       return;
     }
     el.pause();
@@ -64,8 +76,7 @@ export function VideoResidenceFeed() {
       const i = id ? residences.findIndex((r) => r.id === id) : 0;
       const next = i >= 0 ? i : 0;
       setIndex(next);
-      setPlaying(false);
-      window.setTimeout(() => setPlaying(true), 200);
+      setPlaying(true);
     };
 
     window.addEventListener("omar:play-avance", onPlayAvance);
@@ -99,6 +110,7 @@ export function VideoResidenceFeed() {
               ref={videoRef}
               className="absolute inset-0 h-full w-full object-cover"
               src={current.video}
+              autoPlay
               playsInline
               loop
               muted
@@ -130,13 +142,17 @@ export function VideoResidenceFeed() {
           <button
             type="button"
             onClick={() => setPlaying((p) => !p)}
-            aria-label={playing ? "Pausar" : "Ver transformación"}
-            className="pointer-events-auto flex h-14 w-14 items-center justify-center rounded-full border border-white/55 bg-black/25 text-white backdrop-blur-[2px] transition hover:border-white md:h-16 md:w-16"
+            aria-label={playing ? "Pausar" : "Reanudar"}
+            className={`pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full border border-white/40 bg-black/30 text-white backdrop-blur-[2px] transition hover:border-white md:h-14 md:w-14 ${
+              playing
+                ? "opacity-35 hover:opacity-100 focus-visible:opacity-100 md:opacity-0 md:hover:opacity-100"
+                : "opacity-100"
+            }`}
           >
             {playing ? (
-              <Pause size={20} fill="currentColor" />
+              <Pause size={18} fill="currentColor" />
             ) : (
-              <Play size={20} fill="currentColor" className="ml-0.5" />
+              <Play size={18} fill="currentColor" className="ml-0.5" />
             )}
           </button>
         </div>
