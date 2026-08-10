@@ -96,16 +96,21 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Image + overlapping launch card */}
+        {/* Video + overlapping launch card */}
         <div className="relative mt-8 md:mt-10">
           <div className="relative mx-auto h-[42vh] min-h-[280px] max-h-[420px] w-full overflow-hidden md:h-[48vh] md:max-h-[520px]">
-            <Image
-              src={featured.image}
-              alt={featured.name}
-              fill
-              priority
-              className="object-cover object-[center_45%]"
-              sizes="100vw"
+            <video
+              className="absolute inset-0 h-full w-full object-cover object-[center_45%]"
+              src={featured.video}
+              poster={featured.image}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              controls={false}
+              disablePictureInPicture
+              aria-label={featured.name}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
           </div>
