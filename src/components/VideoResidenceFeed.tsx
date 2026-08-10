@@ -2,236 +2,76 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Lock, Volume2, VolumeX } from "lucide-react";
+import {
+  ArrowRight,
+  BedDouble,
+  CalendarDays,
+  Lock,
+  Menu,
+  Pause,
+  Play,
+  Ruler,
+} from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Logo } from "@/components/Logo";
 import { UnlockModal } from "@/components/UnlockModal";
 import { useNova } from "@/context/NovaContext";
 import { residences } from "@/data/residences";
-import { useLiveSocialProof } from "@/hooks/useLiveSocialProof";
-import { formatUsd, savingsPercent } from "@/lib/pricing";
+import { formatUsd } from "@/lib/pricing";
 
-function VideoSlide({
-  residence,
-  active,
-  muted,
-  onOpenUnlock,
-  onSelect,
-}: {
-  residence: (typeof residences)[number];
-  active: boolean;
-  muted: boolean;
-  onOpenUnlock: () => void;
-  onSelect: () => void;
-}) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const { isUnlocked, ready } = useNova();
-  const unlocked = ready && isUnlocked(residence.id);
-  const { viewers, waitlistLive, toast, currentStage } = useLiveSocialProof(
-    residence,
-    active,
-  );
+const STAGE_LABELS_ES: Record<string, string> = {
+  land: "Terreno",
+  foundation: "Cimentación",
+  framing: "Estructura",
+  roofing: "Cubierta",
+  exterior: "Exterior",
+  interior: "Interior",
+  kitchen: "Cocina",
+  final: "Acabados",
+  completed: "Entrega",
+  design: "Diseño",
+};
 
-  useEffect(() => {
-    const el = videoRef.current;
-    if (!el) return;
-    if (active) {
-      void el.play().catch(() => undefined);
-      return;
-    }
-    el.pause();
-  }, [active]);
+function stageLabel(id: string, fallback: string) {
+  return STAGE_LABELS_ES[id] ?? fallback;
+}
 
-  useEffect(() => {
-    const el = videoRef.current;
-    if (el) el.muted = muted;
-  }, [muted]);
-
-  return (
-    <article
-      className={`w-[92vw] max-w-[1080px] shrink-0 snap-center transition duration-700 ${
-        active ? "opacity-100" : "opacity-40"
-      }`}
-      onClick={() => {
-        if (!active) onSelect();
-      }}
-    >
-      {/* Cinematic frame — video is the hero */}
-      <div className="relative aspect-[16/10] overflow-hidden bg-[#1a1814] md:aspect-[21/11]">
-        <video
-          ref={videoRef}
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover"
-          src={residence.video}
-          poster={residence.image}
-          playsInline
-          loop
-          muted={muted}
-          preload="auto"
-          controls={false}
-          disablePictureInPicture
-        />
-        {/* Hairline frame only — no dark wash over the film */}
-        <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/20" />
-
-        <div className="absolute top-0 inset-x-0 z-10 flex items-start justify-between p-5 md:p-7">
-          <p className="bg-white/90 px-3 py-1.5 text-[10px] tracking-[0.35em] text-ink uppercase backdrop-blur-sm">
-            En vivo · {viewers} presentes
-          </p>
-          <AnimatePresence mode="popLayout">
-            {active && toast && (
-              <motion.p
-                key={toast.id}
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="max-w-[220px] bg-white/90 px-3 py-1.5 text-[10px] leading-relaxed tracking-[0.04em] text-ink/80 backdrop-blur-sm md:max-w-xs"
-              >
-                {toast.text}
-              </motion.p>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-
-      {/* Editorial details under the film */}
-      <div className="grid gap-8 border border-t-0 border-[#e8e2d8] bg-white px-5 py-8 md:grid-cols-[1.4fr_1fr] md:gap-12 md:px-10 md:py-10">
-        <div>
-          <div className="flex items-center gap-4">
-            <span className="text-[11px] tracking-[0.4em] text-[#9a8660] uppercase">
-              {residence.code}
-            </span>
-            <span className="h-px flex-1 bg-[#e8e2d8]" />
-            <span className="text-[11px] tracking-[0.2em] text-[#8a847a] uppercase">
-              {waitlistLive} en lista
-            </span>
-          </div>
-          <h2 className="display mt-5 text-[clamp(2.4rem,5vw,4rem)] font-light leading-[0.95] tracking-[0.02em] text-ink">
-            {residence.name}
-          </h2>
-          <p className="mt-3 text-sm tracking-[0.08em] text-[#8a847a] uppercase">
-            {residence.location}
-          </p>
-          <p className="mt-5 max-w-md text-[15px] leading-relaxed text-[#5c574f]">
-            {residence.teaser}
-          </p>
-        </div>
-
-        <div className="flex flex-col justify-between border-t border-[#e8e2d8] pt-6 md:border-t-0 md:border-l md:pt-0 md:pl-10">
-          <div>
-            <p className="text-[10px] tracking-[0.35em] text-[#9a8660] uppercase">
-              Precio de preventa
-            </p>
-            <p className="display mt-2 text-4xl font-light text-ink md:text-5xl">
-              {formatUsd(residence.priceFrom)}
-            </p>
-            <p className="mt-2 text-sm text-[#8a847a]">
-              Valor estimado {formatUsd(residence.marketValue)} ·{" "}
-              <span className="text-ink">
-                {savingsPercent(residence.priceFrom, residence.marketValue)}% bajo mercado
-              </span>
-            </p>
-            <p className="mt-3 text-[12px] tracking-[0.06em] text-[#9a8660]">
-              {residence.priceHook}
-            </p>
-          </div>
-
-          <div className="mt-8">
-            <div className="mb-2 flex justify-between text-[10px] tracking-[0.25em] text-[#8a847a] uppercase">
-              <span>{currentStage?.label ?? "Construcción"}</span>
-              <span className="text-ink">{residence.progress}%</span>
-            </div>
-            <div className="h-px overflow-hidden bg-[#e8e2d8]">
-              <div
-                className="h-full bg-[#9a8660] transition-[width] duration-1000 ease-out"
-                style={{ width: active ? `${residence.progress}%` : "0%" }}
-              />
-            </div>
-            <p className="mt-3 text-[11px] tracking-[0.18em] text-[#8a847a] uppercase">
-              Entrega · {residence.expected}
-            </p>
-
-            <div className="mt-8">
-              {!unlocked ? (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onOpenUnlock();
-                  }}
-                  className="inline-flex items-center gap-3 border border-ink bg-ink px-8 py-3.5 text-[11px] tracking-[0.28em] text-white uppercase transition hover:bg-transparent hover:text-ink"
-                >
-                  <Lock size={13} />
-                  Solicitar acceso
-                </button>
-              ) : (
-                <Link
-                  href={`/residences/${residence.id}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="inline-flex items-center gap-3 border border-ink bg-ink px-8 py-3.5 text-[11px] tracking-[0.28em] text-white uppercase transition hover:bg-transparent hover:text-ink"
-                >
-                  Build Story
-                  <ArrowRight size={14} />
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </article>
-  );
+function formatDelivery(expected: string) {
+  // "November 2026" -> "NOV 2026"
+  const parts = expected.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    return `${parts[0].slice(0, 3).toUpperCase()} ${parts[1]}`;
+  }
+  return expected.toUpperCase();
 }
 
 export function VideoResidenceFeed() {
   const total = residences.length;
   const [index, setIndex] = useState(0);
-  const [muted, setMuted] = useState(true);
+  const [playing, setPlaying] = useState(true);
   const [unlockOpen, setUnlockOpen] = useState(false);
-  const scrollerRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const current = residences[index];
+  const [menuOpen, setMenuOpen] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const { isUnlocked, ready } = useNova();
 
-  const scrollToIndex = useCallback(
-    (i: number) => {
-      const clamped = Math.max(0, Math.min(total - 1, i));
-      setIndex(clamped);
-      cardRefs.current[clamped]?.scrollIntoView({
-        behavior: "smooth",
-        inline: "center",
-        block: "nearest",
-      });
-    },
-    [total],
-  );
+  const current = residences[index];
+  const unlocked = ready && isUnlocked(current.id);
+
+  const goTo = useCallback((i: number) => {
+    setIndex(Math.max(0, Math.min(total - 1, i)));
+    setPlaying(true);
+  }, [total]);
 
   useEffect(() => {
-    const scroller = scrollerRef.current;
-    if (!scroller) return;
-    let frame = 0;
-    const onScroll = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        const center = scroller.scrollLeft + scroller.clientWidth / 2;
-        let best = 0;
-        let bestDist = Infinity;
-        cardRefs.current.forEach((el, i) => {
-          if (!el) return;
-          const mid = el.offsetLeft + el.offsetWidth / 2;
-          const dist = Math.abs(mid - center);
-          if (dist < bestDist) {
-            bestDist = dist;
-            best = i;
-          }
-        });
-        setIndex(best);
-      });
-    };
-    scroller.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      scroller.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(frame);
-    };
-  }, []);
+    const el = videoRef.current;
+    if (!el) return;
+    el.currentTime = 0;
+    if (playing) void el.play().catch(() => undefined);
+    else el.pause();
+  }, [index, playing]);
 
+  // Preload peers
   useEffect(() => {
     residences.forEach((r) => {
       const link = document.createElement("link");
@@ -243,186 +83,271 @@ export function VideoResidenceFeed() {
   }, []);
 
   return (
-    <section id="casas" className="relative overflow-hidden bg-[#faf8f4]">
-      {/* Gallery header */}
-      <div className="mx-auto max-w-[1200px] px-5 pt-16 md:px-10 md:pt-24">
-        <div className="flex flex-col gap-8 border-b border-[#e8e2d8] pb-8 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="text-[11px] tracking-[0.45em] text-[#9a8660] uppercase">
-              Colección privada
-            </p>
-            <h2 className="display mt-4 text-[clamp(2.5rem,6vw,4.5rem)] font-light leading-[0.95] text-ink">
-              Residencias
-              <br />
-              en construcción
-            </h2>
-          </div>
-          <div className="flex flex-col items-start gap-5 md:items-end">
-            <p className="max-w-xs text-right text-sm leading-relaxed text-[#8a847a] md:text-left">
-              Desliza con calma. Cada propiedad es un lanzamiento — precio de preventa, obra y
-              demanda en tiempo real.
-            </p>
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                aria-label={muted ? "Activar sonido" : "Silenciar"}
-                onClick={() => setMuted((m) => !m)}
-                className="flex h-10 w-10 items-center justify-center border border-[#d9d2c6] text-ink transition hover:border-ink"
-              >
-                {muted ? <VolumeX size={15} /> : <Volume2 size={15} />}
-              </button>
-              <button
-                type="button"
-                aria-label="Anterior"
-                disabled={index === 0}
-                onClick={() => scrollToIndex(index - 1)}
-                className="flex h-10 w-10 items-center justify-center border border-[#d9d2c6] text-ink transition hover:border-ink disabled:opacity-25"
-              >
-                <ArrowLeft size={15} />
-              </button>
-              <button
-                type="button"
-                aria-label="Siguiente"
-                disabled={index === total - 1}
-                onClick={() => scrollToIndex(index + 1)}
-                className="flex h-10 w-10 items-center justify-center border border-[#d9d2c6] text-ink transition hover:border-ink disabled:opacity-25"
-              >
-                <ArrowRight size={15} />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-4 flex items-center justify-between text-[11px] tracking-[0.3em] text-[#8a847a] uppercase">
-          <p>
-            {String(index + 1).padStart(2, "0")} — {String(total).padStart(2, "0")}
-          </p>
-          <p>{current.name}</p>
-        </div>
+    <section
+      id="casas"
+      className="relative min-h-[100dvh] overflow-hidden bg-[#0a0a0a] text-white"
+    >
+      {/* Full-bleed media */}
+      <div className="absolute inset-0">
+        <Image
+          src={current.image}
+          alt={current.name}
+          fill
+          priority
+          className={`object-cover transition-opacity duration-700 ${
+            playing ? "opacity-0" : "opacity-100"
+          }`}
+          sizes="100vw"
+        />
+        <video
+          ref={videoRef}
+          key={current.id}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
+            playing ? "opacity-100" : "opacity-0"
+          }`}
+          src={current.video}
+          poster={current.image}
+          playsInline
+          loop
+          muted
+          preload="auto"
+          controls={false}
+          disablePictureInPicture
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/15 to-black/92" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/35" />
       </div>
 
-      <div
-        ref={scrollerRef}
-        className="mt-8 flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth px-[4vw] pb-4 [-ms-overflow-style:none] [scrollbar-width:none] md:gap-10 md:px-[calc((100vw-1080px)/2)] [&::-webkit-scrollbar]:hidden"
-      >
-        {residences.map((r, i) => (
-          <div
-            key={r.id}
-            ref={(el) => {
-              cardRefs.current[i] = el;
-            }}
-            className="snap-center"
+      {/* Top bar */}
+      <header className="relative z-30 flex items-center justify-between px-5 pt-5 md:px-10 md:pt-7">
+        <Logo light size="sm" href="/" />
+        <button
+          type="button"
+          aria-label="Menú"
+          onClick={() => setMenuOpen((v) => !v)}
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 text-white"
+        >
+          <Menu size={18} />
+        </button>
+      </header>
+
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-x-0 top-20 z-40 mx-5 rounded-2xl border border-white/10 bg-black/85 p-5 backdrop-blur-md md:mx-10"
           >
-            <VideoSlide
-              residence={r}
-              active={i === index}
-              muted={muted}
-              onSelect={() => scrollToIndex(i)}
-              onOpenUnlock={() => setUnlockOpen(true)}
-            />
-          </div>
-        ))}
-      </div>
-
-      <div className="mx-auto flex max-w-[1200px] justify-center gap-3 px-5 py-10">
-        {residences.map((r, i) => (
-          <button
-            key={r.id}
-            type="button"
-            aria-label={r.name}
-            onClick={() => scrollToIndex(i)}
-            className={`h-px transition-all duration-500 ${
-              i === index ? "w-16 bg-ink" : "w-8 bg-[#d9d2c6] hover:bg-[#9a8660]"
-            }`}
-          />
-        ))}
-      </div>
-
-      {/* Editorial catalog */}
-      <div className="border-t border-[#e8e2d8] bg-white">
-        <div className="mx-auto max-w-[1200px] px-5 py-20 md:px-10 md:py-28">
-          <div className="mb-14 flex flex-col justify-between gap-6 md:flex-row md:items-end">
-            <div>
-              <p className="text-[11px] tracking-[0.45em] text-[#9a8660] uppercase">
-                Inventario selecto
-              </p>
-              <h3 className="display mt-4 text-4xl font-light text-ink md:text-5xl">
-                Comparar residencias
-              </h3>
+            <div className="flex flex-col gap-4 text-[12px] tracking-[0.22em] text-white/80 uppercase">
+              <Link href="/residences" onClick={() => setMenuOpen(false)}>
+                Showroom
+              </Link>
+              <Link href="/private" onClick={() => setMenuOpen(false)}>
+                Omar Private
+              </Link>
+              <a href="#casas" onClick={() => setMenuOpen(false)}>
+                Residencias activas
+              </a>
             </div>
-            <Link
-              href="/residences"
-              className="inline-flex items-center gap-3 text-[11px] tracking-[0.28em] text-ink uppercase transition hover:text-[#9a8660]"
-            >
-              Showroom completo
-              <ArrowRight size={14} />
-            </Link>
-          </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-          <div className="divide-y divide-[#e8e2d8] border-y border-[#e8e2d8]">
-            {residences.map((r, i) => {
-              const selected = i === index;
-              return (
-                <button
-                  key={r.id}
-                  type="button"
-                  onClick={() => {
-                    scrollToIndex(i);
-                    document.getElementById("casas")?.scrollIntoView({
-                      behavior: "smooth",
-                      block: "start",
-                    });
-                  }}
-                  className={`group grid w-full grid-cols-1 items-center gap-6 py-8 text-left transition md:grid-cols-[140px_1.2fr_1fr_auto] md:gap-10 md:py-10 ${
-                    selected ? "bg-[#faf8f4]" : "hover:bg-[#faf8f4]"
+      {/* Counter + exclusive */}
+      <div className="relative z-20 px-5 pt-6 md:px-10">
+        <p className="text-[11px] tracking-[0.35em] text-white/70">
+          <span className="text-white">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+          <span className="text-white/35"> / {String(total).padStart(2, "0")}</span>
+          <span className="mx-3 text-white/25">·</span>
+          <span className="tracking-[0.28em] uppercase">Exclusive Residence</span>
+        </p>
+      </div>
+
+      {/* Center play */}
+      <div className="relative z-20 flex justify-center pt-10 md:pt-16">
+        <button
+          type="button"
+          onClick={() => setPlaying((p) => !p)}
+          className="group flex flex-col items-center gap-3"
+        >
+          <span className="flex h-16 w-16 items-center justify-center rounded-full border border-white/50 bg-black/25 text-white backdrop-blur-sm transition group-hover:border-gold-soft group-hover:text-gold-soft md:h-20 md:w-20">
+            {playing ? (
+              <Pause size={22} fill="currentColor" />
+            ) : (
+              <Play size={22} fill="currentColor" className="ml-0.5" />
+            )}
+          </span>
+          <span className="text-[10px] tracking-[0.35em] text-white/80 uppercase">
+            Ver transformación
+          </span>
+        </button>
+      </div>
+
+      {/* Vertical progress — desktop / large phones */}
+      <div className="absolute top-[28%] right-4 z-20 hidden w-28 sm:block md:right-8 md:w-32">
+        <p className="text-[10px] tracking-[0.2em] text-gold-soft uppercase">
+          {current.progress}% Completado
+        </p>
+        <div className="mt-4 space-y-0">
+          {current.stages.slice(0, 6).map((stage, i, arr) => {
+            const done = stage.status === "done";
+            const currentStage = stage.status === "current";
+            return (
+              <div key={stage.id} className="flex gap-3">
+                <div className="flex flex-col items-center">
+                  <span
+                    className={`mt-0.5 h-2 w-2 rounded-full ${
+                      currentStage
+                        ? "bg-white shadow-[0_0_12px_rgba(255,255,255,0.85)]"
+                        : done
+                          ? "bg-gold-soft"
+                          : "bg-white/25"
+                    }`}
+                  />
+                  {i < arr.length - 1 && (
+                    <span
+                      className={`w-px flex-1 min-h-[18px] ${
+                        done || currentStage ? "bg-gold-soft/50" : "bg-white/15"
+                      }`}
+                    />
+                  )}
+                </div>
+                <p
+                  className={`pb-3 text-[9px] tracking-[0.18em] uppercase ${
+                    currentStage
+                      ? "text-white"
+                      : done
+                        ? "text-white/70"
+                        : "text-white/35"
                   }`}
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden md:aspect-[5/4]">
-                    <Image
-                      src={r.image}
-                      alt={r.name}
-                      fill
-                      className="object-cover transition duration-700 group-hover:scale-[1.03]"
-                      sizes="180px"
-                    />
-                  </div>
+                  {stageLabel(stage.id, stage.label)}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
-                  <div>
-                    <p className="text-[10px] tracking-[0.35em] text-[#9a8660] uppercase">
-                      {String(i + 1).padStart(2, "0")} · {r.code}
-                    </p>
-                    <p className="display mt-2 text-3xl font-light text-ink md:text-4xl">
-                      {r.name}
-                    </p>
-                    <p className="mt-2 text-sm text-[#8a847a]">{r.location}</p>
-                  </div>
+      {/* Bottom content */}
+      <div className="absolute inset-x-0 bottom-0 z-20 px-5 pb-5 md:px-10 md:pb-8">
+        <div className="max-w-xl">
+          <p className="text-[11px] tracking-[0.35em] text-gold-soft uppercase">
+            {current.code}
+          </p>
+          <h2 className="display mt-2 text-4xl font-light tracking-[0.04em] text-white md:text-6xl">
+            {current.name}
+          </h2>
+          <p className="mt-2 text-sm text-white/55">{current.location}</p>
 
-                  <div className="space-y-3">
-                    <div className="flex items-baseline justify-between gap-4 md:block">
-                      <p className="display text-2xl text-ink">{formatUsd(r.priceFrom)}</p>
-                      <p className="text-xs tracking-[0.12em] text-[#8a847a] uppercase">
-                        {r.progress}% construido · {r.waitlistCount} en lista
-                      </p>
-                    </div>
-                    <div className="h-px bg-[#e8e2d8]">
-                      <div
-                        className="h-full bg-[#9a8660]"
-                        style={{ width: `${r.progress}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 text-[11px] tracking-[0.25em] text-ink uppercase">
-                    {selected ? "En vista" : "Ver"}
-                    <ArrowRight
-                      size={14}
-                      className="transition group-hover:translate-x-1"
-                    />
-                  </div>
-                </button>
-              );
-            })}
+          <div className="mt-5 border-t border-white/15 pt-5">
+            <p className="text-[10px] tracking-[0.3em] text-gold-soft uppercase">Desde</p>
+            <p className="display mt-1 text-4xl font-light text-white md:text-5xl">
+              {formatUsd(current.priceFrom)}
+            </p>
+            <p className="mt-2 text-[10px] tracking-[0.28em] text-gold-soft/90 uppercase">
+              Acceso pre-construcción
+            </p>
           </div>
+
+          <div className="mt-6 grid grid-cols-3 gap-3 border-y border-white/10 py-4">
+            <div className="flex flex-col gap-1.5">
+              <CalendarDays size={14} className="text-gold-soft" />
+              <p className="text-[9px] leading-snug tracking-[0.14em] text-white/70 uppercase">
+                Entrega
+                <br />
+                {formatDelivery(current.expected)}
+              </p>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Ruler size={14} className="text-gold-soft" />
+              <p className="text-[9px] leading-snug tracking-[0.14em] text-white/70 uppercase">
+                Área
+                <br />
+                {current.sqft.toLocaleString()} SQ FT
+              </p>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <BedDouble size={14} className="text-gold-soft" />
+              <p className="text-[9px] leading-snug tracking-[0.14em] text-white/70 uppercase">
+                {current.beds} Hab. {current.baths} Baños
+              </p>
+            </div>
+          </div>
+
+          {/* Mobile progress strip */}
+          <div className="mt-4 sm:hidden">
+            <div className="mb-1.5 flex justify-between text-[9px] tracking-[0.2em] text-white/55 uppercase">
+              <span>Obra</span>
+              <span className="text-gold-soft">{current.progress}% completado</span>
+            </div>
+            <div className="h-0.5 overflow-hidden bg-white/15">
+              <div
+                className="h-full bg-gold-soft transition-[width] duration-700"
+                style={{ width: `${current.progress}%` }}
+              />
+            </div>
+          </div>
+
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+            <Link
+              href={`/residences/${current.id}`}
+              className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#c4a574] px-6 py-3.5 text-[11px] font-medium tracking-[0.22em] text-ink uppercase transition hover:bg-[#d4b888]"
+            >
+              Ver residencia
+              <ArrowRight size={14} />
+            </Link>
+            <button
+              type="button"
+              onClick={() => setUnlockOpen(true)}
+              className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-white/35 px-6 py-3.5 text-[11px] tracking-[0.22em] text-white uppercase transition hover:border-gold-soft hover:text-gold-soft"
+            >
+              <Lock size={13} />
+              {unlocked ? "Ya tienes acceso" : "Solicitar acceso"}
+            </button>
+          </div>
+
+          <p className="mt-3 flex items-center justify-center gap-2 text-[9px] tracking-[0.22em] text-white/40 uppercase sm:justify-start">
+            <Lock size={10} />
+            Acceso privado · Cupos limitados
+          </p>
+        </div>
+
+        {/* Thumbnail carousel */}
+        <div className="mt-6 flex gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {residences.map((r, i) => {
+            const active = i === index;
+            return (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => goTo(i)}
+                className={`relative h-[72px] w-[118px] shrink-0 overflow-hidden rounded-lg border transition md:h-20 md:w-[140px] ${
+                  active
+                    ? "border-[#c4a574]"
+                    : "border-white/15 opacity-70 hover:opacity-100"
+                }`}
+              >
+                <Image
+                  src={r.image}
+                  alt={r.name}
+                  fill
+                  className="object-cover"
+                  sizes="140px"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-2 text-left">
+                  <p className="text-[9px] tracking-[0.16em] text-white uppercase">
+                    {String(i + 1).padStart(2, "0")} {r.name.replace("THE ", "")}
+                  </p>
+                  <p className="text-[9px] text-gold-soft">{r.progress}%</p>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
 
