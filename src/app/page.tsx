@@ -16,6 +16,7 @@ import { HeroActivityFeed } from "@/components/HeroActivityFeed";
 import { HeroVideo } from "@/components/HeroVideo";
 import { LaunchCard } from "@/components/LaunchCard";
 import { Logo } from "@/components/Logo";
+import { ResidencesCatalog } from "@/components/ResidencesCatalog";
 import { VideoResidenceFeed } from "@/components/VideoResidenceFeed";
 import { residences } from "@/data/residences";
 
@@ -50,6 +51,9 @@ export default function HomePage() {
               <div className="flex flex-col gap-3 text-[11px] tracking-[0.22em] text-ink/70 uppercase">
                 <Link href="/#casas" onClick={() => setMenuOpen(false)}>
                   Colección
+                </Link>
+                <Link href="/#catalogo" onClick={() => setMenuOpen(false)}>
+                  Catálogo
                 </Link>
                 <Link href="/residences" onClick={() => setMenuOpen(false)}>
                   Showroom
@@ -191,6 +195,9 @@ export default function HomePage() {
 
       {/* Colección en vivo */}
       <VideoResidenceFeed />
+
+      {/* Catálogo premium compacto */}
+      <ResidencesCatalog />
 
       {/* Proceso */}
       <section className="relative bg-[#faf8f4] px-5 py-24 md:px-12 md:py-32 lg:px-16">
