@@ -492,23 +492,23 @@ export function VideoResidenceFeed() {
             Acceso privado · Cupos limitados
           </p>
 
-          {/* Catalog — clear and obvious */}
-          <div className="mt-7 border-t border-white/15 pt-5">
+          {/* Catalog — clear and obvious, white surface */}
+          <div className="mt-7 -mx-4 border-t border-white/10 bg-white px-4 pt-5 pb-6 md:-mx-8 md:px-8">
             <div className="mb-3 flex items-end justify-between gap-3">
               <div>
-                <p className="text-[10px] tracking-[0.32em] text-[#c4a574] uppercase">
+                <p className="text-[10px] tracking-[0.32em] text-[#9a8660] uppercase">
                   Catálogo
                 </p>
-                <p className="mt-1 text-sm text-white/80">
+                <p className="mt-1 text-sm text-ink/70">
                   Elige otra residencia · desliza o toca
                 </p>
               </div>
-              <p className="text-[10px] tracking-[0.2em] text-white/40 uppercase">
+              <p className="text-[10px] tracking-[0.2em] text-ink/40 uppercase">
                 {total} disponibles
               </p>
             </div>
 
-            <div className="flex gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {residences.map((r, i) => {
                 const active = i === index;
                 const v = liveViewers[r.id] ?? 0;
@@ -519,8 +519,8 @@ export function VideoResidenceFeed() {
                     onClick={() => goTo(i, i > index ? 1 : -1)}
                     className={`relative h-[108px] w-[168px] shrink-0 overflow-hidden rounded-xl border-2 transition md:h-[120px] md:w-[200px] ${
                       active
-                        ? "border-[#c4a574] shadow-[0_0_0_1px_rgba(196,165,116,0.35)]"
-                        : "border-white/20 opacity-80 hover:opacity-100"
+                        ? "border-[#c4a574] shadow-[0_8px_24px_rgba(20,16,10,0.12)]"
+                        : "border-[#e8e2d8] opacity-90 hover:opacity-100"
                     }`}
                   >
                     <Image
