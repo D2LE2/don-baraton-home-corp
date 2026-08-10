@@ -16,6 +16,7 @@ import { HeroActivityFeed } from "@/components/HeroActivityFeed";
 import { HeroVideo } from "@/components/HeroVideo";
 import { LaunchCard } from "@/components/LaunchCard";
 import { Logo } from "@/components/Logo";
+import { OmarCredibility } from "@/components/OmarCredibility";
 import { ProgressBar } from "@/components/ProgressBar";
 import { ResidencesCatalog } from "@/components/ResidencesCatalog";
 import { VideoResidenceFeed } from "@/components/VideoResidenceFeed";
@@ -190,6 +191,9 @@ export default function HomePage() {
 
       {/* Catálogo premium compacto */}
       <ResidencesCatalog />
+
+      {/* Credibilidad Omar Corp */}
+      <OmarCredibility />
 
       {/* Proceso */}
       <section className="relative bg-[#faf8f4] px-5 py-24 md:px-12 md:py-32 lg:px-16">
