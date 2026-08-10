@@ -51,24 +51,28 @@ body {
 }
 
 /*
- * In-flow hero: locked height once (--app-vh ≈ 100lvh).
- * No position:fixed + scroll transforms — those felt laggy/jumpy on mobile.
+ * Hero fills at least one small viewport — no JS height lock, no max-height.
+ * Forced pixel heights + scroll transforms were causing the section handoff jank.
  */
 .hero-viewport {
-  height: var(--app-vh, 100lvh);
-  min-height: var(--app-vh, 100lvh);
+  min-height: 100svh;
+  min-height: 100dvh;
   width: 100%;
 }
 
-/* Residence video frame — same locked unit, no live vh */
+/* Video stage — shorter, aspect-led; doesn’t dominate the scroll */
 .residence-video-frame {
-  height: min(calc(var(--app-vh, 100lvh) * 0.78), 820px);
-  min-height: 520px;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  max-height: 68vh;
+  min-height: 380px;
 }
 
 @media (min-width: 768px) {
   .residence-video-frame {
-    height: calc(var(--app-vh, 100lvh) * 0.82);
+    aspect-ratio: 16 / 10;
+    max-height: 70vh;
+    min-height: 480px;
   }
 }
 

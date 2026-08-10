@@ -13,7 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Logo } from "@/components/Logo";
 import { VideoResidenceFeed } from "@/components/VideoResidenceFeed";
 import { useNova } from "@/context/NovaContext";
@@ -22,7 +22,6 @@ import {
   getActiveResidences,
   playResidenceAvance,
 } from "@/data/residences";
-import { useViewportHeight } from "@/hooks/useViewportHeight";
 
 const LIST_AVATARS = [
   { initials: "MR", tone: "bg-[#3d3428]" },
@@ -33,7 +32,6 @@ const LIST_AVATARS = [
 ];
 
 export default function HomePage() {
-  const viewportH = useViewportHeight();
   const { membership } = useNova();
   const [menuOpen, setMenuOpen] = useState(false);
   const activeCount = getActiveResidenceCount();
@@ -44,25 +42,12 @@ export default function HomePage() {
     activeResidences.reduce((sum, r) => sum + Math.round(r.waitlistCount * 0.08), 0) || 24,
   );
 
-  useEffect(() => {
-    if (viewportH > 0) {
-      document.documentElement.style.setProperty("--app-vh", `${viewportH}px`);
-    }
-  }, [viewportH]);
-
   return (
     <main className="overflow-x-hidden bg-ink">
       {/* PRIMERA SECCIÓN — hero + social + residencias activas */}
       <section className="bg-black text-white">
         {/* Hero media */}
-        <div
-          className="hero-viewport relative isolate overflow-hidden"
-          style={
-            viewportH > 0
-              ? { height: viewportH, minHeight: viewportH }
-              : undefined
-          }
-        >
+        <div className="hero-viewport relative isolate overflow-hidden">
           <div className="absolute inset-0">
             <Image
               src={featured?.image ?? "/images/monroe.jpg"}
@@ -208,7 +193,7 @@ export default function HomePage() {
         </div>
 
         {/* Social proof capsule */}
-        <div className="relative z-10 -mt-5 px-4 md:-mt-6 md:px-10 lg:px-16">
+        <div className="relative z-10 px-4 pt-5 md:px-10 md:pt-6 lg:px-16">
           <div className="mx-auto flex max-w-5xl flex-col gap-3 rounded-2xl border border-white/10 bg-[#121212] px-4 py-3.5 shadow-[0_12px_40px_rgba(0,0,0,0.45)] sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5">
             <p className="inline-flex items-center gap-2 text-[10px] tracking-[0.18em] text-[#e0c57a] uppercase">
               <Users size={14} strokeWidth={1.75} />

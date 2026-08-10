@@ -362,7 +362,8 @@ export function getActiveResidenceCount() {
 export function playResidenceAvance(residenceId?: string) {
   if (typeof window === "undefined") return;
   const target = document.getElementById("casas");
-  target?.scrollIntoView({ behavior: "smooth", block: "start" });
+  // Instant scroll — smooth + layout work felt laggy on mobile
+  target?.scrollIntoView({ behavior: "auto", block: "start" });
   window.dispatchEvent(
     new CustomEvent("omar:play-avance", {
       detail: { id: residenceId ?? residences[0]?.id },
