@@ -8,22 +8,21 @@ import { useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/Logo";
 import { VideoResidenceFeed } from "@/components/VideoResidenceFeed";
 import { useNova } from "@/context/NovaContext";
-import { residences, getActiveResidenceCount, getActiveResidences, playResidenceAvance } from "@/data/residences";
+import { getActiveResidenceCount, getActiveResidences, playResidenceAvance } from "@/data/residences";
 import { useViewportHeight } from "@/hooks/useViewportHeight";
 
 export default function HomePage() {
-  const heroRef = useRef<HTMLElement>(null);
+  const spacerRef = useRef<HTMLDivElement>(null);
   const viewportH = useViewportHeight();
   const { membership } = useNova();
   const [menuOpen, setMenuOpen] = useState(false);
   const activeCount = getActiveResidenceCount();
   const activeResidences = getActiveResidences();
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.55], [1, 0]);
+  const { scrollY } = useScroll();
+  const scrollRange = viewportH > 0 ? viewportH : 800;
+  const heroY = useTransform(scrollY, [0, scrollRange], [0, -scrollRange]);
+  const imageScale = useTransform(scrollY, [0, scrollRange], [1, 1.08]);
+  const contentOpacity = useTransform(scrollY, [0, scrollRange * 0.5], [1, 0]);
 
   useEffect(() => {
     if (viewportH > 0) {
@@ -33,19 +32,13 @@ export default function HomePage() {
 
   return (
     <main className="overflow-x-hidden bg-ink">
-      {/* HERO — matches exclusivity mockup */}
-      <section
-        ref={heroRef}
-        className="hero-viewport relative isolate overflow-hidden"
-        style={
-          viewportH > 0
-            ? {
-                height: viewportH,
-                minHeight: viewportH,
-                maxHeight: viewportH,
-              }
-            : undefined
-        }
+      {/*
+        Fixed full-screen hero: always covers the visual viewport at load,
+        so the second section can never peek. Spacer reserves scroll room.
+      */}
+      <motion.section
+        style={{ y: heroY }}
+        className="hero-viewport fixed inset-0 z-20 isolate overflow-hidden bg-ink"
       >
         <motion.div style={{ scale: imageScale }} className="absolute inset-0">
           <Image
@@ -227,7 +220,15 @@ export default function HomePage() {
             </div>
           </div>
         </motion.div>
-      </section>
+      </motion.section>
+
+      {/* Scroll room equal to one screen — second section starts after this */}
+      <div
+        ref={spacerRef}
+        aria-hidden
+        className="hero-spacer"
+        style={viewportH > 0 ? { height: viewportH } : undefined}
+      />
 
       {/* Video houses — the magic + unlock */}
       <VideoResidenceFeed />
