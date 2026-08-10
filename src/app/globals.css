@@ -57,19 +57,19 @@ body {
   width: 100%;
 }
 
-/* Video stage — shorter, aspect-led; doesn’t dominate the scroll */
+/* Collection stage — compact cinematic frame, not a tall phone scroll */
 .residence-video-frame {
   width: 100%;
-  aspect-ratio: 4 / 5;
-  max-height: 68vh;
-  min-height: 380px;
+  aspect-ratio: 16 / 10;
+  max-height: 52vh;
+  min-height: 240px;
 }
 
 @media (min-width: 768px) {
   .residence-video-frame {
-    aspect-ratio: 16 / 10;
-    max-height: 70vh;
-    min-height: 480px;
+    aspect-ratio: 16 / 9;
+    max-height: 56vh;
+    min-height: 320px;
   }
 }
 

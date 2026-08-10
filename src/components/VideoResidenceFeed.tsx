@@ -4,30 +4,22 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
-  CalendarDays,
   ChevronLeft,
   ChevronRight,
-  Lock,
   MapPin,
   Pause,
   Play,
-  UserRound,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { residences, type Residence } from "@/data/residences";
+import { residences } from "@/data/residences";
 
-function transformLabel(residence: Residence) {
-  if (residence.status === "COMING SOON") return "Early stage";
-  return "Active transform";
-}
-
+/** Compact pro collection stage — video + overlay, no tall status stack */
 export function VideoResidenceFeed() {
   const total = residences.length;
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
-
   const current = residences[index];
 
   const goTo = useCallback(
@@ -51,13 +43,11 @@ export function VideoResidenceFeed() {
   useEffect(() => {
     const el = videoRef.current;
     if (!el) return;
-
     el.muted = true;
     if (playing) {
       const attempt = el.play();
       if (attempt) {
         attempt.catch(() => {
-          // Retry once data is ready (mobile autoplay quirks)
           const onReady = () => {
             void el.play().catch(() => undefined);
             el.removeEventListener("canplay", onReady);
@@ -74,36 +64,47 @@ export function VideoResidenceFeed() {
     const onPlayAvance = (event: Event) => {
       const id = (event as CustomEvent<{ id?: string }>).detail?.id;
       const i = id ? residences.findIndex((r) => r.id === id) : 0;
-      const next = i >= 0 ? i : 0;
-      setIndex(next);
+      setIndex(i >= 0 ? i : 0);
       setPlaying(true);
     };
-
     window.addEventListener("omar:play-avance", onPlayAvance);
     return () => window.removeEventListener("omar:play-avance", onPlayAvance);
   }, []);
 
   return (
-    <section id="casas" className="relative bg-black text-white">
-      {/* Quiet bridge so the handoff from landing isn’t a hard cut */}
-      <div className="border-t border-white/10 px-5 py-8 md:px-12 lg:px-16">
-        <p className="text-[10px] tracking-[0.35em] text-[#c4a574] uppercase">
-          Colección en vivo
-        </p>
-        <p className="mt-2 max-w-md text-sm text-white/50">
-          Elige una residencia y mira cómo se transforma.
-        </p>
+    <section id="casas" className="relative bg-[#0c0b0a] text-white">
+      <div className="flex items-end justify-between gap-4 border-t border-white/10 px-5 py-5 md:px-12 md:py-6 lg:px-16">
+        <div>
+          <p className="text-[10px] tracking-[0.35em] text-[#c4a574] uppercase">
+            Colección en vivo
+          </p>
+          <p className="mt-1 text-[12px] text-white/45">
+            Tres residencias. Avance real.
+          </p>
+        </div>
+        <div className="flex items-center gap-1.5">
+          {residences.map((r, i) => (
+            <button
+              key={r.id}
+              type="button"
+              onClick={() => goTo(i)}
+              aria-label={r.code}
+              className={`h-1 w-6 rounded-full transition ${
+                i === index ? "bg-[#e0c57a]" : "bg-white/20 hover:bg-white/40"
+              }`}
+            />
+          ))}
+        </div>
       </div>
 
-      {/* VIDEO — no drag (it fights vertical scroll on mobile) */}
-      <div className="residence-video-frame relative overflow-hidden bg-[#12100e]">
+      <div className="residence-video-frame relative mx-auto max-w-[1200px] overflow-hidden bg-[#12100e] md:mx-5 md:rounded-sm lg:mx-12 xl:mx-16">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={current.id}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.28 }}
+            transition={{ duration: 0.25 }}
             className="absolute inset-0 bg-[#12100e]"
           >
             <video
@@ -121,40 +122,31 @@ export function VideoResidenceFeed() {
           </motion.div>
         </AnimatePresence>
 
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/70" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/40" />
 
-        <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-5 pt-5 md:px-10 md:pt-6">
-          <p className="text-[11px] tracking-[0.28em] text-white/90 uppercase">
-            <span className="font-medium text-white">
-              {String(index + 1).padStart(2, "0")}
-            </span>
-            <span className="text-white/45">
-              {" "}
-              / {String(total).padStart(2, "0")}
-            </span>
+        {/* Top chrome */}
+        <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-4 pt-4 md:px-6 md:pt-5">
+          <p className="text-[10px] tracking-[0.28em] text-white/70 uppercase tabular-nums">
+            <span className="text-white">{String(index + 1).padStart(2, "0")}</span>
+            <span className="text-white/35"> / {String(total).padStart(2, "0")}</span>
           </p>
-          <p className="text-[11px] tracking-[0.22em] text-[#e0c57a] uppercase tabular-nums">
-            {current.progress}% transformed
-          </p>
-        </div>
-
-        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
-          <button
-            type="button"
-            onClick={() => setPlaying((p) => !p)}
-            aria-label={playing ? "Pausar" : "Reanudar"}
-            className={`pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full border border-white/40 bg-black/30 text-white backdrop-blur-[2px] transition hover:border-white md:h-14 md:w-14 ${
-              playing
-                ? "opacity-35 hover:opacity-100 focus-visible:opacity-100 md:opacity-0 md:hover:opacity-100"
-                : "opacity-100"
-            }`}
-          >
-            {playing ? (
-              <Pause size={18} fill="currentColor" />
-            ) : (
-              <Play size={18} fill="currentColor" className="ml-0.5" />
-            )}
-          </button>
+          <div className="flex items-center gap-3">
+            <p className="text-[10px] tracking-[0.2em] text-[#e0c57a] uppercase tabular-nums">
+              {current.progress}%
+            </p>
+            <button
+              type="button"
+              onClick={() => setPlaying((p) => !p)}
+              aria-label={playing ? "Pausar" : "Reanudar"}
+              className="pointer-events-auto flex h-8 w-8 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white/90 backdrop-blur-sm"
+            >
+              {playing ? (
+                <Pause size={12} fill="currentColor" />
+              ) : (
+                <Play size={12} fill="currentColor" className="ml-0.5" />
+              )}
+            </button>
+          </div>
         </div>
 
         {index > 0 && (
@@ -162,9 +154,9 @@ export function VideoResidenceFeed() {
             type="button"
             aria-label="Anterior"
             onClick={goPrev}
-            className="absolute top-1/2 left-3 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/30 text-white/80 backdrop-blur-sm md:left-5"
+            className="absolute top-1/2 left-2 z-30 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white/80 md:left-4"
           >
-            <ChevronLeft size={20} strokeWidth={1.25} />
+            <ChevronLeft size={18} strokeWidth={1.25} />
           </button>
         )}
         {index < total - 1 && (
@@ -172,126 +164,78 @@ export function VideoResidenceFeed() {
             type="button"
             aria-label="Siguiente"
             onClick={goNext}
-            className="absolute top-1/2 right-3 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/30 text-white/80 backdrop-blur-sm md:right-5"
+            className="absolute top-1/2 right-2 z-30 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white/80 md:right-4"
           >
-            <ChevronRight size={20} strokeWidth={1.25} />
+            <ChevronRight size={18} strokeWidth={1.25} />
           </button>
         )}
-      </div>
 
-      {/* Status — no listing sheet */}
-      <div className="bg-black px-5 pb-14 pt-8 md:px-12 md:pb-16 md:pt-10 lg:px-16">
-        <div className="mx-auto max-w-xl">
-          <p className="text-[10px] tracking-[0.4em] text-[#c4a574] uppercase">
-            {current.code}
-          </p>
-          <h2 className="mt-2.5 text-[clamp(2rem,7vw,3.5rem)] font-semibold tracking-[0.04em] text-white uppercase">
-            {current.name}
-          </h2>
-
-          <p className="mt-2.5 flex items-center gap-1.5 text-[13px] text-white/50">
-            <MapPin size={13} className="shrink-0 text-white/40" />
-            {current.location}
-          </p>
-
-          <p className="mt-4 inline-flex items-center gap-2 text-[10px] tracking-[0.28em] text-emerald-400 uppercase">
-            <span className="live-dot !bg-emerald-400" />
-            {transformLabel(current)}
-          </p>
-
-          <div className="mt-7 flex items-end gap-4">
-            <div className="shrink-0">
-              <p className="text-[clamp(2.6rem,9vw,3.75rem)] font-light leading-none tracking-tight text-[#e0c57a] tabular-nums">
-                {current.progress}%
+        {/* Bottom overlay — all key info, no tall stack below */}
+        <div className="absolute inset-x-0 bottom-0 z-20 px-4 pb-4 md:px-6 md:pb-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="min-w-0">
+              <p className="text-[9px] tracking-[0.32em] text-[#c4a574] uppercase">
+                {current.code}
               </p>
-              <p className="mt-2 text-[9px] tracking-[0.28em] text-white/40 uppercase">
-                Current progress
+              <h2 className="mt-1 text-[clamp(1.35rem,4vw,2rem)] font-semibold tracking-[0.06em] text-white uppercase">
+                {current.name}
+              </h2>
+              <p className="mt-1 flex items-center gap-1 text-[11px] text-white/50">
+                <MapPin size={11} className="shrink-0 opacity-70" />
+                {current.location}
               </p>
-            </div>
-            <div className="mb-7 min-w-0 flex-1">
-              <div className="h-[2px] overflow-hidden rounded-full bg-white/15">
-                <div
-                  className="h-full bg-[#e0c57a] transition-[width] duration-700 ease-out"
-                  style={{ width: `${current.progress}%` }}
+              <div className="mt-2.5 h-[2px] max-w-[180px] overflow-hidden bg-white/15">
+                <motion.div
+                  key={current.id}
+                  className="h-full bg-[#e0c57a]"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${current.progress}%` }}
+                  transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                 />
               </div>
-            </div>
-          </div>
-
-          {current.latestUpdate && (
-            <Link
-              href={`/residences/${current.id}`}
-              className="group mt-7 flex items-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-white/[0.04] p-3 transition hover:border-[#c4a574]/45"
-            >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#c4a574]/15 text-[#e0c57a]">
-                <CalendarDays size={16} strokeWidth={1.75} />
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-[9px] tracking-[0.24em] text-[#e0c57a] uppercase">
-                  Latest update · {current.latestUpdate.date}
+              {current.latestUpdate && (
+                <p className="mt-2 truncate text-[10px] text-white/40">
+                  {current.latestUpdate.date} · {current.latestUpdate.title}
                 </p>
-                <p className="mt-1 flex items-center gap-1.5 text-[13px] text-white">
-                  <span className="truncate">{current.latestUpdate.title}</span>
-                  <ArrowRight size={13} className="shrink-0 opacity-70" />
-                </p>
-              </div>
-              {current.latestUpdate.image && (
-                <span className="relative h-14 w-[4.5rem] shrink-0 overflow-hidden rounded-md">
-                  <Image
-                    src={current.latestUpdate.image}
-                    alt=""
-                    fill
-                    className="object-cover"
-                    sizes="72px"
-                  />
-                </span>
               )}
-            </Link>
-          )}
+            </div>
 
-          <p className="mt-7 flex items-start gap-2 text-[11px] leading-relaxed tracking-[0.06em] text-white/50 uppercase">
-            <UserRound size={14} className="mt-0.5 shrink-0 text-white/35" />
-            Sigue cada avance. Obtén prioridad cuando esté disponible.
-          </p>
-
-          <Link
-            href={`/residences/${current.id}#follow`}
-            className="mt-5 flex w-full items-center justify-center gap-2.5 rounded-lg bg-[#c4a574] px-5 py-3.5 text-[11px] font-semibold tracking-[0.22em] text-ink uppercase transition hover:bg-[#e0c57a]"
-          >
-            Follow this residence
-            <ArrowRight size={15} />
-          </Link>
-
-          <p className="mt-4 flex items-center justify-center gap-1.5 text-[8px] tracking-[0.22em] text-white/35 uppercase">
-            <Lock size={9} />
-            Private list · Limited access
-          </p>
-
-          {/* Compact switcher — not a second catalog page */}
-          <div className="mt-10 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {residences.map((r, i) => (
-              <button
-                key={r.id}
-                type="button"
-                onClick={() => goTo(i)}
-                className={`relative h-16 w-24 shrink-0 overflow-hidden rounded-md border transition ${
-                  i === index
-                    ? "border-[#c4a574]"
-                    : "border-white/15 opacity-70 hover:opacity-100"
-                }`}
+            <div className="flex shrink-0 items-center gap-2 sm:flex-col sm:items-end">
+              <div className="flex gap-1.5">
+                {residences.map((r, i) => (
+                  <button
+                    key={r.id}
+                    type="button"
+                    onClick={() => goTo(i)}
+                    className={`relative h-11 w-14 overflow-hidden border transition md:h-12 md:w-16 ${
+                      i === index
+                        ? "border-[#c4a574]"
+                        : "border-white/20 opacity-60 hover:opacity-100"
+                    }`}
+                  >
+                    <Image
+                      src={r.image}
+                      alt={r.name}
+                      fill
+                      className="object-cover"
+                      sizes="64px"
+                    />
+                  </button>
+                ))}
+              </div>
+              <Link
+                href={`/residences/${current.id}`}
+                className="inline-flex items-center gap-1.5 bg-[#c4a574] px-3.5 py-2 text-[9px] font-semibold tracking-[0.18em] text-ink uppercase transition hover:bg-[#e0c57a]"
               >
-                <Image
-                  src={r.image}
-                  alt={r.name}
-                  fill
-                  className="object-cover"
-                  sizes="96px"
-                />
-              </button>
-            ))}
+                Ver residencia
+                <ArrowRight size={12} />
+              </Link>
+            </div>
           </div>
         </div>
       </div>
+
+      <div className="h-8 md:h-10" />
     </section>
   );
 }
