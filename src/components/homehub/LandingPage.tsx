@@ -8,6 +8,7 @@ import {
   BedDouble,
   Bell,
   Box,
+  Building2,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -22,8 +23,10 @@ import {
   ShieldCheck,
   Star,
   User,
+  Wrench,
   X,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { JoinListModal } from "@/components/homehub/JoinListModal";
 import { homes, type PreMarketHome } from "@/data/homes";
@@ -127,20 +130,47 @@ const VALUE = [
   },
 ] as const;
 
-const CATEGORIES = [
+const ENTRIES = [
   {
     href: "/discover",
+    title: "Find a home",
+    copy: "Discover renovations and get early access before listing day.",
+    Icon: Search,
+  },
+  {
+    href: "/publish",
+    title: "Publish a home",
+    copy: "Owners & builders: list a project and measure demand early.",
+    Icon: Building2,
+  },
+  {
+    href: "/rentals",
+    title: "Find a rental",
+    copy: "Browse homes and spaces available to rent nearby.",
+    Icon: KeyRound,
+  },
+  {
+    href: "/rentals/publish",
+    title: "List a rental",
+    copy: "Landlords & hosts: publish a space and connect with renters.",
+    Icon: Home,
+  },
+] as const;
+
+const CATEGORIES = [
+  {
+    href: "/rentals",
     title: "Rentals",
     copy: "Find homes and spaces available for rent",
     image: "/images/interior.jpg",
     Icon: KeyRound,
   },
   {
-    href: "/#categories",
+    href: "/things",
     title: "Things",
-    copy: "Rent the things you need, when you need them",
+    copy: "Rent tools and gear when you need them",
     image: "/images/kitchen.jpg",
-    Icon: Box,
+    Icon: Wrench,
   },
   {
     href: "/#how",
@@ -152,13 +182,14 @@ const CATEGORIES = [
 ] as const;
 
 const MOBILE_TABS = [
-  { id: "homes", label: "Homes", Icon: Home },
-  { id: "rentals", label: "Rentals", Icon: KeyRound },
-  { id: "things", label: "Things", Icon: Box },
+  { id: "homes", label: "Homes", Icon: Home, href: "/discover" },
+  { id: "rentals", label: "Rentals", Icon: KeyRound, href: "/rentals" },
+  { id: "things", label: "Things", Icon: Box, href: "/things" },
 ] as const;
 
 export function LandingPage() {
   const featured = homes[0];
+  const router = useRouter();
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [joinOpen, setJoinOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -166,6 +197,11 @@ export function LandingPage() {
 
   const scrollProjects = (dir: -1 | 1) => {
     scrollerRef.current?.scrollBy({ left: dir * 300, behavior: "smooth" });
+  };
+
+  const selectTab = (id: (typeof MOBILE_TABS)[number]["id"], href: string) => {
+    setTab(id);
+    if (id !== "homes") router.push(href);
   };
 
   return (
@@ -184,17 +220,17 @@ export function LandingPage() {
             <Link href="/discover" className="hover:text-[#111]">
               Homes
             </Link>
-            <Link href="/#browse" className="hover:text-[#111]">
+            <Link href="/rentals" className="hover:text-[#111]">
               Rentals
             </Link>
-            <Link href="/#categories" className="hover:text-[#111]">
+            <Link href="/things" className="hover:text-[#111]">
               Things
+            </Link>
+            <Link href="/publish" className="hover:text-[#111]">
+              Publish
             </Link>
             <Link href="/#how" className="hover:text-[#111]">
               How it works
-            </Link>
-            <Link href="/#about" className="hover:text-[#111]">
-              About us
             </Link>
           </nav>
 
@@ -234,10 +270,19 @@ export function LandingPage() {
           <div className="border-t border-[#f0f0f0] px-4 py-4 lg:hidden">
             <div className="flex flex-col gap-3 text-[15px] font-medium text-[#5c5c5c]">
               <Link href="/discover" onClick={() => setMenuOpen(false)}>
-                Homes
+                Find a home
               </Link>
-              <Link href="/#how" onClick={() => setMenuOpen(false)}>
-                How it works
+              <Link href="/publish" onClick={() => setMenuOpen(false)}>
+                Publish a home
+              </Link>
+              <Link href="/rentals" onClick={() => setMenuOpen(false)}>
+                Find a rental
+              </Link>
+              <Link href="/rentals/publish" onClick={() => setMenuOpen(false)}>
+                List a rental
+              </Link>
+              <Link href="/things" onClick={() => setMenuOpen(false)}>
+                Rent tools & things
               </Link>
               <Link href="/early-access" onClick={() => setMenuOpen(false)}>
                 Get Early Access
@@ -368,11 +413,11 @@ export function LandingPage() {
       {/* Category toggle — mobile mock */}
       <div className="mx-auto mt-2 flex max-w-[1200px] justify-center px-4 md:mt-4 md:px-8 lg:hidden">
         <div className="inline-flex rounded-full border border-[#ececec] bg-[#f7f7f7] p-1">
-          {MOBILE_TABS.map(({ id, label, Icon }) => (
+          {MOBILE_TABS.map(({ id, label, Icon, href }) => (
             <button
               key={id}
               type="button"
-              onClick={() => setTab(id)}
+              onClick={() => selectTab(id, href)}
               className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[12px] font-semibold transition ${
                 tab === id
                   ? "bg-[#f3ebe3] text-[#8a6b2e]"
@@ -401,6 +446,41 @@ export function LandingPage() {
                 </p>
               </div>
             </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Four marketplace entries */}
+      <section id="entries" className="mx-auto max-w-[1200px] px-4 py-10 md:px-8 md:py-14">
+        <div className="mb-6 max-w-xl md:mb-8">
+          <p className="text-[11px] font-semibold tracking-[0.14em] text-[#c4a07a] uppercase">
+            One platform
+          </p>
+          <h2 className="mt-1 text-[1.35rem] font-semibold tracking-tight text-[#111] md:text-[1.85rem]">
+            Built for seekers and publishers
+          </h2>
+          <p className="mt-2 text-[14px] leading-relaxed text-[#6a6a6a]">
+            Whether you&apos;re buying early, listing a project, finding a rental, or hosting one —
+            start here.
+          </p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 md:gap-4">
+          {ENTRIES.map(({ href, title, copy, Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              className="flex flex-col rounded-[1.35rem] border border-[#efefef] bg-white p-5 shadow-[0_8px_24px_rgba(0,0,0,0.04)] transition hover:border-[#e0e0e0]"
+            >
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f3ebe3] text-[#a67c52]">
+                <Icon size={18} strokeWidth={1.75} />
+              </span>
+              <p className="mt-4 text-[15px] font-semibold text-[#111]">{title}</p>
+              <p className="mt-1.5 flex-1 text-[13px] leading-relaxed text-[#6a6a6a]">{copy}</p>
+              <span className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#111]">
+                Enter
+                <ArrowRight size={14} />
+              </span>
+            </Link>
           ))}
         </div>
       </section>
@@ -484,7 +564,7 @@ export function LandingPage() {
           <div>
             <p className="text-[15px] font-semibold text-[#111]">HomeHub</p>
             <p className="mt-1 max-w-md text-[13px] text-[#6a6a6a]">
-              Pre-market homes. Follow renovations and get early access before the open market.
+              Buy early. Rent nearby. Publish your home or rental. Rent the tools you need.
             </p>
           </div>
           <Link
