@@ -29,15 +29,14 @@ export function useLiveViewersMap(activeId: string) {
         const next = { ...prev };
         residences.forEach((r) => {
           const current = next[r.id] ?? baseFor(r.id);
-          // Active residence moves a bit more
-          const chance = r.id === activeId ? 0.72 : 0.45;
+          const chance = r.id === activeId ? 0.78 : 0.5;
           if (Math.random() > chance) return;
-          const delta = Math.random() > 0.5 ? 1 : -1;
+          const delta = Math.random() > 0.48 ? 1 : -1;
           next[r.id] = Math.max(3, Math.min(48, current + delta));
         });
         return next;
       });
-    }, 3200);
+    }, 2400);
     return () => window.clearInterval(tick);
   }, [activeId]);
 

@@ -16,6 +16,7 @@ import {
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { UnlockModal } from "@/components/UnlockModal";
+import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { useNova } from "@/context/NovaContext";
 import { residences } from "@/data/residences";
 import { useLiveViewersMap } from "@/hooks/useLiveViewersMap";
@@ -54,6 +55,9 @@ export function VideoResidenceFeed() {
   const [unlockOpen, setUnlockOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [hintVisible, setHintVisible] = useState(true);
+  const [liveFlash, setLiveFlash] = useState<string | null>(null);
+  const [progressFill, setProgressFill] = useState(0);
+  const prevViewersRef = useRef<number | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { isUnlocked, ready } = useNova();
 
@@ -65,6 +69,28 @@ export function VideoResidenceFeed() {
     () => pipelineIndex(current.progress),
     [current.progress],
   );
+
+  // Animate completion bar when property changes
+  useEffect(() => {
+    setProgressFill(0);
+    const t = window.setTimeout(() => setProgressFill(current.progress), 80);
+    return () => window.clearTimeout(t);
+  }, [current.id, current.progress]);
+
+  // Live flash when viewers tick up/down
+  useEffect(() => {
+    const prev = prevViewersRef.current;
+    prevViewersRef.current = viewersNow;
+    if (prev === null || prev === viewersNow) return;
+    const delta = viewersNow - prev;
+    setLiveFlash(
+      delta > 0
+        ? `+${delta} entró a ver`
+        : `${Math.abs(delta)} salió`,
+    );
+    const t = window.setTimeout(() => setLiveFlash(null), 1800);
+    return () => window.clearTimeout(t);
+  }, [viewersNow]);
 
   const goTo = useCallback(
     (i: number) => {
@@ -219,10 +245,29 @@ export function VideoResidenceFeed() {
 
           {/* Live viewers — current property */}
           <div className="absolute top-16 right-14 z-20 md:top-20 md:right-20">
-            <p className="inline-flex items-center gap-2 rounded-md bg-black/55 px-2.5 py-1.5 text-[9px] tracking-[0.18em] text-white uppercase backdrop-blur-sm">
+            <motion.p
+              key={viewersNow}
+              initial={{ scale: 1.06 }}
+              animate={{ scale: 1 }}
+              className="inline-flex items-center gap-2 rounded-md bg-black/55 px-2.5 py-1.5 text-[9px] tracking-[0.18em] text-white uppercase backdrop-blur-sm"
+            >
               <span className="live-dot !bg-emerald-400" />
-              {viewersNow} mirando
-            </p>
+              <AnimatedCounter value={viewersNow} className="tabular-nums" />{" "}
+              mirando
+            </motion.p>
+            <AnimatePresence>
+              {liveFlash && (
+                <motion.p
+                  key={liveFlash}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  className="mt-1.5 rounded-md bg-emerald-500/15 px-2 py-1 text-[8px] tracking-[0.14em] text-emerald-300 uppercase backdrop-blur-sm"
+                >
+                  {liveFlash}
+                </motion.p>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Play */}
@@ -290,8 +335,17 @@ export function VideoResidenceFeed() {
           {/* Vertical progress */}
           <div className="absolute top-[18%] right-2 z-20 w-[88px] rounded-lg bg-black/55 px-2.5 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.45)] backdrop-blur-md md:right-5 md:w-[110px] md:px-3 md:py-3.5">
             <p className="text-[9px] font-semibold leading-tight tracking-[0.14em] text-[#e0c57a] uppercase md:text-[10px]">
-              {current.progress}% Completado
+              <AnimatedCounter value={current.progress} className="tabular-nums" />
+              % Completado
             </p>
+            <div className="mt-2 h-0.5 overflow-hidden rounded-full bg-white/15">
+              <motion.div
+                className="h-full bg-[#e0c57a]"
+                initial={{ width: 0 }}
+                animate={{ width: `${progressFill}%` }}
+                transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+              />
+            </div>
             <div className="mt-3">
               {PIPELINE.map((label, i) => {
                 const done = i < stageIdx;
@@ -299,7 +353,17 @@ export function VideoResidenceFeed() {
                 return (
                   <div key={label} className="flex gap-2">
                     <div className="flex w-2.5 flex-col items-center">
-                      <span
+                      <motion.span
+                        animate={
+                          active
+                            ? { scale: [1, 1.35, 1], opacity: [1, 0.75, 1] }
+                            : { scale: 1, opacity: 1 }
+                        }
+                        transition={
+                          active
+                            ? { duration: 1.8, repeat: Infinity, ease: "easeInOut" }
+                            : { duration: 0.2 }
+                        }
                         className={`mt-[3px] rounded-full ${
                           active
                             ? "h-2 w-2 bg-[#e0c57a] shadow-[0_0_10px_rgba(224,197,122,0.95)]"
@@ -336,61 +400,94 @@ export function VideoResidenceFeed() {
 
         {/* ═══ ZONE 2: Info panel ═══ */}
         <div className="relative z-10 bg-[#0a0a0a] px-4 pb-5 pt-5 md:px-8 md:pb-7 md:pt-6">
-          <div className="flex flex-wrap items-center gap-3">
-            <p className="text-[10px] tracking-[0.35em] text-[#c4a574] uppercase">
-              {current.code}
-            </p>
-            <span className="inline-flex items-center gap-1.5 text-[9px] tracking-[0.16em] text-emerald-300/90 uppercase">
-              <span className="live-dot !bg-emerald-400" />
-              {viewersNow} en vivo
-            </span>
-            <span className="text-[9px] tracking-[0.16em] text-white/45 uppercase">
-              · {current.progress}% terminación
-            </span>
-          </div>
-          <h2 className="mt-1.5 text-[clamp(1.85rem,7vw,3.25rem)] font-semibold tracking-[0.04em] text-white uppercase">
-            {current.name}
-          </h2>
-          <p className="mt-1 text-[13px] text-white/55">{current.location}</p>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current.id}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="text-[10px] tracking-[0.35em] text-[#c4a574] uppercase">
+                  {current.code}
+                </p>
+                <span className="inline-flex items-center gap-1.5 text-[9px] tracking-[0.16em] text-emerald-300/90 uppercase">
+                  <span className="live-dot !bg-emerald-400" />
+                  <AnimatedCounter value={viewersNow} className="tabular-nums" />{" "}
+                  en vivo
+                </span>
+                <span className="text-[9px] tracking-[0.16em] text-white/45 uppercase">
+                  ·{" "}
+                  <AnimatedCounter
+                    value={current.progress}
+                    className="tabular-nums"
+                  />
+                  % terminación
+                </span>
+              </div>
+              <h2 className="mt-1.5 text-[clamp(1.85rem,7vw,3.25rem)] font-semibold tracking-[0.04em] text-white uppercase">
+                {current.name}
+              </h2>
+              <p className="mt-1 text-[13px] text-white/55">{current.location}</p>
 
-          <div className="mt-4">
-            <p className="text-[clamp(1.6rem,5vw,2.4rem)] font-semibold tracking-tight text-white">
-              <span className="mr-2 text-[11px] font-normal tracking-[0.28em] text-[#c4a574] uppercase">
-                Desde
-              </span>
-              {formatUsd(current.priceFrom)}
-            </p>
-            <p className="mt-1 text-[9px] tracking-[0.28em] text-[#c4a574] uppercase">
-              Acceso pre-construcción
-            </p>
-          </div>
+              <div className="mt-3 h-1 overflow-hidden rounded-full bg-white/10">
+                <motion.div
+                  className="h-full rounded-full bg-gradient-to-r from-[#9a8660] to-[#e0c57a]"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progressFill}%` }}
+                  transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
+                />
+              </div>
 
-          <div className="mt-5 grid grid-cols-3 gap-2 border-y border-white/12 py-3.5">
-            <div className="flex items-start gap-2">
-              <CalendarDays size={14} className="mt-0.5 shrink-0 text-white/70" />
-              <p className="text-[9px] leading-snug tracking-[0.12em] text-white/70 uppercase">
-                Entrega
-                <br />
-                {formatDelivery(current.expected)}
-              </p>
-            </div>
-            <div className="flex items-start gap-2 border-x border-white/12 px-2">
-              <Ruler size={14} className="mt-0.5 shrink-0 text-white/70" />
-              <p className="text-[9px] leading-snug tracking-[0.12em] text-white/70 uppercase">
-                Área
-                <br />
-                {current.sqft.toLocaleString()} SQ FT
-              </p>
-            </div>
-            <div className="flex items-start gap-2 pl-1">
-              <BedDouble size={14} className="mt-0.5 shrink-0 text-white/70" />
-              <p className="text-[9px] leading-snug tracking-[0.12em] text-white/70 uppercase">
-                {current.beds} Hab.
-                <br />
-                {current.baths} Baños
-              </p>
-            </div>
-          </div>
+              <div className="mt-4">
+                <p className="text-[clamp(1.6rem,5vw,2.4rem)] font-semibold tracking-tight text-white">
+                  <span className="mr-2 text-[11px] font-normal tracking-[0.28em] text-[#c4a574] uppercase">
+                    Desde
+                  </span>
+                  <motion.span
+                    key={current.priceFrom}
+                    initial={{ opacity: 0.4, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.45 }}
+                    className="inline-block tabular-nums"
+                  >
+                    {formatUsd(current.priceFrom)}
+                  </motion.span>
+                </p>
+                <p className="mt-1 text-[9px] tracking-[0.28em] text-[#c4a574] uppercase">
+                  Acceso pre-construcción
+                </p>
+              </div>
+
+              <div className="mt-5 grid grid-cols-3 gap-2 border-y border-white/12 py-3.5">
+                <div className="flex items-start gap-2">
+                  <CalendarDays size={14} className="mt-0.5 shrink-0 text-white/70" />
+                  <p className="text-[9px] leading-snug tracking-[0.12em] text-white/70 uppercase">
+                    Entrega
+                    <br />
+                    {formatDelivery(current.expected)}
+                  </p>
+                </div>
+                <div className="flex items-start gap-2 border-x border-white/12 px-2">
+                  <Ruler size={14} className="mt-0.5 shrink-0 text-white/70" />
+                  <p className="text-[9px] leading-snug tracking-[0.12em] text-white/70 uppercase">
+                    Área
+                    <br />
+                    {current.sqft.toLocaleString()} SQ FT
+                  </p>
+                </div>
+                <div className="flex items-start gap-2 pl-1">
+                  <BedDouble size={14} className="mt-0.5 shrink-0 text-white/70" />
+                  <p className="text-[9px] leading-snug tracking-[0.12em] text-white/70 uppercase">
+                    {current.beds} Hab.
+                    <br />
+                    {current.baths} Baños
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
 
           <div className="mt-4 space-y-2.5">
             <Link
@@ -437,17 +534,26 @@ export function VideoResidenceFeed() {
                     sizes="140px"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent" />
+                  <div className="absolute inset-x-0 top-0 p-1.5">
+                    <div className="h-0.5 overflow-hidden rounded-full bg-white/20">
+                      <div
+                        className="h-full bg-[#e0c57a] transition-[width] duration-700"
+                        style={{ width: `${r.progress}%` }}
+                      />
+                    </div>
+                  </div>
                   <div className="absolute inset-x-0 bottom-0 space-y-0.5 p-1.5 text-left">
                     <p className="text-[8px] font-medium tracking-[0.14em] text-white uppercase">
                       {String(i + 1).padStart(2, "0")}{" "}
                       {r.name.replace(/^THE\s+/i, "")}
                     </p>
                     <p className="flex items-center gap-1 text-[8px] text-[#c4a574]">
-                      {r.progress}% obra
+                      <AnimatedCounter value={r.progress} className="tabular-nums" />
+                      % obra
                       <span className="text-white/35">·</span>
                       <span className="inline-flex items-center gap-1 text-emerald-300">
                         <span className="live-dot !h-1.5 !w-1.5 !bg-emerald-400" />
-                        {v}
+                        <AnimatedCounter value={v} className="tabular-nums" />
                       </span>
                     </p>
                   </div>
