@@ -78,7 +78,7 @@ export function VideoResidenceFeed() {
   return (
     <section id="casas" className="relative bg-black text-white">
       {/* 1 — VIDEO: emotion only */}
-      <div className="relative h-[min(78vh,820px)] min-h-[520px] overflow-hidden md:h-[82vh]">
+      <div className="residence-video-frame relative overflow-hidden">
         <motion.div
           className="absolute inset-0 touch-pan-y"
           drag="x"

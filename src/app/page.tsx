@@ -26,9 +26,8 @@ export default function HomePage() {
     target: heroRef,
     offset: ["start start", "end start"],
   });
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const contentY = useTransform(scrollYProgress, [0, 0.5], [0, -50]);
+  const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.55], [1, 0]);
 
   useEffect(() => {
     if (viewportH > 0) {
@@ -106,7 +105,7 @@ export default function HomePage() {
         </div>
 
         <motion.div
-          style={{ opacity: contentOpacity, y: contentY }}
+          style={{ opacity: contentOpacity }}
           className="relative z-10 flex h-full flex-col justify-end px-5 pb-7 md:px-12 md:pb-12 lg:px-16"
         >
           <motion.div

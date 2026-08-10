@@ -32,7 +32,8 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* Avoid smooth + mobile chrome resize fighting (feels like a jump) */
+  scroll-behavior: auto;
   margin: 0;
   padding: 0;
   height: 100%;
@@ -50,20 +51,25 @@ body {
 }
 
 /*
- * Hero = large viewport so the next section never peeks when mobile
- * browser chrome is visible. Prefer --app-vh (innerHeight) from JS;
- * CSS fallback is 100lvh / 100vh (not dvh/svh — those are too short).
+ * Hero height is locked via --app-vh (set once on load).
+ * Do not use dvh/svh here — they change when browser chrome toggles.
  */
 .hero-viewport {
-  height: 100vh;
-  height: 100lvh;
   height: var(--app-vh, 100lvh);
-  min-height: 100vh;
-  min-height: 100lvh;
   min-height: var(--app-vh, 100lvh);
-  max-height: 100vh;
-  max-height: 100lvh;
   max-height: var(--app-vh, 100lvh);
+}
+
+/* Residence video frame — same locked unit, no live vh */
+.residence-video-frame {
+  height: min(calc(var(--app-vh, 100lvh) * 0.78), 820px);
+  min-height: 520px;
+}
+
+@media (min-width: 768px) {
+  .residence-video-frame {
+    height: calc(var(--app-vh, 100lvh) * 0.82);
+  }
 }
 
 ::selection {
