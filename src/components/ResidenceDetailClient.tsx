@@ -106,29 +106,25 @@ export function ResidenceDetailClient({ residence }: { residence: Residence }) {
               </div>
             </div>
 
-            <div className="w-full max-w-sm border border-white/15 bg-black/45 p-4 backdrop-blur-md md:p-5">
-              <p className="text-[9px] tracking-[0.24em] text-[#e0c57a] uppercase">
-                Precio de preventa
-              </p>
-              <p className="mt-2 text-2xl font-light tracking-wide text-white md:text-3xl">
+            <div className="w-full max-w-sm rounded-[1.25rem] border border-white/20 bg-white p-5 shadow-[0_16px_40px_rgba(0,0,0,0.25)] md:p-6">
+              <p className="text-[12px] font-medium text-[#8a6b2e]">Precio de preventa</p>
+              <p className="mt-2 text-2xl font-semibold tracking-tight text-ink md:text-[1.75rem]">
                 Desde {formatUsd(residence.priceFrom)}
               </p>
-              <p className="mt-1 text-[11px] text-white/45">
+              <p className="mt-1 text-[13px] text-[#6a6660]">
                 Mercado ~{formatUsd(residence.marketValue)} ·{" "}
                 {savingsPercent(residence.priceFrom, residence.marketValue)}% de ventaja
               </p>
-              <p className="mt-3 text-[10px] tracking-[0.12em] text-white/50 uppercase">
-                Entrega · {residence.expected}
-              </p>
+              <p className="mt-3 text-[12px] text-[#8a847a]">Entrega · {residence.expected}</p>
               <div className="mt-4">
-                <Countdown targetDate={residence.completionDate} variant="gold" size="sm" />
+                <Countdown targetDate={residence.completionDate} variant="light" size="sm" />
               </div>
               <button
                 type="button"
                 onClick={() => setWaitlistOpen(true)}
-                className="mt-5 w-full bg-[#e0c57a] py-3 text-[10px] font-semibold tracking-[0.2em] text-ink uppercase transition hover:bg-white"
+                className="mt-5 w-full rounded-full bg-ink py-3.5 text-[13px] font-semibold text-white transition hover:bg-ink/90"
               >
-                {joined ? "Ya estás en esta lista" : "Unirse a la lista de esta residencia"}
+                {joined ? "Ya estás en esta lista" : "Unirse a la lista"}
               </button>
             </div>
           </div>
@@ -180,7 +176,7 @@ export function ResidenceDetailClient({ residence }: { residence: Residence }) {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.04, duration: 0.4 }}
                 onClick={() => setLightbox(src)}
-                className={`relative overflow-hidden bg-[#ebe6de] ${
+                className={`relative overflow-hidden rounded-2xl bg-[#ebe6de] ${
                   i === 0 ? "col-span-2 aspect-[16/10] md:row-span-2 md:aspect-auto md:h-full" : "aspect-[4/3]"
                 }`}
               >

@@ -36,9 +36,9 @@ export function WaitlistJoin({
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/55 p-4 backdrop-blur-sm md:items-center">
-      <div className="w-full max-w-md overflow-hidden rounded-[1.75rem] bg-white shadow-2xl">
-        <div className="relative bg-ink px-6 py-7 text-white">
+    <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/40 p-4 backdrop-blur-sm md:items-center">
+      <div className="w-full max-w-md overflow-hidden rounded-[1.5rem] border border-[#ebe7e0] bg-white shadow-[0_20px_50px_rgba(20,16,10,0.18)]">
+        <div className="relative border-b border-[#f0ebe4] px-6 py-6">
           <button
             type="button"
             aria-label="Cerrar"
@@ -46,16 +46,14 @@ export function WaitlistJoin({
               onClose();
               setDone(false);
             }}
-            className="absolute top-4 right-4 rounded-full bg-white/10 p-2 text-white"
+            className="absolute top-4 right-4 rounded-full border border-[#ebe7e0] bg-white p-2 text-ink"
           >
             <X size={16} />
           </button>
-          <p className="text-[10px] tracking-[0.3em] text-gold-soft uppercase">Lista de espera</p>
-          <h3 className="mt-2 text-2xl font-light tracking-wide">{residence.name}</h3>
-          <p className="mt-1 text-sm text-white/55">{residence.location}</p>
-          <p className="mt-4 text-[11px] tracking-[0.15em] text-white/40 uppercase">
-            Entrega estimada · {residence.expected}
-          </p>
+          <p className="text-[12px] font-medium text-[#8a6b2e]">Lista de espera</p>
+          <h3 className="mt-1.5 text-xl font-semibold tracking-tight text-ink">{residence.name}</h3>
+          <p className="mt-1 text-sm text-[#6a6660]">{residence.location}</p>
+          <p className="mt-3 text-[12px] text-[#8a847a]">Entrega estimada · {residence.expected}</p>
         </div>
 
         <div className="px-6 py-6">
