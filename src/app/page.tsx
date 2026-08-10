@@ -25,7 +25,7 @@ export default function HomePage() {
   const featured = residences[0];
 
   return (
-    <main className="overflow-x-hidden bg-[#f6f5f3] text-ink">
+    <main className="overflow-x-hidden bg-[#f7f7f5] text-ink">
       {/* 1 — HERO full viewport (segunda sección solo tras scroll) */}
       <section className="relative h-[100dvh] min-h-[100dvh] overflow-hidden bg-[#1a1814]">
         <motion.div
@@ -163,7 +163,7 @@ export default function HomePage() {
       <OmarCredibility />
 
       {/* 6 — Proceso */}
-      <section className="bg-[#f6f5f3] px-5 py-16 md:px-12 md:py-20 lg:px-16">
+      <section className="bg-[#f7f7f5] px-5 py-16 md:px-12 md:py-20 lg:px-16">
         <div className="mx-auto max-w-[1100px]">
           <motion.div {...fadeUp} className="max-w-xl">
             <p className="text-[12px] font-medium text-[#8a6b2e]">Cómo funciona</p>
@@ -207,21 +207,21 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 6 — Private → footer continuum (ink) */}
-      <section className="bg-ink px-5 pt-20 pb-8 text-white md:px-12 md:pt-24 lg:px-16">
-        <div className="mx-auto grid max-w-[1100px] items-center gap-12 md:grid-cols-2 md:gap-16">
+      {/* 7 — Private (light) */}
+      <section className="bg-white px-5 pt-16 pb-8 text-ink md:px-12 md:pt-20 lg:px-16">
+        <div className="mx-auto grid max-w-[1100px] items-center gap-10 md:grid-cols-2 md:gap-14">
           <motion.div {...fadeUp}>
-            <p className="text-[10px] tracking-[0.35em] text-[#e0c57a] uppercase">Omar Private</p>
-            <h2 className="mt-3 text-3xl font-light tracking-[0.06em] md:text-4xl">
+            <p className="text-[12px] font-medium text-[#8a6b2e]">Omar Private</p>
+            <h2 className="mt-2 text-[1.75rem] font-semibold tracking-tight md:text-[2.15rem]">
               Acceso antes del mercado
             </h2>
-            <p className="mt-4 max-w-md text-[14px] leading-relaxed text-white/50">
+            <p className="mt-4 max-w-md text-[15px] leading-relaxed text-[#6a6660]">
               Membresía por solicitud. Residencias, prioridad y actualizaciones — para quien está
               listo de verdad.
             </p>
             <Link
               href="/private"
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#e0c57a] px-7 py-3.5 text-[14px] font-semibold text-ink transition hover:bg-white"
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-ink px-7 py-3.5 text-[14px] font-semibold text-white transition hover:bg-ink/90"
             >
               Solicitar membresía
               <ArrowRight size={14} />
@@ -233,7 +233,7 @@ export default function HomePage() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="relative aspect-[5/4] overflow-hidden md:aspect-[4/3]"
+            className="relative aspect-[5/4] overflow-hidden rounded-[1.35rem] md:aspect-[4/3]"
           >
             <Image
               src="/images/ellington.jpg"
@@ -242,18 +242,16 @@ export default function HomePage() {
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 50vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-ink/60 to-transparent" />
-            <p className="absolute bottom-6 left-6 text-[10px] tracking-[0.28em] text-[#e0c57a] uppercase">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
+            <p className="absolute bottom-6 left-6 text-[13px] font-medium text-white">
               Antes de que salga al mercado
             </p>
           </motion.div>
         </div>
 
-        <footer className="mx-auto mt-16 flex max-w-[1100px] flex-col items-start justify-between gap-5 border-t border-white/10 pt-8 sm:flex-row sm:items-center">
-          <Logo light size="sm" />
-          <p className="text-[10px] tracking-[0.18em] text-white/30 uppercase">
-            Omar Corp · Indiana · Live residences
-          </p>
+        <footer className="mx-auto mt-14 flex max-w-[1100px] flex-col items-start justify-between gap-4 border-t border-[#ebe7e0] pt-6 sm:flex-row sm:items-center">
+          <Logo size="sm" />
+          <p className="text-[12px] text-[#8a847a]">Omar Corp · Indiana · Live residences</p>
         </footer>
       </section>
     </main>

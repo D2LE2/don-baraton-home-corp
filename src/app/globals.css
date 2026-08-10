@@ -87,20 +87,18 @@ body {
 
 .residence-peek-card {
   width: min(78vw, 880px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  border: 1px solid #ebe7e0;
+  box-shadow: 0 10px 30px rgba(20, 16, 10, 0.06);
 }
 
 .residence-peek-card[data-active="true"] {
-  border-color: rgba(224, 197, 122, 0.55);
-  box-shadow:
-    0 16px 48px rgba(0, 0, 0, 0.55),
-    0 0 0 1px rgba(224, 197, 122, 0.2);
+  border-color: #ddd6cb;
+  box-shadow: 0 14px 36px rgba(20, 16, 10, 0.1);
 }
 
 .residence-peek-card[data-active="false"] {
-  border-color: rgba(255, 255, 255, 0.35);
-  filter: brightness(1.08) contrast(1.05);
+  border-color: #ebe7e0;
+  filter: none;
 }
 
 @media (min-width: 768px) {

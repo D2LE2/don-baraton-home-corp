@@ -60,7 +60,7 @@ export function ResidencesCatalog() {
   }, []);
 
   return (
-    <section id="catalogo" className="bg-[#f6f5f3] py-12 md:py-16">
+    <section id="catalogo" className="bg-[#f7f7f5] py-12 md:py-16">
       <div className="mx-auto mb-6 flex max-w-[1200px] items-end justify-between gap-4 px-5 md:mb-8 md:px-10 lg:px-12">
         <div>
           <p className="text-[12px] font-medium text-[#8a6b2e]">Residencias</p>
