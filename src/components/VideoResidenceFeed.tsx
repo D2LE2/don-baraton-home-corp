@@ -37,8 +37,10 @@ export function VideoResidenceFeed() {
     const el = cardRefs.current[next];
     const scroller = scrollerRef.current;
     if (!el || !scroller) return;
-    const left = el.offsetLeft - (scroller.clientWidth - el.clientWidth) / 2;
-    scroller.scrollTo({ left: Math.max(0, left), behavior });
+    // Align like Amazon: active card to the left, next card peeks on the right
+    const styles = getComputedStyle(scroller);
+    const padLeft = Number.parseFloat(styles.paddingLeft) || 0;
+    scroller.scrollTo({ left: Math.max(0, el.offsetLeft - padLeft), behavior });
     setIndex(next);
     setPlaying(true);
     setWaitlistOpen(false);
@@ -61,13 +63,14 @@ export function VideoResidenceFeed() {
     const onScroll = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
-        const center = scroller.scrollLeft + scroller.clientWidth / 2;
+        const styles = getComputedStyle(scroller);
+        const padLeft = Number.parseFloat(styles.paddingLeft) || 0;
+        const marker = scroller.scrollLeft + padLeft + 24;
         let best = 0;
         let bestDist = Infinity;
         cardRefs.current.forEach((card, i) => {
           if (!card) return;
-          const mid = card.offsetLeft + card.clientWidth / 2;
-          const dist = Math.abs(mid - center);
+          const dist = Math.abs(card.offsetLeft - marker);
           if (dist < bestDist) {
             bestDist = dist;
             best = i;
@@ -150,7 +153,7 @@ export function VideoResidenceFeed() {
 
         <div
           ref={scrollerRef}
-          className="residence-peek-scroller flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-1 md:gap-4"
+          className="residence-peek-scroller flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 md:gap-5"
         >
           {residences.map((r, i) => {
             const active = i === index;
@@ -160,7 +163,8 @@ export function VideoResidenceFeed() {
                 ref={(el) => {
                   cardRefs.current[i] = el;
                 }}
-                className="residence-peek-card relative shrink-0 snap-center overflow-hidden bg-[#12100e]"
+                data-active={active ? "true" : "false"}
+                className="residence-peek-card relative shrink-0 snap-start overflow-hidden bg-[#1a1814]"
                 onClick={() => {
                   if (!active) scrollToIndex(i);
                 }}
@@ -187,15 +191,16 @@ export function VideoResidenceFeed() {
                     className={`object-cover transition-opacity duration-500 ${
                       active && playing ? "opacity-0" : "opacity-100"
                     }`}
-                    sizes="(max-width: 768px) 88vw, 72vw"
+                    sizes="(max-width: 768px) 78vw, 64vw"
                     priority={i === 0}
                   />
 
+                  {/* Active: soft bottom fade only. Peek cards stay bright so they read on dark UI */}
                   <div
                     className={`pointer-events-none absolute inset-0 transition ${
                       active
-                        ? "bg-gradient-to-t from-black/50 via-transparent to-black/15"
-                        : "bg-black/45"
+                        ? "bg-gradient-to-t from-black/55 via-transparent to-transparent"
+                        : "bg-gradient-to-r from-transparent via-transparent to-black/10"
                     }`}
                   />
 
@@ -218,12 +223,12 @@ export function VideoResidenceFeed() {
                   )}
 
                   {!active && (
-                    <div className="absolute inset-0 z-10 flex items-end p-4">
+                    <div className="absolute inset-y-0 left-0 z-10 flex w-[42%] items-end bg-gradient-to-r from-black/55 to-transparent p-3 md:p-4">
                       <div>
-                        <p className="text-[9px] tracking-[0.28em] text-[#c4a574] uppercase">
+                        <p className="text-[9px] tracking-[0.28em] text-[#e0c57a] uppercase">
                           {r.code}
                         </p>
-                        <p className="mt-1 text-sm font-semibold tracking-[0.06em] text-white/90 uppercase">
+                        <p className="mt-1 text-sm font-semibold tracking-[0.06em] text-white uppercase">
                           {r.name}
                         </p>
                       </div>

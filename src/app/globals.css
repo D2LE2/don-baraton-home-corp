@@ -75,8 +75,8 @@ body {
 
 /* Amazon-style peek carousel for live collection */
 .residence-peek-scroller {
-  padding-left: 5vw;
-  padding-right: 5vw;
+  padding-left: 4vw;
+  padding-right: 18vw; /* room so the next card always peeks */
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -86,17 +86,31 @@ body {
 }
 
 .residence-peek-card {
-  width: min(86vw, 920px);
+  width: min(78vw, 880px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.residence-peek-card[data-active="true"] {
+  border-color: rgba(224, 197, 122, 0.55);
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(224, 197, 122, 0.2);
+}
+
+.residence-peek-card[data-active="false"] {
+  border-color: rgba(255, 255, 255, 0.35);
+  filter: brightness(1.08) contrast(1.05);
 }
 
 @media (min-width: 768px) {
   .residence-peek-scroller {
-    padding-left: max(2rem, calc((100% - 1100px) / 2 + 1rem));
-    padding-right: max(2rem, calc((100% - 1100px) / 2 + 1rem));
+    padding-left: max(1.5rem, calc((100% - 1100px) / 2));
+    padding-right: max(12vw, calc((100% - 1100px) / 2 + 10rem));
   }
 
   .residence-peek-card {
-    width: min(72vw, 860px);
+    width: min(64vw, 780px);
   }
 }
 
