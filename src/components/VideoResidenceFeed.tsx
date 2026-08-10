@@ -16,6 +16,7 @@ import {
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
+import { LiveCompletionBar } from "@/components/LiveCompletionBar";
 import { UnlockModal } from "@/components/UnlockModal";
 import { useNova } from "@/context/NovaContext";
 import { residences } from "@/data/residences";
@@ -421,14 +422,11 @@ export function VideoResidenceFeed() {
               </h2>
               <p className="mt-1 text-[13px] text-white/55">{current.location}</p>
 
-              <div className="mt-3 h-1 overflow-hidden rounded-full bg-white/10">
-                <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-[#9a8660] to-[#e0c57a]"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${current.progress}%` }}
-                  transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-                />
-              </div>
+              <LiveCompletionBar
+                key={current.id}
+                residenceId={current.id}
+                baseProgress={current.progress}
+              />
 
               <div className="mt-4">
                 <p className="text-[clamp(1.6rem,5vw,2.4rem)] font-semibold tracking-tight text-white">
