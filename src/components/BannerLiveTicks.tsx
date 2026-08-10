@@ -7,7 +7,8 @@ import { residences } from "@/data/residences";
 const INITIALS = ["S.M.", "C.R.", "A.V.", "L.P.", "M.G.", "D.H."];
 
 /**
- * Ultra-minimal live ticks for the headline banner — thin, dark, adult.
+ * Ultra-minimal live ticks for the headline banner — top-left only,
+ * clear of progress (top-right) and CTAs (bottom).
  */
 export function BannerLiveTicks() {
   const [online, setOnline] = useState(7);
@@ -55,8 +56,8 @@ export function BannerLiveTicks() {
   }, []);
 
   return (
-    <>
-      <div className="absolute top-3 right-3 z-20 flex items-center gap-2 md:top-4 md:right-5">
+    <div className="pointer-events-none absolute top-3 left-3 z-20 flex w-[min(72%,240px)] flex-col gap-1.5 md:top-4 md:left-5 md:w-[260px]">
+      <div className="flex items-center gap-2">
         <span className="relative flex h-1.5 w-1.5">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#e0c57a] opacity-60" />
           <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#e0c57a]" />
@@ -66,22 +67,20 @@ export function BannerLiveTicks() {
         </p>
       </div>
 
-      <div className="absolute right-3 bottom-24 left-3 z-20 md:right-5 md:bottom-28 md:left-5">
-        <AnimatePresence mode="wait">
-          {line && (
-            <motion.p
-              key={lineId}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="max-w-md truncate border border-white/12 bg-black/45 px-2.5 py-1.5 text-[9px] tracking-[0.06em] text-white/80 uppercase backdrop-blur-sm md:text-[10px]"
-            >
-              {line}
-            </motion.p>
-          )}
-        </AnimatePresence>
-      </div>
-    </>
+      <AnimatePresence mode="wait">
+        {line && (
+          <motion.p
+            key={lineId}
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.28 }}
+            className="truncate border border-white/12 bg-black/50 px-2.5 py-1.5 text-[9px] tracking-[0.05em] text-white/80 uppercase backdrop-blur-sm md:text-[10px]"
+          >
+            {line}
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

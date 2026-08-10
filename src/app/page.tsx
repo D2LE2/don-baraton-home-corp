@@ -89,8 +89,8 @@ export default function HomePage() {
 
             <BannerLiveTicks />
 
-            <div className="absolute top-4 right-4 z-20 w-[140px] md:top-5 md:right-5 md:w-[160px]">
-              <div className="border border-white/15 bg-black/45 px-3 py-2 backdrop-blur-sm">
+            <div className="absolute top-3 right-3 z-20 w-[132px] md:top-4 md:right-5 md:w-[152px]">
+              <div className="border border-white/15 bg-black/45 px-2.5 py-1.5 backdrop-blur-sm">
                 <ProgressBar
                   value={featured.progress}
                   tone="dark"
@@ -102,7 +102,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="absolute inset-0 z-10 flex flex-col justify-end px-5 pb-28 md:px-10 md:pb-32 lg:px-16">
+            <div className="absolute inset-0 z-10 flex flex-col justify-end px-5 pb-24 md:px-10 md:pb-28 lg:px-16">
               <motion.p
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
