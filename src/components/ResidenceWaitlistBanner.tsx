@@ -36,7 +36,7 @@ export function ResidenceWaitlistBanner({ residence }: { residence: Residence })
           className="inline-flex items-center justify-center gap-2 rounded-full bg-ink px-8 py-4 text-[12px] tracking-[0.2em] text-gold-soft uppercase transition hover:bg-ink/90"
         >
           <Lock size={14} />
-          {joined ? "Ya estás en la lista" : "Únete a la lista de espera"}
+          {joined ? "Ya estás en la lista" : "Únete a la lista ahora"}
         </button>
       </div>
 

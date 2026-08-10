@@ -25,7 +25,7 @@ export default function PrivateStatusPage() {
           href="/private/apply"
           className="mt-6 rounded-full bg-ink px-6 py-3 text-[11px] tracking-[0.2em] text-gold-soft uppercase"
         >
-          Request Membership →
+          Solicitar membresía →
         </Link>
       </main>
     );
@@ -40,7 +40,7 @@ export default function PrivateStatusPage() {
           <p className="mt-10 text-[11px] tracking-[0.35em] text-gold uppercase">
             Application Received
           </p>
-          <h1 className="mt-4 text-3xl font-light tracking-[0.15em] text-ink">NOVA PRIVATE</h1>
+          <h1 className="mt-4 text-3xl font-light tracking-[0.15em] text-ink">OMAR PRIVATE</h1>
           <p className="mt-4 text-sm text-muted">Review in progress</p>
           <p className="mt-6 max-w-sm text-sm leading-relaxed text-muted">
             Revisaremos tu solicitud con cuidado. Te contactaremos cuando tu acceso esté listo.
@@ -80,13 +80,13 @@ export default function PrivateStatusPage() {
         <Sparkles className="mt-14 text-gold-soft" size={28} />
         <p className="mt-6 text-[11px] tracking-[0.35em] text-gold-soft uppercase">Welcome</p>
         <h1 className="mt-3 text-3xl font-light tracking-[0.12em] md:text-4xl">
-          WELCOME TO NOVA PRIVATE
+          WELCOME TO OMAR PRIVATE
         </h1>
 
         <div className="mt-12 w-full overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.09] to-white/[0.02] p-8 text-left shadow-2xl">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-[10px] tracking-[0.35em] text-gold-soft uppercase">NOVA HOMES</p>
+              <p className="text-[10px] tracking-[0.35em] text-gold-soft uppercase">OMAR CORP</p>
               <p className="mt-6 script text-3xl text-gold-soft">Member</p>
             </div>
             <div className="h-10 w-10 rounded-full border border-gold/40" />
@@ -104,16 +104,16 @@ export default function PrivateStatusPage() {
             </p>
           )}
           <p className="mt-6 text-[10px] leading-relaxed tracking-wide text-white/35">
-            Digital membership card. No legal or financial value — represents membership within
-            the NOVA Private platform.
+            Tarjeta digital de membresía. Sin valor legal ni financiero — representa tu acceso
+            dentro de Omar Private.
           </p>
         </div>
 
         <Link
           href="/residences"
-          className="mt-10 w-full rounded-full bg-white py-4 text-center text-[11px] tracking-[0.22em] text-ink uppercase"
+          className="mt-10 w-full rounded-full bg-gold-soft py-4 text-center text-[11px] tracking-[0.22em] text-ink uppercase"
         >
-          Explore Residences →
+          Explorar residencias →
         </Link>
       </div>
     </main>

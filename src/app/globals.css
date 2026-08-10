@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fafafa;
+  --background: #f6f4f0;
   --foreground: #0a0a0a;
-  --gold: #b8963e;
-  --gold-soft: #d4b56a;
-  --gold-muted: #c9a84c;
-  --muted: #6b6b6b;
-  --border: #e6e6e6;
+  --gold: #c4a35a;
+  --gold-soft: #e0c57a;
+  --gold-muted: #b8924a;
+  --muted: #6a655e;
+  --border: #e4dfd6;
   --surface: #ffffff;
-  --ink: #111111;
+  --ink: #0b0b0b;
 }
 
 @theme inline {
@@ -44,7 +44,7 @@ body {
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--gold) 35%, white);
+  background: color-mix(in srgb, var(--gold) 40%, white);
   color: var(--ink);
 }
 
@@ -84,10 +84,49 @@ body {
 @keyframes pulse-gold {
   0%,
   100% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--gold) 40%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--gold) 45%, transparent);
   }
   50% {
-    box-shadow: 0 0 0 10px transparent;
+    box-shadow: 0 0 0 12px transparent;
+  }
+}
+
+@keyframes live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.85);
+  }
+}
+
+@keyframes ken-burns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes shimmer-line {
+  0% {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  50% {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+  50.1% {
+    transform-origin: right;
+  }
+  100% {
+    transform: scaleX(0);
+    transform-origin: right;
   }
 }
 
@@ -99,12 +138,33 @@ body {
   animation: pulse-gold 2.4s ease-in-out infinite;
 }
 
+.animate-live {
+  animation: live-pulse 1.6s ease-in-out infinite;
+}
+
+.animate-ken {
+  animation: ken-burns 18s ease-out forwards;
+}
+
+.animate-shimmer {
+  animation: shimmer-line 2.8s ease-in-out infinite;
+}
+
 .hero-grain {
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(184, 150, 62, 0.08), transparent),
-    linear-gradient(180deg, #ffffff 0%, #f7f5f1 100%);
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(196, 163, 90, 0.1), transparent),
+    linear-gradient(180deg, #ffffff 0%, #f3efe8 100%);
 }
 
 .mask-fade-left {
   mask-image: linear-gradient(90deg, transparent 0%, black 28%, black 100%);
+}
+
+.live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #e0c57a;
+  animation: live-pulse 1.6s ease-in-out infinite;
 }

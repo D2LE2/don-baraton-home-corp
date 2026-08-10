@@ -3,9 +3,9 @@ import { Lock, Sparkles } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 
 export const metadata = {
-  title: "NOVA Private — Request Membership",
+  title: "Omar Private — Solicitar membresía",
   description:
-    "Private access to residences before they're released to the market.",
+    "Acceso privado a residencias Omar Corp antes de que salgan al mercado.",
 };
 
 export default function PrivatePage() {
@@ -19,27 +19,28 @@ export default function PrivatePage() {
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-gold/40 bg-gold/10 text-gold">
             <Lock size={22} />
           </div>
-          <p className="mt-6 text-[11px] tracking-[0.35em] text-gold uppercase">Membership</p>
+          <p className="mt-6 text-[11px] tracking-[0.35em] text-gold uppercase">Membresía</p>
           <h1 className="mt-4 text-4xl font-light tracking-[0.12em] text-ink md:text-6xl">
-            NOVA PRIVATE
+            OMAR PRIVATE
           </h1>
+          <p className="script mt-2 text-3xl text-gold">Solo para quienes están listos.</p>
           <p className="mx-auto mt-5 max-w-lg text-base leading-relaxed text-muted">
-            Private access to residences before they&apos;re released to the market. No waiting
-            list — a curated membership for those who are ready.
+            Acceso privado a residencias antes de que salgan al mercado. No es una lista genérica —
+            es membresía Omar Corp por solicitud.
           </p>
 
           <Link
             href="/private/apply"
             className="mt-10 inline-flex items-center gap-2 rounded-full bg-ink px-9 py-4 text-[12px] tracking-[0.22em] text-gold-soft uppercase transition hover:bg-ink/90"
           >
-            Request Membership →
+            Solicitar membresía →
           </Link>
 
           <ul className="mx-auto mt-16 grid max-w-2xl gap-4 text-left sm:grid-cols-3">
             {[
-              "Early access to new residences",
-              "Private launch invitations",
-              "Priority updates & walkthroughs",
+              "Acceso anticipado a nuevas residencias",
+              "Invitaciones a lanzamientos privados",
+              "Updates y recorridos prioritarios",
             ].map((item) => (
               <li
                 key={item}

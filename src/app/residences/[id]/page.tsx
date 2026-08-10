@@ -16,9 +16,9 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const residence = getResidence(id);
-  if (!residence) return { title: "Residence — NOVA HOMES" };
+  if (!residence) return { title: "Residence — Omar Corp" };
   return {
-    title: `${residence.name} — NOVA HOMES`,
+    title: `${residence.name} — Omar Corp`,
     description: residence.tagline,
   };
 }
@@ -84,15 +84,15 @@ export default async function ResidenceDetailPage({
       </div>
 
       <section className="border-t border-border bg-ink px-5 py-16 text-center text-white md:px-10">
-        <p className="text-[11px] tracking-[0.3em] text-gold-soft uppercase">NOVA Private</p>
+        <p className="text-[11px] tracking-[0.3em] text-gold-soft uppercase">Omar Private</p>
         <h2 className="mx-auto mt-3 max-w-lg text-2xl font-light tracking-wide">
-          Private access to residences before they&apos;re released to the market.
+          Acceso privado a residencias antes de que salgan al mercado.
         </h2>
         <Link
           href="/private/apply"
-          className="mt-8 inline-flex rounded-full bg-white px-8 py-3.5 text-[11px] tracking-[0.22em] text-ink uppercase"
+          className="mt-8 inline-flex rounded-full bg-gold-soft px-8 py-3.5 text-[11px] tracking-[0.22em] text-ink uppercase"
         >
-          Request Membership →
+          Solicitar membresía →
         </Link>
       </section>
     </main>

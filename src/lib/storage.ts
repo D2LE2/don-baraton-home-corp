@@ -33,9 +33,9 @@ export type WaitlistEntry = {
   joinedAt: string;
 };
 
-const FOLLOW_KEY = "nova-follow";
-const MEMBER_KEY = "nova-membership";
-const WAITLIST_KEY = "nova-waitlist";
+const FOLLOW_KEY = "omar-follow";
+const MEMBER_KEY = "omar-membership";
+const WAITLIST_KEY = "omar-waitlist";
 
 export function loadFollow(): FollowAccount | null {
   if (typeof window === "undefined") return null;

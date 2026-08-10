@@ -22,15 +22,15 @@ const greatVibes = Great_Vibes({
 });
 
 export const metadata: Metadata = {
-  title: "NOVA HOMES — El futuro de vivir",
+  title: "Omar Corp — El futuro de vivir",
   description:
-    "Showroom inmobiliario en vivo. Descubre residencias en construcción, sigue su transformación y solicita acceso a NOVA Private.",
+    "Omar Corp: showroom inmobiliario en vivo. Residencias en construcción, contador real y lista de espera exclusiva.",
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#ffffff",
+  themeColor: "#0b0b0b",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

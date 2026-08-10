@@ -1,11 +1,11 @@
-# NOVA HOMES
+# Omar Corp
 
-Plataforma inmobiliaria: showroom en vivo + seguimiento de construcción + NOVA Private.
+Showroom inmobiliario en vivo + seguimiento de construcción + lista de espera + Omar Private.
 
 ## Mundos
 
-- **Público** — descubrir residencias, Build Story, Live Progress, Follow
-- **Privado** — solicitud de membresía NOVA Private + tarjeta digital
+- **Público** — descubrir residencias, Build Story, countdown, lista de espera
+- **Privado** — membresía Omar Private + tarjeta digital
 
 ## Desarrollo
 
@@ -20,9 +20,9 @@ Abre [http://localhost:3000](http://localhost:3000).
 
 | Ruta | Descripción |
 |------|-------------|
-| `/` | Portada premium |
-| `/residences` | Feed una casa por pantalla |
-| `/residences/[id]` | Build Story + Live Progress + Follow |
-| `/private` | NOVA Private |
-| `/private/apply` | Solicitud de membresía (4 pasos) |
-| `/private/status` | Application received / Member card |
+| `/` | Portada Omar Corp |
+| `/residences` | Showroom una casa por pantalla |
+| `/residences/[id]` | Build Story + Live Progress + Waitlist |
+| `/private` | Omar Private |
+| `/private/apply` | Solicitud de membresía |
+| `/private/status` | Estado / tarjeta de miembro |

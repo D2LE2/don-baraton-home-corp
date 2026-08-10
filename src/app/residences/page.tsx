@@ -121,10 +121,10 @@ function ResidencePanel({
                 <button
                   type="button"
                   onClick={() => setWaitlistOpen(true)}
-                  className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-[11px] tracking-[0.2em] text-ink uppercase transition hover:bg-gold-soft"
+                  className="group inline-flex items-center gap-2 rounded-full bg-gold-soft px-7 py-3.5 text-[11px] tracking-[0.2em] text-ink uppercase transition hover:bg-white"
                 >
                   <Lock size={14} />
-                  {joined ? "Ya estás en la lista" : "Únete a la lista de espera"}
+                  {joined ? "Ya estás en la lista" : "Únete a la lista ahora"}
                 </button>
                 <Link
                   href={`/residences/${residence.id}`}
@@ -209,7 +209,7 @@ export default function ResidencesPage() {
           href="/private"
           className="pointer-events-auto rounded-full border border-white/20 bg-black/35 px-4 py-2 text-[10px] tracking-[0.2em] text-gold-soft uppercase backdrop-blur-md"
         >
-          Private
+          Omar Private
         </Link>
       </div>
 

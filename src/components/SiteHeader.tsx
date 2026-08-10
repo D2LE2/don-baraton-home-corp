@@ -7,8 +7,8 @@ import { Logo } from "./Logo";
 import { useNova } from "@/context/NovaContext";
 
 const links = [
-  { href: "/residences", label: "Residences" },
-  { href: "/private", label: "NOVA Private" },
+  { href: "/residences", label: "Residencias" },
+  { href: "/private", label: "Omar Private" },
 ];
 
 export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
@@ -44,7 +44,7 @@ export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
             href="/private/apply"
             className="rounded-full bg-ink px-4 py-2 text-[10px] tracking-[0.2em] text-gold-soft uppercase"
           >
-            Request Access
+            Solicitar acceso
           </Link>
         )}
       </nav>
@@ -75,7 +75,7 @@ export function SiteHeader({ transparent = false }: { transparent?: boolean }) {
               onClick={() => setOpen(false)}
               className="mt-2 rounded-full bg-ink px-4 py-3 text-center text-[11px] tracking-[0.2em] text-gold-soft uppercase"
             >
-              {membership.status === "approved" ? "My Membership" : "NOVA Private"}
+              {membership.status === "approved" ? "Mi membresía" : "Omar Private"}
             </Link>
           </div>
         </div>
