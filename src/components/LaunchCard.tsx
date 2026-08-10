@@ -17,11 +17,16 @@ import { useEffect, useState, type MouseEvent } from "react";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { Countdown } from "@/components/Countdown";
 import { ProgressBar } from "@/components/ProgressBar";
+import { WaitlistJoin } from "@/components/WaitlistJoin";
+import { useNova } from "@/context/NovaContext";
 import type { Residence } from "@/data/residences";
 
 const INITIALS = ["S.M.", "C.R.", "A.V.", "L.P.", "M.G."];
 
 export function LaunchCard({ residence }: { residence: Residence }) {
+  const { isOnWaitlist } = useNova();
+  const joined = isOnWaitlist(residence.id);
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
   const [waitlist, setWaitlist] = useState(residence.waitlistCount);
   const [viewers, setViewers] = useState(6 + (residence.followers % 5));
   const [tick, setTick] = useState<string | null>(null);
@@ -65,7 +70,7 @@ export function LaunchCard({ residence }: { residence: Residence }) {
     };
   }, [residence.followers, residence.progress, residence.waitlistCount]);
 
-  const onMove = (e: MouseEvent<HTMLAnchorElement>) => {
+  const onMove = (e: MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     mx.set(e.clientX - rect.left);
     my.set(e.clientY - rect.top);
@@ -79,12 +84,11 @@ export function LaunchCard({ residence }: { residence: Residence }) {
       transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
       className="mx-auto max-w-lg md:max-w-xl"
     >
-      <Link
-        href={`/residences/${residence.id}`}
+      <div
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         onMouseMove={onMove}
-        className="group relative block overflow-hidden rounded-2xl border border-[#e8e2d8] bg-white shadow-[0_20px_50px_rgba(20,16,10,0.14)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_64px_rgba(20,16,10,0.18)]"
+        className="group relative overflow-hidden rounded-2xl border border-[#e8e2d8] bg-white shadow-[0_20px_50px_rgba(20,16,10,0.14)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_64px_rgba(20,16,10,0.18)]"
       >
         <motion.div
           className="pointer-events-none absolute inset-0 z-10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
@@ -102,13 +106,16 @@ export function LaunchCard({ residence }: { residence: Residence }) {
                 Próximo lanzamiento
               </p>
             </div>
-            <span className="inline-flex items-center gap-1 text-[9px] tracking-[0.16em] text-[#8a847a] uppercase transition group-hover:text-ink">
-              Abrir
+            <Link
+              href={`/residences/${residence.id}`}
+              className="inline-flex items-center gap-1 text-[9px] tracking-[0.16em] text-[#8a847a] uppercase transition hover:text-ink"
+            >
+              Detalle
               <ArrowUpRight
                 size={12}
                 className={`transition duration-300 ${hovered ? "translate-x-0.5 -translate-y-0.5" : ""}`}
               />
-            </span>
+            </Link>
           </div>
 
           <div className="mt-3.5 flex gap-3.5">
@@ -212,8 +219,37 @@ export function LaunchCard({ residence }: { residence: Residence }) {
               size="sm"
             />
           </div>
+
+          <div className="mt-3 flex gap-2 border-t border-[#f0ebe3] pt-3">
+            {joined ? (
+              <span className="inline-flex flex-1 items-center justify-center gap-1.5 border border-[#e8e2d8] py-2.5 text-[10px] tracking-[0.16em] text-[#6a655e] uppercase">
+                Ya estás en esta lista
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setWaitlistOpen(true)}
+                className="flex-1 bg-ink py-2.5 text-[10px] font-medium tracking-[0.18em] text-[#e0c57a] uppercase transition hover:bg-ink/90"
+              >
+                Unirse a lista de {residence.code.replace("RESIDENCE ", "R.")}
+              </button>
+            )}
+            <Link
+              href={`/residences/${residence.id}`}
+              className="inline-flex items-center justify-center border border-[#e8e2d8] px-3 text-[#9a8660] transition hover:border-ink hover:text-ink"
+              aria-label="Ver residencia"
+            >
+              <ArrowUpRight size={16} />
+            </Link>
+          </div>
         </div>
-      </Link>
+      </div>
+
+      <WaitlistJoin
+        residence={residence}
+        open={waitlistOpen}
+        onClose={() => setWaitlistOpen(false)}
+      />
     </motion.div>
   );
 }

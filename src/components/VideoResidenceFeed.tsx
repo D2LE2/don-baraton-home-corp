@@ -12,16 +12,21 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { residences } from "@/data/residences";
 import { ProgressBar } from "@/components/ProgressBar";
+import { WaitlistJoin } from "@/components/WaitlistJoin";
+import { useNova } from "@/context/NovaContext";
+import { residences } from "@/data/residences";
 
 /** Compact pro collection stage — video + overlay, no tall status stack */
 export function VideoResidenceFeed() {
   const total = residences.length;
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(true);
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const current = residences[index];
+  const { isOnWaitlist } = useNova();
+  const joined = isOnWaitlist(current.id);
 
   const goTo = useCallback(
     (i: number) => {
@@ -29,6 +34,7 @@ export function VideoResidenceFeed() {
       if (next === index) return;
       setIndex(next);
       setPlaying(true);
+      setWaitlistOpen(false);
     },
     [index, total],
   );
@@ -201,40 +207,62 @@ export function VideoResidenceFeed() {
               )}
             </div>
 
-            <div className="flex shrink-0 items-center gap-2 sm:flex-col sm:items-end">
-              <div className="flex gap-1.5">
-                {residences.map((r, i) => (
-                  <button
-                    key={r.id}
-                    type="button"
-                    onClick={() => goTo(i)}
-                    className={`relative h-11 w-14 overflow-hidden border transition md:h-12 md:w-16 ${
-                      i === index
-                        ? "border-[#c4a574]"
-                        : "border-white/20 opacity-60 hover:opacity-100"
-                    }`}
+              <div className="flex shrink-0 flex-wrap items-center gap-2 sm:flex-col sm:items-end">
+                <div className="flex gap-1.5">
+                  {residences.map((r, i) => (
+                    <button
+                      key={r.id}
+                      type="button"
+                      onClick={() => goTo(i)}
+                      className={`relative h-11 w-14 overflow-hidden border transition md:h-12 md:w-16 ${
+                        i === index
+                          ? "border-[#c4a574]"
+                          : "border-white/20 opacity-60 hover:opacity-100"
+                      }`}
+                    >
+                      <Image
+                        src={r.image}
+                        alt={r.name}
+                        fill
+                        className="object-cover"
+                        sizes="64px"
+                      />
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  {joined ? (
+                    <span className="inline-flex items-center border border-white/25 px-3 py-2 text-[9px] tracking-[0.16em] text-white/70 uppercase">
+                      En esta lista
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setWaitlistOpen(true)}
+                      className="bg-[#c4a574] px-3.5 py-2 text-[9px] font-semibold tracking-[0.16em] text-ink uppercase transition hover:bg-[#e0c57a]"
+                    >
+                      Unirse a lista
+                    </button>
+                  )}
+                  <Link
+                    href={`/residences/${current.id}`}
+                    className="inline-flex items-center gap-1.5 border border-white/25 px-3 py-2 text-[9px] tracking-[0.16em] text-white/85 uppercase transition hover:border-white"
                   >
-                    <Image
-                      src={r.image}
-                      alt={r.name}
-                      fill
-                      className="object-cover"
-                      sizes="64px"
-                    />
-                  </button>
-                ))}
+                    Ver
+                    <ArrowRight size={12} />
+                  </Link>
+                </div>
               </div>
-              <Link
-                href={`/residences/${current.id}`}
-                className="inline-flex items-center gap-1.5 bg-[#c4a574] px-3.5 py-2 text-[9px] font-semibold tracking-[0.18em] text-ink uppercase transition hover:bg-[#e0c57a]"
-              >
-                Ver residencia
-                <ArrowRight size={12} />
-              </Link>
             </div>
           </div>
         </div>
       </div>
+
+      <WaitlistJoin
+        residence={current}
+        open={waitlistOpen}
+        onClose={() => setWaitlistOpen(false)}
+      />
 
       <div className="h-8 md:h-10" />
     </section>
