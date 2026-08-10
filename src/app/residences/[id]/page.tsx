@@ -1,29 +1,14 @@
-import { notFound } from "next/navigation";
-import { ResidenceDetailClient } from "@/components/ResidenceDetailClient";
-import { getResidence, residences } from "@/data/residences";
+import { redirect } from "next/navigation";
 
 export function generateStaticParams() {
-  return residences.map((r) => ({ id: r.id }));
+  return [{ id: "001" }, { id: "002" }, { id: "003" }];
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const residence = getResidence(id);
-  if (!residence) return { title: "Residence — Omar Corp" };
-  return {
-    title: `${residence.name} — Omar Corp`,
-    description: residence.teaser,
-  };
-}
-
-export default async function ResidenceDetailPage({
+export default async function ResidenceRedirect({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const residence = getResidence(id);
-  if (!residence) notFound();
-
-  return <ResidenceDetailClient residence={residence} />;
+  redirect(`/homes/${id}`);
 }
