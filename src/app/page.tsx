@@ -4,13 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, ArrowRight, Play } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Logo } from "@/components/Logo";
 import { VideoResidenceFeed } from "@/components/VideoResidenceFeed";
 import { useNova } from "@/context/NovaContext";
+import { useViewportHeight } from "@/hooks/useViewportHeight";
 
 export default function HomePage() {
   const heroRef = useRef<HTMLElement>(null);
+  const viewportH = useViewportHeight();
   const { membership } = useNova();
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -20,12 +22,24 @@ export default function HomePage() {
   const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const contentY = useTransform(scrollYProgress, [0, 0.5], [0, -50]);
 
+  // Keep CSS var in sync even before first paint settles
+  useEffect(() => {
+    if (viewportH > 0) {
+      document.documentElement.style.setProperty("--app-vh", `${viewportH}px`);
+    }
+  }, [viewportH]);
+
   return (
     <main className="overflow-x-hidden bg-ink">
-      {/* HERO — full viewport only; next section hidden until scroll */}
+      {/* HERO — exact screen height; second section only after scroll */}
       <section
         ref={heroRef}
-        className="relative isolate h-svh max-h-svh min-h-svh overflow-hidden"
+        className="hero-viewport relative isolate overflow-hidden"
+        style={
+          viewportH > 0
+            ? { height: viewportH, minHeight: viewportH, maxHeight: viewportH }
+            : undefined
+        }
       >
         <motion.div style={{ scale: imageScale }} className="absolute inset-0">
           <Image
