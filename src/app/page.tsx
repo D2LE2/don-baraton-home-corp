@@ -108,7 +108,7 @@ export default function HomePage() {
                 className="group inline-flex items-center justify-center gap-3 rounded-full bg-gold-soft px-9 py-4 text-[12px] font-medium tracking-[0.22em] text-ink uppercase shadow-[0_0_40px_rgba(224,197,122,0.35)] transition hover:bg-white"
               >
                 <Play size={14} fill="currentColor" />
-                Ver casas en video
+                Explorar residencias
                 <ArrowRight size={16} className="transition group-hover:translate-x-1" />
               </Link>
               <Link
@@ -188,21 +188,6 @@ export default function HomePage() {
               </motion.div>
             ))}
           </div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="mt-14"
-          >
-            <Link
-              href="/#casas"
-              className="group inline-flex items-center gap-3 text-[12px] tracking-[0.22em] text-gold-soft uppercase"
-            >
-              Ver casas en video ahora
-              <ArrowRight size={16} className="transition group-hover:translate-x-1" />
-            </Link>
-          </motion.div>
         </div>
       </section>
 
@@ -296,18 +281,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Sticky mobile CTA */}
-      <div className="fixed inset-x-4 bottom-4 z-50 md:hidden">
-        <Link
-          href="/#casas"
-          className="flex w-full items-center justify-center gap-2 rounded-full bg-gold-soft py-4 text-[11px] font-medium tracking-[0.2em] text-ink uppercase shadow-2xl"
-        >
-          Ver casas en video
-          <ArrowRight size={14} />
-        </Link>
-      </div>
-
-      <footer className="border-t border-white/10 bg-ink px-5 py-12 pb-24 md:px-12 md:pb-12">
+      <footer className="border-t border-white/10 bg-ink px-5 py-12 md:px-12">
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
           <Logo light size="sm" />
           <p className="text-[11px] tracking-[0.15em] text-white/35 uppercase">
