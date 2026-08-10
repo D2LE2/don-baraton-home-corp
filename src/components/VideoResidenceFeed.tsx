@@ -85,7 +85,7 @@ export function VideoResidenceFeed() {
       </div>
 
       {/* VIDEO — no drag (it fights vertical scroll on mobile) */}
-      <div className="residence-video-frame relative overflow-hidden bg-black">
+      <div className="residence-video-frame relative overflow-hidden bg-[#12100e]">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={current.id}
@@ -93,29 +93,16 @@ export function VideoResidenceFeed() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.28 }}
-            className="absolute inset-0"
+            className="absolute inset-0 bg-[#12100e]"
           >
-            <Image
-              src={current.image}
-              alt={current.name}
-              fill
-              priority
-              className={`object-cover object-center ${
-                playing ? "opacity-0" : "opacity-100"
-              }`}
-              sizes="100vw"
-            />
             <video
               ref={videoRef}
-              className={`absolute inset-0 h-full w-full object-cover ${
-                playing ? "opacity-100" : "opacity-0"
-              }`}
+              className="absolute inset-0 h-full w-full object-cover"
               src={current.video}
-              poster={current.image}
               playsInline
               loop
               muted
-              preload="metadata"
+              preload="auto"
               controls={false}
               disablePictureInPicture
             />

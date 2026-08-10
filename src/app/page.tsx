@@ -18,6 +18,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { Countdown } from "@/components/Countdown";
 import { HeroActivityFeed } from "@/components/HeroActivityFeed";
+import { HeroVideo } from "@/components/HeroVideo";
 import { Logo } from "@/components/Logo";
 import { VideoResidenceFeed } from "@/components/VideoResidenceFeed";
 import { residences } from "@/data/residences";
@@ -73,21 +74,16 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Banner video — wide cinematic strip with headline */}
+          {/* Banner image — wide cinematic strip with headline */}
           <div className="relative mt-4 w-full overflow-hidden">
-            <div className="relative aspect-[2.35/1] min-h-[132px] w-full sm:min-h-[160px] md:aspect-[2.8/1] md:min-h-[180px] md:max-h-[240px]">
-              <video
-                className="absolute inset-0 h-full w-full object-cover object-center"
-                src={featured.video}
-                poster={featured.image}
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                controls={false}
-                disablePictureInPicture
-                aria-hidden
+            <div className="relative aspect-[2.35/1] min-h-[132px] w-full overflow-hidden bg-[#1a1814] sm:min-h-[160px] md:aspect-[2.8/1] md:min-h-[180px] md:max-h-[240px]">
+              <Image
+                src={featured.image}
+                alt=""
+                fill
+                priority
+                className="object-cover object-[center_40%]"
+                sizes="100vw"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/45 to-black/20" />
               <h1 className="absolute inset-0 flex flex-col justify-center px-5 text-[clamp(1.65rem,6.5vw,3.4rem)] font-semibold leading-[1.05] tracking-[0.04em] text-white uppercase md:px-10 lg:px-16">
@@ -123,22 +119,36 @@ export default function HomePage() {
 
         {/* Video + overlapping launch card */}
         <div className="relative mt-8 md:mt-10">
-          <div className="relative mx-auto h-[42vh] min-h-[280px] max-h-[420px] w-full overflow-hidden md:h-[48vh] md:max-h-[520px]">
-            <video
-              className="absolute inset-0 h-full w-full object-cover object-[center_45%]"
+          <div className="relative mx-auto h-[42vh] min-h-[280px] max-h-[420px] w-full overflow-hidden bg-[#1a1814] md:h-[48vh] md:max-h-[520px]">
+            <HeroVideo
               src={featured.video}
-              poster={featured.image}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              controls={false}
-              disablePictureInPicture
+              objectPosition="center 45%"
               aria-label={featured.name}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
             <HeroActivityFeed />
+
+            {/* Minimal progress — Residence 001 */}
+            <div className="absolute top-4 right-4 z-20 w-[148px] md:top-5 md:right-5 md:w-[168px]">
+              <div className="rounded-md border border-white/15 bg-black/40 px-3 py-2 backdrop-blur-sm">
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className="text-[8px] tracking-[0.2em] text-white/65 uppercase">
+                    Progreso
+                  </p>
+                  <p className="text-[11px] font-medium tracking-[0.06em] text-[#e0c57a] tabular-nums">
+                    {featured.progress}%
+                  </p>
+                </div>
+                <div className="mt-1.5 h-[2px] w-full overflow-hidden rounded-full bg-white/20">
+                  <motion.div
+                    className="h-full rounded-full bg-[#e0c57a]"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${featured.progress}%` }}
+                    transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Floating card */}
@@ -163,6 +173,28 @@ export default function HomePage() {
                     {featured.code}
                   </p>
                   <p className="mt-0.5 text-[12px] text-[#8a847a]">{featured.location}</p>
+
+                  {/* Minimal transform progress */}
+                  <div className="mt-3">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="text-[9px] tracking-[0.18em] text-[#9a8660] uppercase">
+                        Transformación
+                      </span>
+                      <span className="text-[11px] font-medium text-ink tabular-nums">
+                        {featured.progress}%
+                      </span>
+                    </div>
+                    <div className="mt-1.5 h-[2px] w-full overflow-hidden bg-[#ece7df]">
+                      <motion.div
+                        className="h-full bg-[#c4a574]"
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${featured.progress}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+                      />
+                    </div>
+                  </div>
+
                   <div className="mt-2.5 grid grid-cols-4 gap-1 border-t border-[#f0ebe3] pt-2.5">
                     <div className="flex flex-col items-start gap-0.5">
                       <BedDouble size={12} className="text-[#b8924a]" strokeWidth={1.5} />

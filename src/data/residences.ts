@@ -65,7 +65,7 @@ export const residences: Residence[] = [
     baths: 2.5,
     sqft: 1920,
     garage: 2,
-    progress: 68,
+    progress: 62,
     expected: "November 2026",
     completionDate: "2026-11-15T18:00:00",
     status: "AVAILABLE",
