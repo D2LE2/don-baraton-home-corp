@@ -168,17 +168,16 @@ export default function HomePage() {
         </div>
 
         <div className="relative">
-          <div className="relative mx-auto w-full overflow-hidden bg-[#1a1814]">
-            <div className="relative mx-auto h-[38vh] min-h-[240px] max-h-[340px] w-full md:h-[42vh] md:max-h-[380px]">
+          <div className="relative w-full overflow-hidden bg-[#0c0b0a]">
+            <div className="relative mx-auto w-full max-w-[1200px] aspect-[1800/980]">
               <Image
-                src={featured.image}
+                src="/images/monroe-featured.jpg"
                 alt={featured.name}
                 fill
-                className="object-cover object-[center_32%]"
-                sizes="100vw"
+                className="object-cover object-center"
+                sizes="(max-width: 1200px) 100vw, 1200px"
                 priority
               />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
 
               <div className="absolute top-4 right-4 z-20 w-[140px] md:top-5 md:right-6 md:w-[150px]">
                 <div className="border border-white/15 bg-black/45 px-2.5 py-1.5 backdrop-blur-sm">
