@@ -66,7 +66,7 @@ export function BannerLiveTicks() {
         </p>
       </div>
 
-      <div className="absolute right-3 bottom-3 left-3 z-20 md:right-5 md:bottom-4 md:left-5">
+      <div className="absolute right-3 bottom-24 left-3 z-20 md:right-5 md:bottom-28 md:left-5">
         <AnimatePresence mode="wait">
           {line && (
             <motion.p

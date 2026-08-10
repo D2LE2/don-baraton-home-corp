@@ -97,14 +97,12 @@ export function OmarCredibility() {
               Resultados Omar Corp
             </p>
             <h2 className="mt-3 text-[clamp(1.75rem,4vw,2.75rem)] font-light leading-tight tracking-[0.04em] text-white">
-              No es marketing.
-              <br />
-              Son entregas.
+              Lo que ya entregamos.
             </h2>
           </div>
           <p className="max-w-sm text-[13px] leading-relaxed text-white/45">
-            Residencias colocadas con discreción. Listas privadas con prioridad real. Familias
-            que ya viven lo que otros todavía están buscando.
+            Cierres reales, familias en su hogar y listas privadas con prioridad — el mismo estándar
+            que verás en cada residencia de esta colección.
           </p>
         </div>
 

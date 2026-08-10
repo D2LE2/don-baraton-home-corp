@@ -79,14 +79,14 @@ export function VideoResidenceFeed() {
   }, []);
 
   return (
-    <section id="casas" className="relative bg-[#0c0b0a] text-white">
-      <div className="flex items-end justify-between gap-4 border-t border-white/10 px-5 py-5 md:px-12 md:py-6 lg:px-16">
+    <section id="casas" className="relative bg-[#0f0e0c] text-white">
+      <div className="flex items-end justify-between gap-4 px-5 py-6 md:px-12 md:py-8 lg:px-16">
         <div>
           <p className="text-[10px] tracking-[0.35em] text-[#c4a574] uppercase">
             Colección en vivo
           </p>
-          <p className="mt-1 text-[12px] text-white/45">
-            Tres residencias. Avance real.
+          <p className="mt-1.5 text-[13px] text-white/45">
+            El siguiente paso: mira cómo se transforma cada casa.
           </p>
         </div>
         <div className="flex items-center gap-1.5">
@@ -263,7 +263,7 @@ export function VideoResidenceFeed() {
         onClose={() => setWaitlistOpen(false)}
       />
 
-      <div className="h-8 md:h-10" />
+      <div className="h-10 bg-gradient-to-b from-[#0f0e0c] to-[#f7f4ef] md:h-12" />
     </section>
   );
 }

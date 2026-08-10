@@ -16,17 +16,17 @@ export function ResidencesCatalog() {
   const [active, setActive] = useState<Residence | null>(null);
 
   return (
-    <section id="catalogo" className="bg-white px-5 py-16 md:px-12 md:py-20 lg:px-16">
+    <section id="catalogo" className="bg-[#f7f4ef] px-5 py-16 md:px-12 md:py-20 lg:px-16">
       <div className="mx-auto max-w-[1100px]">
-        <div className="flex flex-col gap-3 border-b border-[#e8e2d8] pb-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-3 border-b border-[#e4dfd6] pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-[10px] tracking-[0.35em] text-[#9a8660] uppercase">Catálogo</p>
             <h2 className="mt-2 text-2xl font-light tracking-[0.06em] text-ink uppercase md:text-3xl">
-              Residencias
+              Elige tu residencia
             </h2>
           </div>
-          <p className="max-w-sm text-[12px] leading-relaxed text-[#8a847a]">
-            Cada propiedad tiene su propia lista de espera. Únete solo a la que te interesa.
+          <p className="max-w-sm text-[13px] leading-relaxed text-[#8a847a]">
+            Misma colección, vista clara. Cada una con su progreso y su lista de espera.
           </p>
         </div>
 
