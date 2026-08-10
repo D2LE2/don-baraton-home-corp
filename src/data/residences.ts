@@ -1,0 +1,304 @@
+export type StageStatus = "done" | "current" | "upcoming";
+
+export type BuildStage = {
+  id: string;
+  label: string;
+  date: string;
+  status: StageStatus;
+  description: string;
+  images: string[];
+  hasVideo?: boolean;
+};
+
+export type ResidenceStatus =
+  | "AVAILABLE"
+  | "PRIVATE LIST OPEN"
+  | "COMING SOON";
+
+export type Residence = {
+  id: string;
+  code: string;
+  name: string;
+  location: string;
+  image: string;
+  beds: number;
+  baths: number;
+  sqft: number;
+  garage: number;
+  progress: number;
+  expected: string;
+  status: ResidenceStatus;
+  followers: number;
+  tagline: string;
+  stages: BuildStage[];
+  latestUpdate?: {
+    title: string;
+    body: string;
+    date: string;
+  };
+};
+
+export const residences: Residence[] = [
+  {
+    id: "001",
+    code: "RESIDENCE 001",
+    name: "THE MONROE",
+    location: "Logansport, Indiana",
+    image: "/images/monroe.jpg",
+    beds: 3,
+    baths: 2.5,
+    sqft: 1920,
+    garage: 2,
+    progress: 68,
+    expected: "November 2026",
+    status: "AVAILABLE",
+    followers: 42,
+    tagline: "Modern living, reimagined for Indiana.",
+    latestUpdate: {
+      title: "The Monroe just changed.",
+      body: "Kitchen cabinetry was installed today.",
+      date: "Today",
+    },
+    stages: [
+      {
+        id: "land",
+        label: "Land",
+        date: "JAN 18",
+        status: "done",
+        description: "Site secured and surveyed for Residence 001.",
+        images: ["/images/land.jpg"],
+      },
+      {
+        id: "foundation",
+        label: "Foundation",
+        date: "FEB 03",
+        status: "done",
+        description: "Concrete foundation poured and cured.",
+        images: ["/images/foundation.jpg"],
+        hasVideo: true,
+      },
+      {
+        id: "framing",
+        label: "Framing",
+        date: "MAR 21",
+        status: "done",
+        description: "Structural framing completed — the silhouette takes shape.",
+        images: ["/images/framing.jpg"],
+      },
+      {
+        id: "roofing",
+        label: "Roofing",
+        date: "APR 16",
+        status: "done",
+        description: "Roof sealed. Weather protection in place.",
+        images: ["/images/roof.jpg"],
+      },
+      {
+        id: "interior",
+        label: "Interior",
+        date: "TODAY",
+        status: "current",
+        description: "Interior finishing underway — drywall, trim, and systems.",
+        images: ["/images/interior.jpg"],
+      },
+      {
+        id: "kitchen",
+        label: "Kitchen",
+        date: "SEP",
+        status: "upcoming",
+        description: "Cabinetry, counters, and appliance installation.",
+        images: ["/images/kitchen.jpg"],
+      },
+      {
+        id: "final",
+        label: "Final Details",
+        date: "OCT",
+        status: "upcoming",
+        description: "Paint, fixtures, landscaping, and punch list.",
+        images: ["/images/interior.jpg"],
+      },
+      {
+        id: "completed",
+        label: "Completed",
+        date: "NOV",
+        status: "upcoming",
+        description: "Ready for its first chapter as a home.",
+        images: ["/images/monroe.jpg"],
+      },
+    ],
+  },
+  {
+    id: "002",
+    code: "RESIDENCE 002",
+    name: "THE HARRISON",
+    location: "Lafayette, Indiana",
+    image: "/images/harrison.jpg",
+    beds: 4,
+    baths: 3,
+    sqft: 2480,
+    garage: 2,
+    progress: 31,
+    expected: "February 2027",
+    status: "PRIVATE LIST OPEN",
+    followers: 67,
+    tagline: "Spacious modern family living in Lafayette.",
+    latestUpdate: {
+      title: "The Harrison is rising.",
+      body: "Framing reached the second floor this week.",
+      date: "2 days ago",
+    },
+    stages: [
+      {
+        id: "land",
+        label: "Land",
+        date: "MAR 02",
+        status: "done",
+        description: "Lot acquired and prepared.",
+        images: ["/images/land.jpg"],
+      },
+      {
+        id: "foundation",
+        label: "Foundation",
+        date: "APR 12",
+        status: "done",
+        description: "Foundation complete.",
+        images: ["/images/foundation.jpg"],
+      },
+      {
+        id: "framing",
+        label: "Framing",
+        date: "TODAY",
+        status: "current",
+        description: "Wood framing in progress across both levels.",
+        images: ["/images/framing.jpg"],
+        hasVideo: true,
+      },
+      {
+        id: "roofing",
+        label: "Roofing",
+        date: "SEP",
+        status: "upcoming",
+        description: "Roof structure and weatherproofing.",
+        images: ["/images/roof.jpg"],
+      },
+      {
+        id: "interior",
+        label: "Interior",
+        date: "NOV",
+        status: "upcoming",
+        description: "Interior systems and finishing.",
+        images: ["/images/interior.jpg"],
+      },
+      {
+        id: "kitchen",
+        label: "Kitchen",
+        date: "DEC",
+        status: "upcoming",
+        description: "Kitchen build-out.",
+        images: ["/images/kitchen.jpg"],
+      },
+      {
+        id: "final",
+        label: "Final Details",
+        date: "JAN",
+        status: "upcoming",
+        description: "Final finishes and landscaping.",
+        images: ["/images/interior.jpg"],
+      },
+      {
+        id: "completed",
+        label: "Completed",
+        date: "FEB",
+        status: "upcoming",
+        description: "Move-in ready.",
+        images: ["/images/harrison.jpg"],
+      },
+    ],
+  },
+  {
+    id: "003",
+    code: "RESIDENCE 003",
+    name: "THE ELLINGTON",
+    location: "Kokomo, Indiana",
+    image: "/images/ellington.jpg",
+    beds: 3,
+    baths: 2,
+    sqft: 1750,
+    garage: 2,
+    progress: 8,
+    expected: "May 2027",
+    status: "COMING SOON",
+    followers: 18,
+    tagline: "Construction begins soon — follow early.",
+    stages: [
+      {
+        id: "land",
+        label: "Land",
+        date: "JUN 01",
+        status: "done",
+        description: "Land secured for Residence 003.",
+        images: ["/images/land.jpg"],
+      },
+      {
+        id: "foundation",
+        label: "Foundation",
+        date: "SOON",
+        status: "current",
+        description: "Construction begins soon.",
+        images: ["/images/foundation.jpg"],
+      },
+      {
+        id: "framing",
+        label: "Framing",
+        date: "—",
+        status: "upcoming",
+        description: "Structural framing.",
+        images: ["/images/framing.jpg"],
+      },
+      {
+        id: "roofing",
+        label: "Roofing",
+        date: "—",
+        status: "upcoming",
+        description: "Roof installation.",
+        images: ["/images/roof.jpg"],
+      },
+      {
+        id: "interior",
+        label: "Interior",
+        date: "—",
+        status: "upcoming",
+        description: "Interior finishing.",
+        images: ["/images/interior.jpg"],
+      },
+      {
+        id: "kitchen",
+        label: "Kitchen",
+        date: "—",
+        status: "upcoming",
+        description: "Kitchen installation.",
+        images: ["/images/kitchen.jpg"],
+      },
+      {
+        id: "final",
+        label: "Final Details",
+        date: "—",
+        status: "upcoming",
+        description: "Final details.",
+        images: ["/images/interior.jpg"],
+      },
+      {
+        id: "completed",
+        label: "Completed",
+        date: "MAY",
+        status: "upcoming",
+        description: "Home complete.",
+        images: ["/images/ellington.jpg"],
+      },
+    ],
+  },
+];
+
+export function getResidence(id: string) {
+  return residences.find((r) => r.id === id);
+}
