@@ -73,6 +73,33 @@ body {
   }
 }
 
+/* Amazon-style peek carousel for live collection */
+.residence-peek-scroller {
+  padding-left: 5vw;
+  padding-right: 5vw;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.residence-peek-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.residence-peek-card {
+  width: min(86vw, 920px);
+}
+
+@media (min-width: 768px) {
+  .residence-peek-scroller {
+    padding-left: max(2rem, calc((100% - 1100px) / 2 + 1rem));
+    padding-right: max(2rem, calc((100% - 1100px) / 2 + 1rem));
+  }
+
+  .residence-peek-card {
+    width: min(72vw, 860px);
+  }
+}
+
 ::selection {
   background: color-mix(in srgb, var(--gold) 40%, white);
   color: var(--ink);
