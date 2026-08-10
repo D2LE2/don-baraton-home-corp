@@ -22,7 +22,6 @@ export default function HomePage() {
   const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const contentY = useTransform(scrollYProgress, [0, 0.5], [0, -50]);
 
-  // Keep CSS var in sync even before first paint settles
   useEffect(() => {
     if (viewportH > 0) {
       document.documentElement.style.setProperty("--app-vh", `${viewportH}px`);
@@ -31,13 +30,17 @@ export default function HomePage() {
 
   return (
     <main className="overflow-x-hidden bg-ink">
-      {/* HERO — exact screen height; second section only after scroll */}
+      {/* HERO — large viewport height; second section only after scroll */}
       <section
         ref={heroRef}
         className="hero-viewport relative isolate overflow-hidden"
         style={
           viewportH > 0
-            ? { height: viewportH, minHeight: viewportH, maxHeight: viewportH }
+            ? {
+                height: viewportH,
+                minHeight: viewportH,
+                maxHeight: viewportH,
+              }
             : undefined
         }
       >

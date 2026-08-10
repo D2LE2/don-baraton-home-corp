@@ -49,11 +49,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Locked first-screen height (set by JS; CSS fallback) */
+/*
+ * Hero = large viewport so the next section never peeks when mobile
+ * browser chrome is visible. Prefer --app-vh (innerHeight) from JS;
+ * CSS fallback is 100lvh / 100vh (not dvh/svh — those are too short).
+ */
 .hero-viewport {
-  height: var(--app-vh, 100dvh);
-  min-height: var(--app-vh, 100dvh);
-  max-height: var(--app-vh, 100dvh);
+  height: 100vh;
+  height: 100lvh;
+  height: var(--app-vh, 100lvh);
+  min-height: 100vh;
+  min-height: 100lvh;
+  min-height: var(--app-vh, 100lvh);
+  max-height: 100vh;
+  max-height: 100lvh;
+  max-height: var(--app-vh, 100lvh);
 }
 
 ::selection {

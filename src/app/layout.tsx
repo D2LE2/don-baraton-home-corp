@@ -40,6 +40,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="es"
       className={`${outfit.variable} ${cormorant.variable} ${greatVibes.variable} h-full antialiased`}
     >
+      <head>
+        {/* Set --app-vh before paint so the hero never undersizes on mobile */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var h=Math.max(window.innerHeight||0,document.documentElement.clientHeight||0);if(h)document.documentElement.style.setProperty('--app-vh',h+'px');}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="min-h-full bg-background text-foreground">
         <NovaProvider>{children}</NovaProvider>
       </body>
