@@ -1,42 +1,44 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Lock, Volume2, VolumeX } from "lucide-react";
-import { AnimatePresence, motion, type PanInfo } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-import { Countdown } from "@/components/Countdown";
+import { Lock, Pause, Play, Volume2, VolumeX } from "lucide-react";
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  type PanInfo,
+} from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { UnlockModal } from "@/components/UnlockModal";
 import { useNova } from "@/context/NovaContext";
 import { residences, type Residence } from "@/data/residences";
 
+const SLIDE_MS = 7000;
+
 function VideoSlide({
   residence,
   active,
+  muted,
+  onOpenUnlock,
 }: {
   residence: Residence;
   active: boolean;
+  muted: boolean;
+  onOpenUnlock: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { isUnlocked, ready } = useNova();
   const unlocked = ready && isUnlocked(residence.id);
-  const [showHook, setShowHook] = useState(false);
-  const [wantMore, setWantMore] = useState(false);
-  const [unlockOpen, setUnlockOpen] = useState(false);
-  const [muted, setMuted] = useState(true);
+  const [teaserIn, setTeaserIn] = useState(false);
 
   useEffect(() => {
     const el = videoRef.current;
     if (!el) return;
     if (active) {
+      el.currentTime = 0;
       void el.play().catch(() => undefined);
-      setShowHook(false);
-      setWantMore(false);
-      const t1 = window.setTimeout(() => setShowHook(true), 1800);
-      const t2 = window.setTimeout(() => setWantMore(true), 4200);
-      return () => {
-        window.clearTimeout(t1);
-        window.clearTimeout(t2);
-      };
+      const t = window.setTimeout(() => setTeaserIn(true), 900);
+      return () => window.clearTimeout(t);
     }
     el.pause();
   }, [active]);
@@ -47,198 +49,354 @@ function VideoSlide({
   }, [muted]);
 
   return (
-    <div className="relative h-full w-full shrink-0 overflow-hidden bg-ink">
-      <video
-        ref={videoRef}
-        className="pointer-events-none absolute inset-0 h-full w-full object-cover"
-        src={residence.video}
-        poster={residence.image}
-        playsInline
-        loop
-        muted={muted}
-        preload={active ? "auto" : "metadata"}
-        controls={false}
-        disablePictureInPicture
-      />
+    <div className="relative h-full w-full overflow-hidden bg-ink">
+      <motion.div
+        className="absolute inset-0"
+        initial={{ scale: 1.06 }}
+        animate={active ? { scale: 1 } : { scale: 1.06 }}
+        transition={{ duration: 7, ease: "linear" }}
+      >
+        <video
+          ref={videoRef}
+          className="pointer-events-none h-full w-full object-cover"
+          src={residence.video}
+          poster={residence.image}
+          playsInline
+          loop
+          muted={muted}
+          preload={active ? "auto" : "metadata"}
+          controls={false}
+          disablePictureInPicture
+        />
+      </motion.div>
 
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/50 via-black/10 to-black/80" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/70 via-black/20 to-black/85" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-black/35 to-transparent" />
 
-      <div className="relative z-10 flex h-full flex-col justify-between px-5 pb-24 pt-20 md:px-12 md:pb-20 md:pt-24">
-        <div>
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="inline-flex items-center gap-2 rounded-full border border-gold-soft/40 bg-black/35 px-3 py-1.5 text-[10px] tracking-[0.22em] text-gold-soft uppercase backdrop-blur-md">
-              <span className="live-dot" />
-              Video en vivo
-            </span>
-            <span className="text-[10px] tracking-[0.22em] text-white/50 uppercase">
-              {residence.code}
-            </span>
-          </div>
-
-          <h2 className="mt-5 text-3xl font-light tracking-[0.08em] text-white md:text-5xl">
+      <div className="relative z-10 flex h-full flex-col justify-end px-5 pb-28 md:px-12 md:pb-32 lg:px-16">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-2xl"
+        >
+          <p className="text-[11px] tracking-[0.35em] text-gold-soft uppercase">
+            {residence.code}
+          </p>
+          <h2 className="mt-3 text-4xl font-light tracking-[0.08em] text-white md:text-6xl">
             {residence.name}
           </h2>
-          <p className="mt-2 text-sm text-white/60">{residence.location}</p>
+          <p className="mt-2 text-sm text-white/55 md:text-base">{residence.location}</p>
 
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={showHook ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-            className="script mt-4 max-w-md text-2xl text-gold-soft md:text-3xl"
-          >
-            {residence.teaser}
-          </motion.p>
-        </div>
+          <AnimatePresence>
+            {teaserIn && (
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="script mt-5 max-w-lg text-2xl text-gold-soft md:text-4xl"
+              >
+                {residence.teaser}
+              </motion.p>
+            )}
+          </AnimatePresence>
 
-        <div className="max-w-xl">
-          <div className="mb-4 flex items-end gap-6">
-            <div>
-              <p className="display text-4xl font-light text-white md:text-5xl">
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <div className="flex items-baseline gap-2">
+              <span className="display text-4xl font-light text-white md:text-5xl">
                 {residence.progress}%
-              </p>
-              <p className="mt-1 text-[10px] tracking-[0.25em] text-white/50 uppercase">Built</p>
+              </span>
+              <span className="text-[10px] tracking-[0.28em] text-white/45 uppercase">
+                construido
+              </span>
             </div>
+            <span className="hidden h-8 w-px bg-white/15 sm:block" />
+            <p className="text-sm text-white/50">Entrega · {residence.expected}</p>
           </div>
 
-          {!unlocked ? (
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={wantMore ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-              className="rounded-[1.5rem] border border-white/15 bg-black/45 p-4 backdrop-blur-md md:p-5"
-            >
-              <p className="text-[11px] tracking-[0.22em] text-gold-soft uppercase">
-                Quieres ver más
-              </p>
-              <p className="mt-2 text-sm text-white/70">
-                Desbloquea el Build Story completo con tus datos.
-              </p>
+          <div className="mt-8">
+            {!unlocked ? (
               <button
                 type="button"
-                onClick={() => setUnlockOpen(true)}
-                className="mt-4 inline-flex items-center gap-2 rounded-full bg-gold-soft px-5 py-2.5 text-[11px] font-medium tracking-[0.2em] text-ink uppercase"
+                onClick={onOpenUnlock}
+                className="group inline-flex items-center gap-3 rounded-full bg-gold-soft px-7 py-3.5 text-[11px] font-medium tracking-[0.22em] text-ink uppercase shadow-[0_0_32px_rgba(224,197,122,0.28)] transition hover:bg-white"
               >
                 <Lock size={14} />
-                Desbloquear
-                <ArrowRight size={14} />
+                Me interesa
+                <span className="text-ink/50 transition group-hover:text-ink">· ver más</span>
               </button>
-            </motion.div>
-          ) : (
-            <div className="space-y-3">
-              <div className="rounded-[1.5rem] border border-gold-soft/25 bg-black/40 px-4 py-4 backdrop-blur-md">
-                <Countdown
-                  targetDate={residence.completionDate}
-                  variant="gold"
-                  size="sm"
-                  label={`Tiempo restante · ${residence.expected}`}
-                />
-              </div>
+            ) : (
               <Link
                 href={`/residences/${residence.id}`}
-                className="inline-flex items-center gap-2 rounded-full bg-gold-soft px-6 py-3 text-[11px] font-medium tracking-[0.2em] text-ink uppercase"
+                className="inline-flex items-center gap-3 rounded-full bg-gold-soft px-7 py-3.5 text-[11px] font-medium tracking-[0.22em] text-ink uppercase"
               >
-                Ver Build Story
-                <ArrowRight size={14} />
+                Entrar al Build Story
               </Link>
-            </div>
-          )}
-        </div>
+            )}
+            <p className="mt-3 text-[11px] tracking-[0.12em] text-white/40">
+              {unlocked
+                ? "Ya desbloqueaste esta residencia"
+                : "Si te enamoras, toca. El tour sigue solo."}
+            </p>
+          </div>
+        </motion.div>
       </div>
-
-      <button
-        type="button"
-        aria-label={muted ? "Activar sonido" : "Silenciar"}
-        onClick={() => setMuted((m) => !m)}
-        className="absolute top-20 right-5 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-md md:right-10"
-      >
-        {muted ? <VolumeX size={15} /> : <Volume2 size={15} />}
-      </button>
-
-      <UnlockModal
-        residence={residence}
-        open={unlockOpen}
-        onClose={() => setUnlockOpen(false)}
-      />
     </div>
   );
 }
 
 export function VideoResidenceFeed() {
-  const [index, setIndex] = useState(0);
   const total = residences.length;
-  const current = residences[index];
+  const reduceMotion = useReducedMotion();
+  const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [paused, setPaused] = useState(false);
+  const [inView, setInView] = useState(false);
+  const [muted, setMuted] = useState(true);
+  const [unlockOpen, setUnlockOpen] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const rafRef = useRef<number | null>(null);
+  const startRef = useRef(0);
+  const heldRef = useRef(0);
 
-  function go(next: number) {
-    setIndex(Math.max(0, Math.min(total - 1, next)));
-  }
+  const current = residences[index];
+  const next = residences[(index + 1) % total];
+
+  const goTo = useCallback(
+    (nextIndex: number, dir?: number) => {
+      const wrapped = ((nextIndex % total) + total) % total;
+      setDirection(
+        dir ?? (wrapped > index || (index === total - 1 && wrapped === 0) ? 1 : -1),
+      );
+      setIndex(wrapped);
+      setProgress(0);
+      heldRef.current = 0;
+      startRef.current = performance.now();
+    },
+    [index, total],
+  );
+
+  const goNext = useCallback(() => goTo(index + 1, 1), [goTo, index]);
+  const goPrev = useCallback(() => goTo(index - 1, -1), [goTo, index]);
+
+  useEffect(() => {
+    const node = sectionRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting && entry.intersectionRatio >= 0.35),
+      { threshold: [0.2, 0.35, 0.55] },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  const autoplayBlocked = paused || unlockOpen || !inView || !!reduceMotion;
+
+  useEffect(() => {
+    if (autoplayBlocked) {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+      return;
+    }
+
+    startRef.current = performance.now() - heldRef.current;
+
+    const tick = (now: number) => {
+      const elapsed = now - startRef.current;
+      const ratio = Math.min(1, elapsed / SLIDE_MS);
+      setProgress(ratio);
+      if (ratio >= 1) {
+        heldRef.current = 0;
+        goNext();
+        return;
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+      const elapsed = performance.now() - startRef.current;
+      heldRef.current = Math.min(SLIDE_MS, Math.max(0, elapsed));
+    };
+  }, [autoplayBlocked, goNext, index]);
 
   function onDragEnd(_: unknown, info: PanInfo) {
-    const threshold = 60;
-    if (info.offset.x < -threshold) go(index + 1);
-    else if (info.offset.x > threshold) go(index - 1);
+    const threshold = 70;
+    if (info.offset.x < -threshold || info.velocity.x < -500) goNext();
+    else if (info.offset.x > threshold || info.velocity.x > 500) goPrev();
   }
 
+  const variants = {
+    enter: (dir: number) => ({
+      x: dir > 0 ? "12%" : "-12%",
+      opacity: 0,
+      scale: 1.02,
+    }),
+    center: { x: 0, opacity: 1, scale: 1 },
+    exit: (dir: number) => ({
+      x: dir > 0 ? "-10%" : "10%",
+      opacity: 0,
+      scale: 0.98,
+    }),
+  };
+
   return (
-    <section id="casas" className="relative bg-ink">
-      <div className="flex items-center justify-between px-5 py-5 md:px-10">
-        <div>
-          <p className="text-[11px] tracking-[0.3em] text-gold-soft uppercase">Residencias</p>
-          <p className="mt-1 text-sm text-white/55">
-            Desliza · {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
-          </p>
+    <section ref={sectionRef} id="casas" className="relative bg-ink">
+      {/* Orientation header */}
+      <div className="absolute inset-x-0 top-0 z-30 px-4 pt-5 md:px-10 md:pt-7">
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-[10px] tracking-[0.32em] text-white/45 uppercase">
+              Tour de residencias
+            </p>
+            <p className="mt-1 text-sm text-white/80">
+              <span className="text-gold-soft">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <span className="text-white/35"> / {String(total).padStart(2, "0")}</span>
+              <span className="mx-2 text-white/25">·</span>
+              <span className="tracking-[0.08em]">{current.name}</span>
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              aria-label={paused ? "Reanudar tour" : "Pausar tour"}
+              onClick={() => setPaused((p) => !p)}
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur-md"
+            >
+              {paused || unlockOpen ? <Play size={14} /> : <Pause size={14} />}
+            </button>
+            <button
+              type="button"
+              aria-label={muted ? "Activar sonido" : "Silenciar"}
+              onClick={() => setMuted((m) => !m)}
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur-md"
+            >
+              {muted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            aria-label="Anterior"
-            onClick={() => go(index - 1)}
-            disabled={index === 0}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white disabled:opacity-30"
-          >
-            <ArrowLeft size={16} />
-          </button>
-          <button
-            type="button"
-            aria-label="Siguiente"
-            onClick={() => go(index + 1)}
-            disabled={index === total - 1}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white disabled:opacity-30"
-          >
-            <ArrowRight size={16} />
-          </button>
+
+        {/* Story progress segments */}
+        <div className="flex gap-1.5">
+          {residences.map((r, i) => {
+            const fill =
+              i < index ? 1 : i === index ? (reduceMotion ? 1 : progress) : 0;
+            return (
+              <button
+                key={r.id}
+                type="button"
+                aria-label={`Ir a ${r.name}`}
+                onClick={() => goTo(i, i > index ? 1 : -1)}
+                className="group h-1 flex-1 overflow-hidden rounded-full bg-white/20"
+              >
+                <span
+                  className="block h-full origin-left rounded-full bg-gold-soft transition-[width] duration-75 ease-linear group-hover:bg-white"
+                  style={{ width: `${fill * 100}%` }}
+                />
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      <div className="relative h-[78dvh] min-h-[520px] overflow-hidden md:h-[82dvh]">
-        <AnimatePresence initial={false} mode="popLayout">
+      {/* Stage */}
+      <div className="relative h-[88dvh] min-h-[560px] overflow-hidden touch-pan-y">
+        <AnimatePresence initial={false} custom={direction} mode="popLayout">
           <motion.div
             key={current.id}
-            className="absolute inset-0"
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -40 }}
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.18}
-            onDragEnd={onDragEnd}
+            dragElastic={0.14}
+            onDragStart={() => setPaused(true)}
+            onDragEnd={(e, info) => {
+              onDragEnd(e, info);
+              setPaused(false);
+            }}
+            className="absolute inset-0 cursor-grab active:cursor-grabbing"
           >
-            <VideoSlide residence={current} active />
+            <VideoSlide
+              residence={current}
+              active={inView}
+              muted={muted}
+              onOpenUnlock={() => {
+                setPaused(true);
+                setUnlockOpen(true);
+              }}
+            />
           </motion.div>
         </AnimatePresence>
+
+        {/* Next peek label */}
+        <div className="pointer-events-none absolute right-5 bottom-36 z-20 hidden text-right md:right-10 md:block">
+          <p className="text-[9px] tracking-[0.28em] text-white/35 uppercase">Siguiente</p>
+          <p className="mt-1 text-xs tracking-[0.14em] text-white/60">{next.name}</p>
+        </div>
       </div>
 
-      <div className="flex items-center justify-center gap-2 pb-8">
-        {residences.map((r, i) => (
-          <button
-            key={r.id}
-            type="button"
-            aria-label={r.name}
-            onClick={() => go(i)}
-            className={`h-1.5 rounded-full transition-all ${
-              i === index ? "w-8 bg-gold-soft" : "w-1.5 bg-white/35 hover:bg-white/60"
-            }`}
-          />
-        ))}
+      {/* Filmstrip — always know where you are */}
+      <div className="border-t border-white/8 bg-[#070707] px-4 py-4 md:px-10">
+        <div className="mx-auto flex max-w-6xl gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {residences.map((r, i) => {
+            const active = i === index;
+            return (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => goTo(i, i > index ? 1 : -1)}
+                className={`relative flex min-w-[148px] flex-1 items-center gap-3 rounded-2xl border px-3 py-2.5 text-left transition ${
+                  active
+                    ? "border-gold-soft/45 bg-gold-soft/10"
+                    : "border-white/10 bg-white/[0.03] hover:border-white/25"
+                }`}
+              >
+                <div
+                  className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-cover bg-center"
+                  style={{ backgroundImage: `url(${r.image})` }}
+                />
+                <div className="min-w-0">
+                  <p
+                    className={`truncate text-[11px] tracking-[0.16em] uppercase ${
+                      active ? "text-gold-soft" : "text-white/70"
+                    }`}
+                  >
+                    {r.name}
+                  </p>
+                  <p className="mt-0.5 truncate text-[10px] text-white/40">
+                    {r.progress}% · {r.location.split(",")[0]}
+                  </p>
+                </div>
+                {active && (
+                  <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-gold-soft" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+        <p className="mx-auto mt-3 max-w-6xl text-center text-[10px] tracking-[0.2em] text-white/30 uppercase md:text-left">
+          {autoplayBlocked ? "Tour en pausa" : "Avance automático"} · desliza o toca otra casa
+        </p>
       </div>
+
+      <UnlockModal
+        residence={current}
+        open={unlockOpen}
+        onClose={() => {
+          setUnlockOpen(false);
+          setPaused(false);
+        }}
+      />
     </section>
   );
 }
