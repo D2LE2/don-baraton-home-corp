@@ -56,7 +56,7 @@ export function BannerLiveTicks() {
   }, []);
 
   return (
-    <div className="pointer-events-none absolute top-3 left-3 z-20 flex w-[min(72%,240px)] flex-col gap-1.5 md:top-4 md:left-5 md:w-[260px]">
+    <div className="pointer-events-none absolute top-[4.75rem] left-3 z-20 flex w-[min(72%,240px)] flex-col gap-1.5 md:top-[5.25rem] md:left-5 md:w-[260px]">
       <div className="flex items-center gap-2">
         <span className="relative flex h-1.5 w-1.5">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#e0c57a] opacity-60" />

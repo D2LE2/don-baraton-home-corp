@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Lock, Menu, X } from "lucide-react";
+import { ArrowRight, ChevronDown, Lock, Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { BannerLiveTicks } from "@/components/BannerLiveTicks";
@@ -27,15 +27,33 @@ export default function HomePage() {
 
   return (
     <main className="overflow-x-hidden bg-[#f7f4ef] text-ink">
-      {/* 1 — HERO (solo marca + mensaje) */}
-      <section className="relative bg-[#f7f4ef]">
-        <header className="relative z-30 flex items-center justify-between px-5 pt-5 md:px-10 md:pt-7">
-          <Logo size="md" />
+      {/* 1 — HERO full viewport (segunda sección solo tras scroll) */}
+      <section className="relative h-[100dvh] min-h-[100dvh] overflow-hidden bg-[#1a1814]">
+        <motion.div
+          className="absolute inset-0"
+          initial={{ scale: 1.06 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 9, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <Image
+            src={featured.image}
+            alt=""
+            fill
+            priority
+            className="object-cover object-[center_38%]"
+            sizes="100vw"
+          />
+        </motion.div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/35" />
+
+        <header className="absolute inset-x-0 top-0 z-30 flex items-center justify-between px-5 pt-5 md:px-10 md:pt-7">
+          <Logo size="md" light />
           <button
             type="button"
             aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
             onClick={() => setMenuOpen((v) => !v)}
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-[#e4dfd6] bg-white/80 text-ink shadow-sm backdrop-blur-sm"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/35 text-white shadow-sm backdrop-blur-sm"
           >
             {menuOpen ? <X size={16} /> : <Menu size={16} />}
           </button>
@@ -47,9 +65,9 @@ export default function HomePage() {
               initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="absolute top-[4.25rem] right-5 z-40 w-48 border border-[#e4dfd6] bg-white p-4 shadow-lg md:right-10"
+              className="absolute top-[4.25rem] right-5 z-40 w-48 border border-white/15 bg-black/80 p-4 shadow-lg backdrop-blur-md md:right-10"
             >
-              <div className="flex flex-col gap-3 text-[11px] tracking-[0.22em] text-ink/70 uppercase">
+              <div className="flex flex-col gap-3 text-[11px] tracking-[0.22em] text-white/75 uppercase">
                 <Link href="/#lanzamiento" onClick={() => setMenuOpen(false)}>
                   Lanzamiento
                 </Link>
@@ -67,92 +85,79 @@ export default function HomePage() {
           )}
         </AnimatePresence>
 
-        <div className="relative mt-5 w-full overflow-hidden md:mt-6">
-          <div className="relative h-[min(52vh,480px)] min-h-[280px] w-full bg-[#1a1814]">
-            <motion.div
-              className="absolute inset-0"
-              initial={{ scale: 1.06 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 9, ease: [0.22, 1, 0.36, 1] }}
+        <BannerLiveTicks />
+
+        <div className="absolute inset-0 z-10 flex flex-col justify-end px-5 pb-16 md:px-10 md:pb-20 lg:px-16">
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.1 }}
+            className="text-[10px] tracking-[0.38em] text-[#e0c57a] uppercase"
+          >
+            Omar Corp · Indiana
+          </motion.p>
+          <motion.h1
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.22 }}
+            className="mt-3 max-w-3xl text-[clamp(2.15rem,7vw,4.25rem)] font-semibold leading-[1.02] tracking-[0.04em] text-white uppercase"
+          >
+            Residencias en obra.
+            <br />
+            Acceso privado.
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.55, delay: 0.4 }}
+            className="mt-3 max-w-md text-[13px] leading-relaxed text-white/65 md:text-[14px]"
+          >
+            Mira el progreso en tiempo real. Únete a la lista de la residencia que quieres.
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.5 }}
+            className="mt-7 flex flex-wrap items-center gap-3"
+          >
+            <Link
+              href="#lanzamiento"
+              className="inline-flex items-center gap-2 bg-[#e0c57a] px-5 py-3 text-[11px] font-semibold tracking-[0.18em] text-ink uppercase transition hover:bg-white"
             >
-              <Image
-                src={featured.image}
-                alt=""
-                fill
-                priority
-                className="object-cover object-[center_38%]"
-                sizes="100vw"
-              />
-            </motion.div>
-            <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/20" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-black/25" />
-
-            <BannerLiveTicks />
-
-            <div className="absolute inset-0 z-10 flex flex-col justify-end px-5 pb-10 md:px-10 md:pb-12 lg:px-16">
-              <motion.p
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, delay: 0.1 }}
-                className="text-[10px] tracking-[0.38em] text-[#e0c57a] uppercase"
-              >
-                Omar Corp · Indiana
-              </motion.p>
-              <motion.h1
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.22 }}
-                className="mt-3 max-w-3xl text-[clamp(2rem,6.5vw,4rem)] font-semibold leading-[1.02] tracking-[0.04em] text-white uppercase"
-              >
-                Residencias en obra.
-                <br />
-                Acceso privado.
-              </motion.h1>
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.55, delay: 0.4 }}
-                className="mt-3 max-w-md text-[13px] leading-relaxed text-white/65"
-              >
-                Mira el progreso en tiempo real. Únete a la lista de la residencia que quieres.
-              </motion.p>
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, delay: 0.5 }}
-                className="mt-6 flex flex-wrap items-center gap-3"
-              >
-                <Link
-                  href="#lanzamiento"
-                  className="inline-flex items-center gap-2 bg-[#e0c57a] px-5 py-3 text-[11px] font-semibold tracking-[0.18em] text-ink uppercase transition hover:bg-white"
-                >
-                  Ver primer lanzamiento
-                  <ArrowRight size={14} />
-                </Link>
-                <Link
-                  href="/private"
-                  className="inline-flex items-center gap-1.5 border border-white/25 px-4 py-3 text-[10px] tracking-[0.16em] text-white/80 uppercase transition hover:border-white"
-                >
-                  <Lock size={11} />
-                  Omar Private
-                </Link>
-              </motion.div>
-            </div>
-          </div>
+              Ver primer lanzamiento
+              <ArrowRight size={14} />
+            </Link>
+            <Link
+              href="/private"
+              className="inline-flex items-center gap-1.5 border border-white/25 px-4 py-3 text-[10px] tracking-[0.16em] text-white/80 uppercase transition hover:border-white"
+            >
+              <Lock size={11} />
+              Omar Private
+            </Link>
+          </motion.div>
         </div>
 
-        <p className="mx-auto max-w-lg px-5 py-8 text-center text-[13px] leading-relaxed text-[#6a655e] md:px-10">
-          Omar Corp documenta cada transformación. Tú eliges la residencia, sigues el avance y
-          entras a su lista — antes del mercado.
-        </p>
+        <a
+          href="#lanzamiento"
+          aria-label="Ir al lanzamiento"
+          className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-1 text-white/45 transition hover:text-white/80"
+        >
+          <motion.span
+            animate={{ y: [0, 5, 0] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <ChevronDown size={18} strokeWidth={1.25} />
+          </motion.span>
+        </a>
       </section>
 
-      {/* Soft divider */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-[#d9d0c3] to-transparent" />
-
       {/* 2 — PRIMERA RESIDENCIA (foto + card Próximo lanzamiento) */}
-      <section id="lanzamiento" className="relative bg-[#f7f4ef] pt-2 md:pt-4">
+      <section id="lanzamiento" className="relative bg-[#f7f4ef] pt-8 md:pt-12">
         <div className="px-5 pb-3 md:px-10 lg:px-16">
+          <p className="mx-auto mb-8 max-w-lg text-center text-[13px] leading-relaxed text-[#6a655e] md:mb-10">
+            Omar Corp documenta cada transformación. Tú eliges la residencia, sigues el avance y
+            entras a su lista — antes del mercado.
+          </p>
           <p className="text-[10px] tracking-[0.35em] text-[#9a8660] uppercase">
             Residencia destacada
           </p>
