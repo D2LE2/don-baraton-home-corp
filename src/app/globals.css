@@ -57,19 +57,19 @@ body {
   width: 100%;
 }
 
-/* Collection stage — compact cinematic frame, not a tall phone scroll */
+/* Collection stage — video-first; keep frame wide so the property reads clearly */
 .residence-video-frame {
   width: 100%;
   aspect-ratio: 16 / 10;
-  max-height: 52vh;
-  min-height: 240px;
+  max-height: 58vh;
+  min-height: 260px;
 }
 
 @media (min-width: 768px) {
   .residence-video-frame {
     aspect-ratio: 16 / 9;
-    max-height: 56vh;
-    min-height: 320px;
+    max-height: 64vh;
+    min-height: 360px;
   }
 }
 

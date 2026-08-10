@@ -17,7 +17,7 @@ import { WaitlistJoin } from "@/components/WaitlistJoin";
 import { useNova } from "@/context/NovaContext";
 import { residences } from "@/data/residences";
 
-/** Compact pro collection stage — video + overlay, no tall status stack */
+/** Video-first collection — property footage stays clear; meta lives under the frame */
 export function VideoResidenceFeed() {
   const total = residences.length;
   const [index, setIndex] = useState(0);
@@ -80,28 +80,13 @@ export function VideoResidenceFeed() {
 
   return (
     <section id="casas" className="relative bg-[#0f0e0c] text-white">
-      <div className="flex items-end justify-between gap-4 px-5 py-6 md:px-12 md:py-8 lg:px-16">
-        <div>
-          <p className="text-[10px] tracking-[0.35em] text-[#c4a574] uppercase">
-            Colección en vivo
-          </p>
-          <p className="mt-1.5 text-[13px] text-white/45">
-            El siguiente paso: mira cómo se transforma cada casa.
-          </p>
-        </div>
-        <div className="flex items-center gap-1.5">
-          {residences.map((r, i) => (
-            <button
-              key={r.id}
-              type="button"
-              onClick={() => goTo(i)}
-              aria-label={r.code}
-              className={`h-1 w-6 rounded-full transition ${
-                i === index ? "bg-[#e0c57a]" : "bg-white/20 hover:bg-white/40"
-              }`}
-            />
-          ))}
-        </div>
+      <div className="flex items-center justify-between gap-4 px-5 py-5 md:px-12 md:py-6 lg:px-16">
+        <p className="text-[10px] tracking-[0.35em] text-[#c4a574] uppercase">
+          Colección en vivo
+        </p>
+        <p className="text-[10px] tracking-[0.22em] text-white/40 uppercase tabular-nums">
+          {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+        </p>
       </div>
 
       <div className="residence-video-frame relative mx-auto max-w-[1200px] overflow-hidden bg-[#12100e] md:mx-5 md:rounded-sm lg:mx-12 xl:mx-16">
@@ -129,39 +114,28 @@ export function VideoResidenceFeed() {
           </motion.div>
         </AnimatePresence>
 
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/40" />
+        {/* Soft edge only — video stays readable */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/20" />
 
-        {/* Top chrome */}
-        <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-4 pt-4 md:px-6 md:pt-5">
-          <p className="text-[10px] tracking-[0.28em] text-white/70 uppercase tabular-nums">
-            <span className="text-white">{String(index + 1).padStart(2, "0")}</span>
-            <span className="text-white/35"> / {String(total).padStart(2, "0")}</span>
-          </p>
-          <div className="flex items-center gap-3">
-            <p className="text-[10px] tracking-[0.2em] text-[#e0c57a] uppercase tabular-nums">
-              {current.progress}%
-            </p>
-            <button
-              type="button"
-              onClick={() => setPlaying((p) => !p)}
-              aria-label={playing ? "Pausar" : "Reanudar"}
-              className="pointer-events-auto flex h-8 w-8 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white/90 backdrop-blur-sm"
-            >
-              {playing ? (
-                <Pause size={12} fill="currentColor" />
-              ) : (
-                <Play size={12} fill="currentColor" className="ml-0.5" />
-              )}
-            </button>
-          </div>
-        </div>
+        <button
+          type="button"
+          onClick={() => setPlaying((p) => !p)}
+          aria-label={playing ? "Pausar" : "Reanudar"}
+          className="absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white/90 backdrop-blur-sm md:top-4 md:right-4"
+        >
+          {playing ? (
+            <Pause size={13} fill="currentColor" />
+          ) : (
+            <Play size={13} fill="currentColor" className="ml-0.5" />
+          )}
+        </button>
 
         {index > 0 && (
           <button
             type="button"
             aria-label="Anterior"
             onClick={goPrev}
-            className="absolute top-1/2 left-2 z-30 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white/80 md:left-4"
+            className="absolute top-1/2 left-2 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/35 text-white/85 md:left-4"
           >
             <ChevronLeft size={18} strokeWidth={1.25} />
           </button>
@@ -171,88 +145,86 @@ export function VideoResidenceFeed() {
             type="button"
             aria-label="Siguiente"
             onClick={goNext}
-            className="absolute top-1/2 right-2 z-30 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white/80 md:right-4"
+            className="absolute top-1/2 right-2 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/35 text-white/85 md:right-4"
           >
             <ChevronRight size={18} strokeWidth={1.25} />
           </button>
         )}
+      </div>
 
-        {/* Bottom overlay — all key info, no tall stack below */}
-        <div className="absolute inset-x-0 bottom-0 z-20 px-4 pb-4 md:px-6 md:pb-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div className="min-w-0">
-              <p className="text-[9px] tracking-[0.32em] text-[#c4a574] uppercase">
-                {current.code}
-              </p>
-              <h2 className="mt-1 text-[clamp(1.35rem,4vw,2rem)] font-semibold tracking-[0.06em] text-white uppercase">
-                {current.name}
-              </h2>
-              <p className="mt-1 flex items-center gap-1 text-[11px] text-white/50">
-                <MapPin size={11} className="shrink-0 opacity-70" />
-                {current.location}
-              </p>
-              <div className="mt-2.5 max-w-[200px]">
-                <ProgressBar
-                  key={current.id}
-                  value={current.progress}
-                  tone="dark"
-                  size="sm"
-                  live
-                />
-              </div>
-              {current.latestUpdate && (
-                <p className="mt-2 truncate text-[10px] text-white/40">
-                  {current.latestUpdate.date} · {current.latestUpdate.title}
-                </p>
-              )}
+      {/* Meta + actions under the video — property footage is the focus */}
+      <div className="mx-auto max-w-[1200px] px-5 pt-5 pb-2 md:px-12 md:pt-6 lg:px-16">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-[10px] tracking-[0.28em] text-[#c4a574] uppercase">
+              {current.code}
+            </p>
+            <h2 className="mt-1 text-xl font-semibold tracking-[0.05em] text-white uppercase md:text-2xl">
+              {current.name}
+            </h2>
+            <p className="mt-1.5 flex items-center gap-1 text-[12px] text-white/45">
+              <MapPin size={12} className="shrink-0 opacity-70" />
+              {current.location}
+            </p>
+            <div className="mt-3 max-w-[180px]">
+              <ProgressBar
+                key={current.id}
+                value={current.progress}
+                tone="dark"
+                size="sm"
+                showLabel
+                label="Progreso"
+                live
+              />
             </div>
+          </div>
 
-              <div className="flex shrink-0 flex-wrap items-center gap-2 sm:flex-col sm:items-end">
-                <div className="flex gap-1.5">
-                  {residences.map((r, i) => (
-                    <button
-                      key={r.id}
-                      type="button"
-                      onClick={() => goTo(i)}
-                      className={`relative h-11 w-14 overflow-hidden border transition md:h-12 md:w-16 ${
-                        i === index
-                          ? "border-[#c4a574]"
-                          : "border-white/20 opacity-60 hover:opacity-100"
-                      }`}
-                    >
-                      <Image
-                        src={r.image}
-                        alt={r.name}
-                        fill
-                        className="object-cover"
-                        sizes="64px"
-                      />
-                    </button>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  {joined ? (
-                    <span className="inline-flex items-center border border-white/25 px-3 py-2 text-[9px] tracking-[0.16em] text-white/70 uppercase">
-                      En esta lista
-                    </span>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setWaitlistOpen(true)}
-                      className="bg-[#c4a574] px-3.5 py-2 text-[9px] font-semibold tracking-[0.16em] text-ink uppercase transition hover:bg-[#e0c57a]"
-                    >
-                      Unirse a lista
-                    </button>
-                  )}
-                  <Link
-                    href={`/residences/${current.id}`}
-                    className="inline-flex items-center gap-1.5 border border-white/25 px-3 py-2 text-[9px] tracking-[0.16em] text-white/85 uppercase transition hover:border-white"
-                  >
-                    Ver
-                    <ArrowRight size={12} />
-                  </Link>
-                </div>
-              </div>
+          <div className="flex shrink-0 flex-col gap-3 sm:items-end">
+            <div className="flex gap-1.5">
+              {residences.map((r, i) => (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => goTo(i)}
+                  aria-label={r.code}
+                  className={`relative h-12 w-16 overflow-hidden border transition md:h-14 md:w-[4.5rem] ${
+                    i === index
+                      ? "border-[#c4a574]"
+                      : "border-white/15 opacity-55 hover:opacity-100"
+                  }`}
+                >
+                  <Image
+                    src={r.image}
+                    alt={r.name}
+                    fill
+                    className="object-cover"
+                    sizes="72px"
+                  />
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              {joined ? (
+                <span className="inline-flex items-center border border-white/20 px-3.5 py-2.5 text-[10px] tracking-[0.16em] text-white/65 uppercase">
+                  En esta lista
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setWaitlistOpen(true)}
+                  className="bg-[#c4a574] px-4 py-2.5 text-[10px] font-semibold tracking-[0.16em] text-ink uppercase transition hover:bg-[#e0c57a]"
+                >
+                  Unirse a lista
+                </button>
+              )}
+              <Link
+                href={`/residences/${current.id}`}
+                className="inline-flex items-center gap-1.5 border border-white/25 px-3.5 py-2.5 text-[10px] tracking-[0.16em] text-white/85 uppercase transition hover:border-white"
+              >
+                Ver
+                <ArrowRight size={12} />
+              </Link>
+            </div>
           </div>
         </div>
       </div>
