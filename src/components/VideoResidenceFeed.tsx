@@ -9,26 +9,34 @@ import { UnlockModal } from "@/components/UnlockModal";
 import { useNova } from "@/context/NovaContext";
 import { residences, type Residence } from "@/data/residences";
 
-function VideoCard({
-  residence,
-  active,
-}: {
-  residence: Residence;
-  active: boolean;
-}) {
+function VideoCard({ residence }: { residence: Residence }) {
+  const articleRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { isUnlocked, ready } = useNova();
   const unlocked = ready && isUnlocked(residence.id);
+  const [active, setActive] = useState(false);
   const [showHook, setShowHook] = useState(false);
   const [wantMore, setWantMore] = useState(false);
   const [unlockOpen, setUnlockOpen] = useState(false);
   const [muted, setMuted] = useState(true);
 
   useEffect(() => {
+    const node = articleRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setActive(entry.isIntersecting && entry.intersectionRatio >= 0.45);
+      },
+      { threshold: [0.45, 0.65] },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
     const el = videoRef.current;
     if (!el) return;
     if (active) {
-      el.currentTime = 0;
       void el.play().catch(() => undefined);
       setShowHook(false);
       setWantMore(false);
@@ -48,22 +56,27 @@ function VideoCard({
   }, [muted]);
 
   return (
-    <article className="relative h-[100dvh] min-h-[680px] w-full shrink-0 snap-start overflow-hidden bg-ink">
+    <article
+      ref={articleRef}
+      className="relative min-h-[100dvh] w-full overflow-hidden bg-ink"
+      style={{ touchAction: "pan-y" }}
+    >
       <video
         ref={videoRef}
-        className="absolute inset-0 h-full w-full object-cover"
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover"
         src={residence.video}
         poster={residence.image}
         playsInline
         loop
         muted={muted}
         preload="metadata"
+        controls={false}
+        disablePictureInPicture
       />
 
-      <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/15 to-black/85" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/55 via-black/15 to-black/85" />
 
-      {/* Emotional free layer — always visible */}
-      <div className="relative z-10 flex h-full flex-col justify-between px-5 pb-28 pt-28 md:px-12 md:pb-24 md:pt-32 lg:px-16">
+      <div className="relative z-10 flex min-h-[100dvh] flex-col justify-between px-5 pb-28 pt-28 md:px-12 md:pb-24 md:pt-32 lg:px-16">
         <div>
           <div className="flex flex-wrap items-center gap-3">
             <span className="inline-flex items-center gap-2 rounded-full border border-gold-soft/40 bg-black/35 px-3 py-1.5 text-[10px] tracking-[0.22em] text-gold-soft uppercase backdrop-blur-md">
@@ -95,7 +108,6 @@ function VideoCard({
         </div>
 
         <div className="max-w-xl">
-          {/* Free emotional peek */}
           <div className="mb-5 flex items-end gap-6">
             <div>
               <p className="display text-5xl font-light text-white md:text-6xl">
@@ -130,7 +142,7 @@ function VideoCard({
                   <button
                     type="button"
                     onClick={() => setUnlockOpen(true)}
-                    className="mt-4 inline-flex items-center gap-2 rounded-full bg-gold-soft px-6 py-3 text-[11px] font-medium tracking-[0.2em] text-ink uppercase transition hover:bg-white"
+                    className="pointer-events-auto mt-4 inline-flex items-center gap-2 rounded-full bg-gold-soft px-6 py-3 text-[11px] font-medium tracking-[0.2em] text-ink uppercase transition hover:bg-white"
                   >
                     Desbloquear propiedad
                     <ArrowRight size={14} />
@@ -155,7 +167,7 @@ function VideoCard({
               <div className="flex flex-wrap gap-3">
                 <Link
                   href={`/residences/${residence.id}`}
-                  className="inline-flex items-center gap-2 rounded-full bg-gold-soft px-7 py-3.5 text-[11px] font-medium tracking-[0.2em] text-ink uppercase"
+                  className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-gold-soft px-7 py-3.5 text-[11px] font-medium tracking-[0.2em] text-ink uppercase"
                 >
                   Ver Build Story
                   <ArrowRight size={14} />
@@ -173,7 +185,7 @@ function VideoCard({
         type="button"
         aria-label={muted ? "Activar sonido" : "Silenciar"}
         onClick={() => setMuted((m) => !m)}
-        className="absolute right-5 bottom-8 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-md md:right-10"
+        className="pointer-events-auto absolute right-5 bottom-8 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-md md:right-10"
       >
         {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
       </button>
@@ -187,53 +199,19 @@ function VideoCard({
   );
 }
 
+/** Videos en el scroll normal de la página — sin contenedor interno que atrapa */
 export function VideoResidenceFeed() {
-  const scrollerRef = useRef<HTMLDivElement>(null);
-  const [active, setActive] = useState(0);
-
-  useEffect(() => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    const onScroll = () => {
-      const i = Math.round(el.scrollTop / Math.max(el.clientHeight, 1));
-      setActive(i);
-    };
-    el.addEventListener("scroll", onScroll, { passive: true });
-    return () => el.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
     <section id="casas" className="relative bg-ink">
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex justify-center pt-6">
+      <div className="pointer-events-none sticky top-4 z-20 flex justify-center pt-2">
         <p className="rounded-full border border-white/15 bg-black/40 px-4 py-2 text-[10px] tracking-[0.28em] text-gold-soft uppercase backdrop-blur-md">
           La magia está en el video · Desliza cada casa
         </p>
       </div>
 
-      <div ref={scrollerRef} className="snap-y-mandatory h-[100dvh] overflow-y-auto">
-        {residences.map((r, i) => (
-          <VideoCard key={r.id} residence={r} active={active === i} />
-        ))}
-      </div>
-
-      <div className="pointer-events-none fixed top-1/2 right-5 z-30 hidden -translate-y-1/2 flex-col gap-2 md:flex">
-        {residences.map((r, i) => (
-          <button
-            key={r.id}
-            type="button"
-            aria-label={r.name}
-            onClick={() => {
-              scrollerRef.current?.scrollTo({
-                top: i * (scrollerRef.current?.clientHeight ?? 0),
-                behavior: "smooth",
-              });
-            }}
-            className={`pointer-events-auto h-2 rounded-full transition-all ${
-              active === i ? "w-8 bg-gold-soft" : "w-2 bg-white/30 hover:bg-white/60"
-            }`}
-          />
-        ))}
-      </div>
+      {residences.map((r) => (
+        <VideoCard key={r.id} residence={r} />
+      ))}
     </section>
   );
 }
