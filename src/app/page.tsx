@@ -17,6 +17,7 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { Countdown } from "@/components/Countdown";
+import { HeroActivityFeed } from "@/components/HeroActivityFeed";
 import { Logo } from "@/components/Logo";
 import { VideoResidenceFeed } from "@/components/VideoResidenceFeed";
 import { residences } from "@/data/residences";
@@ -68,7 +69,7 @@ export default function HomePage() {
         <div className="relative z-10 pt-8 md:pt-10">
           <div className="px-5 md:px-10 lg:px-16">
             <p className="text-[11px] tracking-[0.35em] text-[#b8924a] uppercase">
-              Modern living. Reimagined.
+              Omar Corp · Indiana
             </p>
           </div>
 
@@ -88,21 +89,22 @@ export default function HomePage() {
                 disablePictureInPicture
                 aria-hidden
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/15" />
-              <h1 className="absolute inset-0 flex flex-col justify-center px-5 text-[clamp(2rem,8vw,4.25rem)] font-semibold leading-[0.95] tracking-[0.02em] text-white uppercase md:px-10 lg:px-16">
-                El futuro
+              <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/45 to-black/20" />
+              <h1 className="absolute inset-0 flex flex-col justify-center px-5 text-[clamp(1.65rem,6.5vw,3.4rem)] font-semibold leading-[1.05] tracking-[0.04em] text-white uppercase md:px-10 lg:px-16">
+                Residencias en obra.
                 <br />
-                de vivir
+                Acceso privado.
               </h1>
             </div>
           </div>
 
           <div className="mx-auto max-w-xl px-5 pt-4 md:mx-0 md:px-10 lg:px-16">
-            <p className="script text-[clamp(1.85rem,5vw,2.75rem)] text-[#c4a574]">
-              Comienza aquí.
+            <p className="max-w-md text-[12px] leading-relaxed tracking-[0.04em] text-[#6a655e] md:text-[13px]">
+              Vas a ver el progreso de cada vivienda en tiempo real — etapas, avances y
+              actualizaciones mientras se transforma.
             </p>
-            <p className="mt-4 max-w-sm text-[14px] leading-relaxed text-[#8a847a] md:text-[15px]">
-              Casas modernas diseñadas para una nueva forma de vivir en Indiana.
+            <p className="mt-3 max-w-sm text-[14px] leading-relaxed text-[#8a847a] md:text-[15px]">
+              Colección selecta en Indiana. Prioridad para quienes entran a la lista privada.
             </p>
 
             <Link
@@ -136,6 +138,7 @@ export default function HomePage() {
               aria-label={featured.name}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
+            <HeroActivityFeed />
           </div>
 
           {/* Floating card */}
